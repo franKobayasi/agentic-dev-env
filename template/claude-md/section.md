@@ -21,6 +21,4 @@
 
 ### 知識維護
 
-- 發現知識過期、缺漏，或學到新慣例 → 用 `ade-contribute` skill 開 PR 回 ADE repo
-- 要註冊新服務 → 用 `ade-add-service` skill
-- `.claude/ade/` 與 `.claude/skills/ade-*/` 為 managed 區域，勿直接修改
+`.claude/ade/` 與 `.claude/skills/ade-*/` 為 managed 區域、視同唯讀；回流、註冊服務、建立流程等維護動作由 ade-* skills 引導。
