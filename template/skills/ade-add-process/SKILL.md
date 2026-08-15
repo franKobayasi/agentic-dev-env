@@ -15,11 +15,14 @@ description: 為團隊建立或修改流程慣例並落地到 ADE 知識庫。�
 
 多數流程是組合：常駐一行（或一支 skill）＋ process 細節檔。
 
+**大流程要拆**：步驟多或跨角色的流程，拆成多支自足的階段 skill ＋ 一支薄總覽 skill（只放階段地圖與進度判斷）。階段交接狀態必須外部化到檔案，各階段 skill 開場先讀檔判斷進度；執行痕跡重的階段建議交 subagent 隔離（結構規則詳見 `knowledge/process/README.md`）。
+
 ## 2. Context 紀律（每一步都遵守）
 
 - **參考技巧**：常駐層與 skill body 只寫「何時做＋去哪看」，細節放 process/ 檔按需載入——預設 context 越小越好
 - section.md 常駐規則一條一行；**常駐規則超過 10 行時，新增前必須與使用者確認取捨**（合併、降級為 skill 觸發、或刪一條舊的）
 - skill 的 description 寫觸發語、body 精簡；超過一頁的細節拆到 process/ 檔並連結
+- **禁止孤兒**：新增的 process/ 文件必須被 skill 或常駐行引用，否則它永遠不會進入 context
 
 ## 3. 落地
 
