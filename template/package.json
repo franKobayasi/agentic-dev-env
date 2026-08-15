@@ -9,6 +9,9 @@
     "type": "git",
     "url": "FILL_ME: git@github.com:ORG/__ADE_NAME__.git"
   },
+  "ade": {
+    "upstream": null
+  },
   "dependencies": {
     "create-agentic-dev-env": "^0.1.0"
   }

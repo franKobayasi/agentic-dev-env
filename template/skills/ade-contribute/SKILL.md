@@ -13,7 +13,7 @@ description: 將工作過程中發現的知識缺口、過期文件、新慣例�
 2. Clone 到暫存目錄：`git clone <source> <tmpdir>/ade`
 3. 在 clone 中建立分支，修改 `knowledge/` 下對應文件
    - 修改前先讀原文，沿用既有格式與詞彙
-   - 服務文件必須符合 `knowledge/services/_template.md` 的區塊結構
+   - 服務描述檔必須符合 `knowledge/services/_template.yaml` 的欄位結構；收錄範圍遵守 `knowledge/README.md` 的分層規則
 4. Commit 並開 PR（GitHub 用 `gh pr create`，GitLab 用 `glab mr create`）
    - PR 描述寫清楚：發現什麼缺口、在哪個工作情境發現的
 5. 告知使用者 PR 連結；merge 後在工作目錄執行 update 即可取得新版

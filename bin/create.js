@@ -22,6 +22,13 @@ for (const f of ['package.json', 'README.md', 'CLAUDE.md', path.join('claude-md'
   const p = path.join(dest, f)
   fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replaceAll('__ADE_NAME__', name))
 }
+// 記錄上游位址，供 ade-feedback-upstream skill 回饋機制改良
+const selfRepo = (require('../package.json').repository || {}).url || null
+const destPkgPath = path.join(dest, 'package.json')
+const destPkg = JSON.parse(fs.readFileSync(destPkgPath, 'utf8'))
+destPkg.ade.upstream = selfRepo ? selfRepo.replace(/^git\+/, '') : null
+fs.writeFileSync(destPkgPath, JSON.stringify(destPkg, null, 2) + '\n')
+
 execSync('git init', { cwd: dest, stdio: 'inherit' })
 
 console.log(`

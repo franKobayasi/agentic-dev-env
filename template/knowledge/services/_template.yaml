@@ -1,0 +1,21 @@
+# 服務描述檔模板：複製為 <service-name>.yaml 填寫，並同步更新 index.md 總覽
+# 只記「取得服務的最小資訊」與跨服務關係；bootstrap 流程與內部慣例歸服務 repo 自己的文件
+# （分層規則見 ../README.md）
+name: <service-name>
+description: |
+  定位：這個服務在整個產品中的角色、為什麼存在（一～兩句）。
+repo:
+  url: git@github.com:ORG/<service-name>.git
+  branch: main
+stack:
+  language: <例：TypeScript / NestJS>
+  package_manager: <例：pnpm>
+  runtime: <例：Node 22>
+dependencies:
+  calls:
+    - service: <service-b>
+      reason: <為了什麼呼叫它>
+  called_by:
+    - <api-gateway>
+specs:
+  - ../specs/<相關規格檔>.md

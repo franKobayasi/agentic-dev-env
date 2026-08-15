@@ -3,12 +3,21 @@
 
 本目錄是 agent 工作站，知識庫位於 `.claude/ade/knowledge/`。
 
+### Session 開始時
+
+- **檢查知識新鮮度**：讀 `.ade.json`，執行 `git ls-remote <source> HEAD`，若 hash 與 `commit` 不符，提醒使用者執行 update 後再繼續（勿自行修改 managed 內容）
+- Session 一律從本目錄（hub 根）開啟；在 `workspaces/<service>/` 內開啟會失去 ade skills
+
+### 知識分層
+
+完整規則見 `.claude/ade/knowledge/README.md`。摘要：ADE 只收跨服務知識、取得服務的最小資訊、產品規格；服務內部一切以服務 repo（CLAUDE.md／AGENTS.md／code）為準。發現 ADE 側資訊過期：以服務 repo 為準繼續工作，任務收尾時用 `ade-contribute` 開 PR 修正，無需先徵詢。
+
 ### 開發某個服務時
 
 1. 讀 `.claude/ade/knowledge/services/index.md`（全服務總覽）定位目標服務
-2. 讀 `.claude/ade/knowledge/services/<service>.md` 取得該服務的定位、repo、技術棧、開發指令
-3. 若 `workspaces/<service>/` 不存在，依該檔「Repo」區塊 clone 到 `workspaces/<service>/`
-4. 依「本地開發」區塊操作（安裝、啟動、測試）；流程慣例見 `knowledge/process/`，功能規格見 `knowledge/specs/`
+2. 讀 `.claude/ade/knowledge/services/<service>.yaml` 取得定位、repo、技術棧、依賴關係
+3. 若 `workspaces/<service>/` 不存在，依 `repo.url` / `repo.branch` clone 到 `workspaces/<service>/`
+4. 讀服務 repo 自身的 README／CLAUDE.md／AGENTS.md 完成安裝、啟動、測試；跨服務流程慣例見 `knowledge/process/`，功能規格見 `knowledge/specs/`
 
 ### 知識維護
 

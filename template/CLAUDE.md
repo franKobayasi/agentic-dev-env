@@ -11,5 +11,5 @@
 
 ## 編輯慣例
 
-- 服務文件必須符合 `knowledge/services/_template.md` 區塊結構，並同步更新 `services/index.md` 總覽
+- 服務描述檔必須符合 `knowledge/services/_template.yaml` 欄位結構，並同步更新 `services/index.md` 總覽；收錄範圍遵守 `knowledge/README.md` 的分層規則
 - 修改 spec 時沿用既有詞彙；PRD 只在「已實作」前可改
