@@ -54,7 +54,7 @@ knowledge/
 ├── specs/       # 當前功能規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
 skills/          # init 時注入工作目錄的 .claude/skills/（五支，見下方 Skills 一覽）
-.claude/skills/  # 在本 repo 內工作用的 skills（三支，見下方 Skills 一覽）
+.claude/skills/  # 在本 repo 內工作用的 skills（三支＋ade-add-service 的 symlink，見下方 Skills 一覽）
 claude-md/       # CLAUDE.md managed 區段的內容
 ```
 
@@ -64,7 +64,7 @@ claude-md/       # CLAUDE.md managed 區段的內容
 
 - **`ade-contribute`** — 知識回流的核心通道。當 agent 在工作中發現知識庫內容與現實不符（服務資訊過期、文件缺漏），或學到值得保存的新知識時觸發。它會先查 ADE repo 的 open issues／PRs 避免重複回流（已有記錄就留言補充），沒有才開 issue 記錄缺口，接著 clone 本 ADE repo、建分支、修改對應文件、開 PR 連結該 issue。人只需要 review PR。**注意：絕不直接改工作目錄裡的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋，改了等於白改；這支 skill 存在的意義就是把修改導向正確的地方。其他三支 skill 的「開 PR」動作也都委派給它，所以回流機制只需要維護這一份。
 
-- **`ade-add-service`** — 在知識庫註冊新服務。使用者說「新增服務」「把某某服務加進知識庫」時觸發。它會依 `knowledge/services/_template.yaml` 的欄位結構建立服務描述檔（`repo` 的 url 與 branch 為必填，因為 agent 之後要靠它自主 clone 服務），同步在 `services/index.md` 總覽表加一列，最後走 `ade-contribute` 流程開 PR。資訊不足時它會問人，不會留空猜測。
+- **`ade-add-service`** — 在知識庫註冊新服務。使用者說「新增服務」「把某某服務加進知識庫」時觸發。它會依 `knowledge/services/_template.yaml` 的欄位結構建立服務描述檔（`repo` 的 url 與 branch 為必填，因為 agent 之後要靠它自主 clone 服務），同步在 `services/index.md` 總覽表加一列。資訊不足時它會問人，不會留空猜測。**本 ADE repo 內也可用**（`.claude/skills/` 有 symlink，這是主要使用場景）：在本 repo 直接編輯、照一般 git 慣例收尾；在工作目錄則走 `ade-contribute` 流程開 PR。
 
 - **`ade-align-spec`** — 開發收尾的文件對齊。RD 完成一個 PRD 的開發後觸發。它對照 `workspaces/` 下的實際實作，逐一核對 spec 中屬於這次 PRD 的 `🚧 尚未實作` 標記：做完且行為一致的移除標記；實作與 spec 有出入的**以實作為準**修改 spec 並記下差異；沒做的保留。全部驗收項完成時把 PRD 狀態改為「已實作」。最後開 PR，把差異清單列給 PO 判斷是否接受。它只動屬於這次 PRD 的標記，同一份 spec 上其他進行中 PRD 的標記不會被誤刪。
 

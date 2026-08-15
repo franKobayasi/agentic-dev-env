@@ -18,6 +18,11 @@ try {
   assert(fs.existsSync(path.join(ade, '.claude/skills/ade-create-prd/SKILL.md')), 'dot-claude 應改名為 .claude')
   assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
   assert(fs.existsSync(path.join(ade, '.claude/skills/ade-feedback-upstream/SKILL.md')), 'feedback-upstream skill 應存在')
+  assert(
+    fs.lstatSync(path.join(ade, '.claude/skills/ade-add-service')).isSymbolicLink() &&
+      fs.existsSync(path.join(ade, '.claude/skills/ade-add-service/SKILL.md')),
+    'add-service 應 symlink 進 ADE repo 的 .claude/skills 且可解析'
+  )
   assert('upstream' in JSON.parse(fs.readFileSync(path.join(ade, 'package.json'), 'utf8')).ade, 'ade.upstream 應寫入')
   assert(!fs.readFileSync(path.join(ade, 'package.json'), 'utf8').includes('__ADE_NAME__'), '名稱應被替換')
   git('add -A', ade)
