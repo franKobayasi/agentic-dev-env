@@ -4,7 +4,7 @@
   "description": "Scaffold and manage team Agentic Dev Environment (ADE) knowledge repos",
   "repository": {
     "type": "git",
-    "url": "FILL_ME: https://github.com/ORG/agentic-dev-env.git"
+    "url": "git+https://github.com/franKobayasi/agentic-dev-env.git"
   },
   "keywords": [
     "agent",

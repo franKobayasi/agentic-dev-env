@@ -1,6 +1,6 @@
 # __ADE_NAME__
 
-由 [create-agentic-dev-env](https://github.com/) 產生的 Agentic Dev Environment（ADE）知識庫：集中管理團隊的 domain 知識、流程知識與產品規格，讓 agent 在任何工作目錄都能取用並持續回流更新。
+由 [create-agentic-dev-env](https://github.com/franKobayasi/agentic-dev-env) 產生的 Agentic Dev Environment（ADE）知識庫：集中管理團隊的 domain 知識、流程知識與產品規格，讓 agent 在任何工作目錄都能取用並持續回流更新。
 
 ## 初始設定（建 repo 後做一次）
 
