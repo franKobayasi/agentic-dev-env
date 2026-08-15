@@ -53,7 +53,7 @@ knowledge/
 ├── process/     # 團隊流程知識
 ├── specs/       # 當前功能規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/（四支，見下方 Skills 一覽）
+skills/          # init 時注入工作目錄的 .claude/skills/（五支，見下方 Skills 一覽）
 .claude/skills/  # 在本 repo 內工作用的 skills（三支，見下方 Skills 一覽）
 claude-md/       # CLAUDE.md managed 區段的內容
 ```
@@ -69,6 +69,8 @@ claude-md/       # CLAUDE.md managed 區段的內容
 - **`ade-align-spec`** — 開發收尾的文件對齊。RD 完成一個 PRD 的開發後觸發。它對照 `workspaces/` 下的實際實作，逐一核對 spec 中屬於這次 PRD 的 `🚧 尚未實作` 標記：做完且行為一致的移除標記；實作與 spec 有出入的**以實作為準**修改 spec 並記下差異；沒做的保留。全部驗收項完成時把 PRD 狀態改為「已實作」。最後開 PR，把差異清單列給 PO 判斷是否接受。它只動屬於這次 PRD 的標記，同一份 spec 上其他進行中 PRD 的標記不會被誤刪。
 
 - **`ade-spec-audit`** — spec 的定期健檢。PRD 流程只覆蓋「計畫內」的開發，hotfix 和直接改 code 的計畫外變更會讓 spec 悄悄失真——這支 skill 補上這條偵測路徑。觸發後它逐份 spec 對照相關服務的實作（缺的 repo 會先 clone），找出「行為已變、功能已移除、實作有但 spec 沒記載」的漂移，產出清單讓人確認該修 spec 還是該修 code（漂移不一定是文件錯，也可能是實作偏離了規格），確認後開 PR 修正。建議在 release 後或定期執行。
+
+- **`ade-add-process`** — 為團隊建立或修改流程慣例的 meta-skill。使用者說「以後都這樣做」「定一個慣例」時觸發。它依三層機制選載體：無條件約束 → `claude-md/section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」（參考技巧）、常駐規則超過 10 行時新增前必須與使用者確認取捨。最後走 `ade-contribute` 流程開 PR。
 
 ### 在本 ADE repo 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
 

@@ -72,6 +72,13 @@ try {
   assert(md2.split('<!-- ADE:BEGIN -->').length === 2, '區段不應重複插入')
   assert(JSON.parse(fs.readFileSync(cfgPath, 'utf8')).commit, '.ade.json 應記錄 commit')
 
+  // 非 ade- 前綴的 skill 應被拒裝（在破壞前驗證）
+  fs.mkdirSync(path.join(ade, 'skills/rogue'))
+  fs.writeFileSync(path.join(ade, 'skills/rogue/SKILL.md'), 'x')
+  git('add -A', ade)
+  git('commit -m rogue', ade)
+  assert.throws(() => runner.update(work), /ade-/, '非 ade- 前綴 skill 應報錯')
+
   console.log('全部通過')
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true })

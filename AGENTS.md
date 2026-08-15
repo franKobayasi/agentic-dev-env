@@ -3,14 +3,15 @@
 ## 維護紀律
 
 - 既存 ADE repos 以 `^0.1.0` 依賴本套件，runner 的修改必須向後相容舊的 ADE repo 目錄結構；結構性 breaking change 一律 major bump
-- 各 ADE repo 會透過 `ade-feedback-upstream` skill 開 PR 回饋機制改良；review 時檢查 PR 不含任何公司知識內容
+- 各 ADE repo 會透過 `ade-feedback-upstream` skill 以 issue 回饋機制改良；review 時檢查不含任何公司知識內容
+- template 的文件載入設計一律考慮 context 成本：常駐層（section.md）最小化、只寫「何時做＋去哪看」，細節分檔按需載入（參考技巧）
 
 ## Layout 契約（runner ↔ ADE repo）
 
 runner 對每個生成的 ADE repo 依賴以下結構——上面「向後相容」的對象就是這份清單：
 
 - `knowledge/` — 整份複製到工作目錄 `.claude/ade/knowledge/`（必要）
-- `skills/*/` — 逐目錄複製到工作目錄 `.claude/skills/`（可缺）
+- `skills/*/` — 逐目錄複製到工作目錄 `.claude/skills/`（可缺）；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴，非前綴裝了就清不掉）
 - `claude-md/section.md` — 注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段內容（必要）
 - `package.json` — 讀 `repository.url`（寫入 `.ade.json` 的 source）與 `ade.upstream`（feedback-upstream skill 用）
 - 寫入工作目錄 `.ade.json`：`{ source, commit }`——消費者有三個：runner update、CLAUDE.md 區段的保鮮檢查、`ade-contribute` skill
