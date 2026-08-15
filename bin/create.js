@@ -3,14 +3,16 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
+console.log(`create-agentic-dev-env v${require('../package.json').version}`)
+
 const name = process.argv[2]
 if (!name || !/^[a-z0-9][a-z0-9._-]*$/i.test(name)) {
-  console.error('用法: create-agentic-dev-env <repo-name>')
+  console.error('Usage: create-agentic-dev-env <repo-name>')
   process.exit(1)
 }
 const dest = path.resolve(name)
 if (fs.existsSync(dest)) {
-  console.error(`${name} 已存在`)
+  console.error(`${name} already exists`)
   process.exit(1)
 }
 
@@ -37,10 +39,10 @@ fs.writeFileSync(destPkgPath, JSON.stringify(destPkg, null, 2) + '\n')
 execSync('git init', { cwd: dest, stdio: 'inherit' })
 
 console.log(`
-已建立 ADE repo: ${name}/
+Created ADE repo: ${name}/
 
-下一步:
-  1. 填 ${name}/package.json 的 repository.url
-  2. 開始填 knowledge/（服務格式見 knowledge/services/_template.yaml）
-  3. push 後團隊即可: pnpm dlx "git+ssh://git@github.com/ORG/${name}.git" init
+Next steps:
+  1. Set repository.url in ${name}/package.json
+  2. Start filling knowledge/ (service format: knowledge/services/_template.yaml)
+  3. After pushing, team members run: pnpm dlx "git+ssh://git@github.com/ORG/${name}.git" init
 `)
