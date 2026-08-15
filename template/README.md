@@ -53,10 +53,30 @@ knowledge/
 ├── process/     # 團隊流程知識
 ├── specs/       # 當前功能規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/
-.claude/skills/  # 在本 repo 內工作用的 skills（PO 建 PRD、轉 spec）
+skills/          # init 時注入工作目錄的 .claude/skills/（四支，見下方 Skills 一覽）
+.claude/skills/  # 在本 repo 內工作用的 skills（三支，見下方 Skills 一覽）
 claude-md/       # CLAUDE.md managed 區段的內容
 ```
+
+## Skills 一覽
+
+### 注入工作目錄的 skills（init 後在工作目錄可用）
+
+- **`ade-contribute`** — 知識回流的核心通道。當 agent 在工作中發現知識庫內容與現實不符（服務資訊過期、文件缺漏），或學到值得保存的新知識時觸發。它會引導 agent clone 本 ADE repo、建分支、修改對應文件、開 PR，並在 PR 描述中說明「發現什麼缺口、在什麼情境發現的」。人只需要 review PR。**注意：絕不直接改工作目錄裡的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋，改了等於白改；這支 skill 存在的意義就是把修改導向正確的地方。其他三支 skill 的「開 PR」動作也都委派給它，所以回流機制只需要維護這一份。
+
+- **`ade-add-service`** — 在知識庫註冊新服務。使用者說「新增服務」「把某某服務加進知識庫」時觸發。它會依 `knowledge/services/_template.yaml` 的欄位結構建立服務描述檔（`repo` 的 url 與 branch 為必填，因為 agent 之後要靠它自主 clone 服務），同步在 `services/index.md` 總覽表加一列，最後走 `ade-contribute` 流程開 PR。資訊不足時它會問人，不會留空猜測。
+
+- **`ade-align-spec`** — 開發收尾的文件對齊。RD 完成一個 PRD 的開發後觸發。它對照 `workspaces/` 下的實際實作，逐一核對 spec 中屬於這次 PRD 的 `🚧 尚未實作` 標記：做完且行為一致的移除標記；實作與 spec 有出入的**以實作為準**修改 spec 並記下差異；沒做的保留。全部驗收項完成時把 PRD 狀態改為「已實作」。最後開 PR，把差異清單列給 PO 判斷是否接受。它只動屬於這次 PRD 的標記，同一份 spec 上其他進行中 PRD 的標記不會被誤刪。
+
+- **`ade-spec-audit`** — spec 的定期健檢。PRD 流程只覆蓋「計畫內」的開發，hotfix 和直接改 code 的計畫外變更會讓 spec 悄悄失真——這支 skill 補上這條偵測路徑。觸發後它逐份 spec 對照相關服務的實作（缺的 repo 會先 clone），找出「行為已變、功能已移除、實作有但 spec 沒記載」的漂移，產出清單讓人確認該修 spec 還是該修 code（漂移不一定是文件錯，也可能是實作偏離了規格），確認後開 PR 修正。建議在 release 後或定期執行。
+
+### 在本 ADE repo 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
+
+- **`ade-create-prd`** — 引導 PO 產出標準化的 PRD。它依 `knowledge/prd/_template.md` 建檔並逐區塊陪 PO 填寫，過程中會先讀服務總覽與既有 spec，用團隊既有詞彙、找出與現有規格的衝突。填完後進行**盲點拷問**：邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收條件是否可測試、最容易被誤會包含在內的相鄰功能——問到每題都有明確答案或明確說「不在範圍」為止。PO 確認後狀態改「已確認」，才能進入下一步。
+
+- **`ade-prd-to-spec`** — 把已確認的 PRD 落入規格。它找出受影響的 spec 檔（必要時新建），將 PRD 需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加 `🚧 尚未實作（PRD: …）` 標記——spec 因此同時承載「已上線的現況」與「已定案未開發」兩種資訊，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認 spec 與預期相符才算結束。這一步的產出就是 RD 開發時的規格依據。
+
+- **`ade-feedback-upstream`** — 把本 repo 演化出的**機制**改良（更好的 skill 寫法、模板結構、流程設計）回饋給上游 create-agentic-dev-env 框架，讓所有 ADE repo 受益。它有一條鐵律：只回饋機制、**絕不回饋內容**——`knowledge/` 下的公司知識、服務資訊、規格全屬機密，送出前會逐行檢查 diff、把公司語彙抽換成通用範例。上游位址記在 `package.json` 的 `ade.upstream`。
 
 ## PRD / Spec 流程
 
