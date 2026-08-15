@@ -34,6 +34,19 @@ try {
   const work = path.join(tmp, 'work')
   fs.mkdirSync(work)
   fs.writeFileSync(path.join(work, 'CLAUDE.md'), '# 我的專案\n\n使用者原有內容\n')
+
+  // repository.url 未填（FILL_ME）→ init 應在寫任何檔案前失敗，目錄乾淨、可重跑
+  assert.throws(() => runner.init(work, ade), /repository\.url/, '未填 repository.url 應報錯')
+  assert(!fs.existsSync(path.join(work, '.ade.json')), '失敗的 init 不應留下 .ade.json')
+  assert(!fs.existsSync(path.join(work, '.claude')), '失敗的 init 不應留下 .claude')
+
+  const pkgPath = path.join(ade, 'package.json')
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+  pkg.repository = { type: 'git', url: ade }
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
+  git('add -A', ade)
+  git('commit -m fill-url', ade)
+
   runner.init(work, ade)
 
   assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')), '知識庫應複製')
