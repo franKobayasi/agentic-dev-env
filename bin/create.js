@@ -39,6 +39,6 @@ console.log(`
 
 下一步:
   1. 填 ${name}/package.json 的 repository.url
-  2. 開始填 knowledge/（服務格式見 knowledge/services/_template.md）
-  3. push 後團隊即可: pnpm dlx github:ORG/${name} init
+  2. 開始填 knowledge/（服務格式見 knowledge/services/_template.yaml）
+  3. push 後團隊即可: pnpm dlx "git+ssh://git@github.com/ORG/${name}.git" init
 `)
