@@ -20,8 +20,10 @@ fs.cpSync(path.join(__dirname, '..', 'template'), dest, { recursive: true })
 // npm publish 會剝掉 dot 開頭的檔案/目錄，template 內以無點名稱存放，複製後改名
 fs.renameSync(path.join(dest, 'gitignore'), path.join(dest, '.gitignore'))
 fs.renameSync(path.join(dest, 'dot-claude'), path.join(dest, '.claude'))
-// add-service 主要使用場景在 ADE repo 內，symlink 進 .claude/skills/ 讓它在本 repo 也可觸發（單一真相在 skills/）
-fs.symlinkSync(path.join('..', '..', 'skills', 'ade-add-service'), path.join(dest, '.claude', 'skills', 'ade-add-service'), 'dir')
+// 這些 skill 在 ADE repo 內也要可觸發，symlink 進 .claude/skills/（單一真相在 skills/）
+for (const s of ['ade-add-service', 'ade-add-skill']) {
+  fs.symlinkSync(path.join('..', '..', 'skills', s), path.join(dest, '.claude', 'skills', s), 'dir')
+}
 for (const rel of fs.readdirSync(dest, { recursive: true })) {
   const p = path.join(dest, rel)
   if (!fs.statSync(p).isFile()) continue

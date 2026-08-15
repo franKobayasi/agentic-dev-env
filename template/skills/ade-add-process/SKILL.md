@@ -28,7 +28,7 @@ description: 為團隊建立或修改流程慣例並落地到 ADE 知識庫。�
 
 1. 依 `ade-contribute` skill 流程 clone ADE repo、建分支（含查重：同一流程已有 issue/PR 就別重開）
 2. 寫 `knowledge/process/<主題>.md`（細節層，kebab-case 檔名）
-3. 需要 skill 的：在 `skills/` 下建立，**目錄名必須 `ade-` 前綴**——runner 只管理此前綴，非前綴會被拒裝
+3. 需要 skill 的：依 `ade-add-skill` skill 建立（它管使用對象選擇、放置位置與命名規則）
 4. 需要常駐行的：在 `claude-md/section.md` 適當小節加一行指標
 5. 更新 `process/README.md` 的主題索引
 6. 依 `ade-contribute` 慣例開 PR；merge 後各工作目錄 update 即生效
