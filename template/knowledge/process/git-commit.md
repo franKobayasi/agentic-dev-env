@@ -19,6 +19,6 @@
 
 ## Agent 執行時
 
-- 在作業區（`.ade.json` 的 `workspaces` 路徑）下任何服務 repo commit 都遵守本慣例
+- 在 `workspaces/` 下任何服務 repo commit 都遵守本慣例
 - 一個 commit 一件事；混雜多個意圖時拆開
 - 服務 repo 自己的 CLAUDE.md／AGENTS.md 若另有 commit 規範，以服務 repo 為準（分層規則見 `../README.md`）

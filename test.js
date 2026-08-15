@@ -46,7 +46,7 @@ try {
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-add-skill/SKILL.md')), 'add-skill skill 應注入')
   assert(!fs.existsSync(path.join(work, '.claude/skills/ade-create-prd')), 'ADE repo 專用 skill 不應注入工作目錄')
   assert(fs.existsSync(path.join(work, 'workspaces')), 'workspaces 應建立')
-  assert(fs.readFileSync(path.join(work, '.gitignore'), 'utf8').includes('workspaces/'), '.gitignore 應含 workspaces/')
+  assert(fs.readFileSync(path.join(work, '.gitignore'), 'utf8').split('\n').includes('workspaces'), '.gitignore 應含 workspaces')
   const md1 = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')
   assert(md1.includes('使用者原有內容') && md1.includes('<!-- ADE:BEGIN -->'), 'CLAUDE.md 應保留原內容並插入區段')
 
@@ -59,31 +59,37 @@ try {
   fs.writeFileSync(path.join(work2, 'CLAUDE.md'), '<!-- ADE:END -->\n內容\n<!-- ADE:BEGIN -->\n')
   assert.throws(() => runner.init(work2, ade), /corrupted/, '顛倒的 marker 應報錯')
 
-  // 自訂作業區：指向 repo 外既有資料夾，不動 .gitignore，update 沿用設定
+  // 自訂作業區：workspaces 建成指向既有資料夾的 symlink，update 沿用設定重建
   const work3 = path.join(tmp, 'work3')
   fs.mkdirSync(work3)
+  fs.mkdirSync(path.join(tmp, 'shared-repos'))
+  fs.mkdirSync(path.join(tmp, 'shared-repos', 'existing-repo'))
   runner.init(work3, ade, '../shared-repos')
-  assert(fs.existsSync(path.join(tmp, 'shared-repos')), '自訂作業區應建立')
+  assert(fs.lstatSync(path.join(work3, 'workspaces')).isSymbolicLink(), 'workspaces 應為 symlink')
+  assert(
+    fs.existsSync(path.join(work3, 'workspaces', 'existing-repo')),
+    'cd workspaces 應等同進入指定資料夾（既有 repo 可見）'
+  )
   assert.strictEqual(
     JSON.parse(fs.readFileSync(path.join(work3, '.ade.json'), 'utf8')).workspaces,
     '../shared-repos',
-    '.ade.json 應記錄 workspaces 路徑'
+    '.ade.json 應記錄 workspaces 目標'
   )
-  assert(!fs.existsSync(path.join(work3, 'workspaces')), '不應另建預設 workspaces/')
-  const gi3 = fs.existsSync(path.join(work3, '.gitignore'))
-    ? fs.readFileSync(path.join(work3, '.gitignore'), 'utf8')
-    : ''
-  assert(!gi3.includes('shared-repos') && !gi3.includes('workspaces'), 'repo 外路徑不應寫入 .gitignore')
   const cfg3Path = path.join(work3, '.ade.json')
   const cfg3 = JSON.parse(fs.readFileSync(cfg3Path, 'utf8'))
   cfg3.source = ade
   fs.writeFileSync(cfg3Path, JSON.stringify(cfg3))
   runner.update(work3)
-  assert.strictEqual(
-    JSON.parse(fs.readFileSync(cfg3Path, 'utf8')).workspaces,
-    '../shared-repos',
-    'update 應沿用 workspaces 設定'
+  assert(
+    fs.lstatSync(path.join(work3, 'workspaces')).isSymbolicLink() &&
+      JSON.parse(fs.readFileSync(cfg3Path, 'utf8')).workspaces === '../shared-repos',
+    'update 應沿用設定並保留 symlink'
   )
+
+  // 既有實體 workspaces/ 目錄＋指定路徑 → 應報錯而非蓋掉
+  const work4 = path.join(tmp, 'work4')
+  fs.mkdirSync(path.join(work4, 'workspaces'), { recursive: true })
+  assert.throws(() => runner.init(work4, ade, '../shared-repos'), /not a symlink/, '實體目錄應報錯')
 
   // update: 指向本地 ADE repo，模擬上游更新
   const cfgPath = path.join(work, '.ade.json')
