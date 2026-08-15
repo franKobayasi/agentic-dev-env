@@ -8,10 +8,11 @@ description: 協助 PO 依統一範本建立標準化 PRD，並拷問規格盲�
 ## 流程
 
 1. 複製 `knowledge/prd/_template.md` 為 `knowledge/prd/YYYY-MM-DD-<slug>.md`，狀態設「草稿」
-2. 與 PO 對話逐區塊填寫，**先讀 `knowledge/services/index.md` 與 `knowledge/specs/` 相關文件**，用既有詞彙、對照現有規格找出衝突
+2. 與 PO 對話逐區塊填寫，**先讀 `knowledge/services/index.md`、`knowledge/specs/` 相關文件，以及 `knowledge/prd/` 下狀態非「已實作」的 PRD**——用既有詞彙、對照現有規格找出衝突；與進行中 PRD 重疊時當場提醒 PO 決定合併或劃清界線
 3. 填完後進行盲點拷問（見下），問到 PO 每題都有明確答案或明確說「不在範圍」
 4. 拷問結果回填文件（範圍外的寫進「非目標」，未定的寫進「開放問題」）
-5. PO 確認後把狀態改為「已確認」，提醒下一步：跑 `ade-prd-to-spec` 更新規格
+5. PO 確認後把狀態改為「已確認」
+6. Commit（或依團隊慣例開 PR），提醒下一步：跑 `ade-prd-to-spec` 更新規格
 
 ## 盲點拷問清單
 

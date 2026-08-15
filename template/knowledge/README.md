@@ -14,6 +14,8 @@ agent 進入服務 repo 之前必需的：repo URL、預設分支、技術棧概
 
 **Bootstrap 流程（安裝、啟動、測試）不在此列**——歸服務 repo 自己的文件，clone 之後即可取得，ADE 不複製一份會過期的副本。
 
+服務退役時：刪除其 yaml 並從 `index.md` 移除，git history 即封存——registry 只描述當前存活的服務，不設狀態欄，退役服務留著只會誤導 agent 去 clone 死掉的 repo。
+
 ## 3. 產品規格與需求
 
 `specs/` 與 `prd/` 收**全部**產品規格，包含單一服務就能完成的功能。「服務可自述」的判準只適用於工程知識，不適用於產品視角——spec 的讀者是 PO，PRD 流程在 ADE repo 進行。

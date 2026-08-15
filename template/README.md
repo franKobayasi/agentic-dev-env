@@ -62,7 +62,7 @@ claude-md/       # CLAUDE.md managed 區段的內容
 
 ### 注入工作目錄的 skills（init 後在工作目錄可用）
 
-- **`ade-contribute`** — 知識回流的核心通道。當 agent 在工作中發現知識庫內容與現實不符（服務資訊過期、文件缺漏），或學到值得保存的新知識時觸發。它會引導 agent clone 本 ADE repo、建分支、修改對應文件、開 PR，並在 PR 描述中說明「發現什麼缺口、在什麼情境發現的」。人只需要 review PR。**注意：絕不直接改工作目錄裡的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋，改了等於白改；這支 skill 存在的意義就是把修改導向正確的地方。其他三支 skill 的「開 PR」動作也都委派給它，所以回流機制只需要維護這一份。
+- **`ade-contribute`** — 知識回流的核心通道。當 agent 在工作中發現知識庫內容與現實不符（服務資訊過期、文件缺漏），或學到值得保存的新知識時觸發。它會先查 ADE repo 的 open issues／PRs 避免重複回流（已有記錄就留言補充），沒有才開 issue 記錄缺口，接著 clone 本 ADE repo、建分支、修改對應文件、開 PR 連結該 issue。人只需要 review PR。**注意：絕不直接改工作目錄裡的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋，改了等於白改；這支 skill 存在的意義就是把修改導向正確的地方。其他三支 skill 的「開 PR」動作也都委派給它，所以回流機制只需要維護這一份。
 
 - **`ade-add-service`** — 在知識庫註冊新服務。使用者說「新增服務」「把某某服務加進知識庫」時觸發。它會依 `knowledge/services/_template.yaml` 的欄位結構建立服務描述檔（`repo` 的 url 與 branch 為必填，因為 agent 之後要靠它自主 clone 服務），同步在 `services/index.md` 總覽表加一列，最後走 `ade-contribute` 流程開 PR。資訊不足時它會問人，不會留空猜測。
 
@@ -76,7 +76,7 @@ claude-md/       # CLAUDE.md managed 區段的內容
 
 - **`ade-prd-to-spec`** — 把已確認的 PRD 落入規格。它找出受影響的 spec 檔（必要時新建），將 PRD 需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加 `🚧 尚未實作（PRD: …）` 標記——spec 因此同時承載「已上線的現況」與「已定案未開發」兩種資訊，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認 spec 與預期相符才算結束。這一步的產出就是 RD 開發時的規格依據。
 
-- **`ade-feedback-upstream`** — 把本 repo 演化出的**機制**改良（更好的 skill 寫法、模板結構、流程設計）回饋給上游 create-agentic-dev-env 框架，讓所有 ADE repo 受益。它有一條鐵律：只回饋機制、**絕不回饋內容**——`knowledge/` 下的公司知識、服務資訊、規格全屬機密，送出前會逐行檢查 diff、把公司語彙抽換成通用範例。上游位址記在 `package.json` 的 `ade.upstream`。
+- **`ade-feedback-upstream`** — 把本 repo 演化出的**機制**改良（更好的 skill 寫法、模板結構、流程設計）以 **issue** 回饋給上游 create-agentic-dev-env 框架，由上游維護者決定是否採納，讓所有 ADE repo 受益。它有一條鐵律：只回饋機制、**絕不回饋內容**——`knowledge/` 下的公司知識、服務資訊、規格全屬機密，送出前會逐行檢查 issue 內文、把公司語彙抽換成通用範例。上游位址記在 `package.json` 的 `ade.upstream`。
 
 ## PRD / Spec 流程
 
