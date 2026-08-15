@@ -59,6 +59,32 @@ try {
   fs.writeFileSync(path.join(work2, 'CLAUDE.md'), '<!-- ADE:END -->\n內容\n<!-- ADE:BEGIN -->\n')
   assert.throws(() => runner.init(work2, ade), /corrupted/, '顛倒的 marker 應報錯')
 
+  // 自訂作業區：指向 repo 外既有資料夾，不動 .gitignore，update 沿用設定
+  const work3 = path.join(tmp, 'work3')
+  fs.mkdirSync(work3)
+  runner.init(work3, ade, '../shared-repos')
+  assert(fs.existsSync(path.join(tmp, 'shared-repos')), '自訂作業區應建立')
+  assert.strictEqual(
+    JSON.parse(fs.readFileSync(path.join(work3, '.ade.json'), 'utf8')).workspaces,
+    '../shared-repos',
+    '.ade.json 應記錄 workspaces 路徑'
+  )
+  assert(!fs.existsSync(path.join(work3, 'workspaces')), '不應另建預設 workspaces/')
+  const gi3 = fs.existsSync(path.join(work3, '.gitignore'))
+    ? fs.readFileSync(path.join(work3, '.gitignore'), 'utf8')
+    : ''
+  assert(!gi3.includes('shared-repos') && !gi3.includes('workspaces'), 'repo 外路徑不應寫入 .gitignore')
+  const cfg3Path = path.join(work3, '.ade.json')
+  const cfg3 = JSON.parse(fs.readFileSync(cfg3Path, 'utf8'))
+  cfg3.source = ade
+  fs.writeFileSync(cfg3Path, JSON.stringify(cfg3))
+  runner.update(work3)
+  assert.strictEqual(
+    JSON.parse(fs.readFileSync(cfg3Path, 'utf8')).workspaces,
+    '../shared-repos',
+    'update 應沿用 workspaces 設定'
+  )
+
   // update: 指向本地 ADE repo，模擬上游更新
   const cfgPath = path.join(work, '.ade.json')
   const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))

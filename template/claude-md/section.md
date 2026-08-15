@@ -6,7 +6,7 @@
 ### Session 開始時
 
 - **檢查知識新鮮度**：讀 `.ade.json`，執行 `git ls-remote <source> HEAD`，若 hash 與 `commit` 不符，提醒使用者執行 update 後再繼續（勿自行修改 managed 內容）
-- Session 一律從本目錄（hub 根）開啟；在 `workspaces/<service>/` 內開啟會失去 ade skills
+- Session 一律從本目錄（hub 根）開啟；在作業區的服務 repo 內開啟會失去 ade skills
 
 ### 知識分層
 
@@ -16,7 +16,7 @@
 
 1. 讀 `.claude/ade/knowledge/services/index.md`（全服務總覽）定位目標服務
 2. 讀 `.claude/ade/knowledge/services/<service>.yaml` 取得定位、repo、技術棧、依賴關係
-3. 若 `workspaces/<service>/` 不存在，依 `repo.url` / `repo.branch` clone 到 `workspaces/<service>/`
+3. 服務 repo 放在作業區（路徑見 `.ade.json` 的 `workspaces`，預設 `workspaces/`）；`<作業區>/<service>/` 已存在就直接用，不存在才依 `repo.url` / `repo.branch` clone 進去
 4. 讀服務 repo 自身的 README／CLAUDE.md／AGENTS.md 完成安裝、啟動、測試；跨服務流程慣例見 `knowledge/process/`，功能規格見 `knowledge/specs/`
 
 ### 知識維護

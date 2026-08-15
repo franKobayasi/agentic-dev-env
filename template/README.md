@@ -40,8 +40,8 @@ init 會在當前目錄建立：
 
 - `CLAUDE.md` 的 `<!-- ADE:BEGIN/END -->` managed 區段（原有內容不動）
 - `.claude/ade/knowledge/` 知識庫副本、`.claude/skills/ade-*/` skills
-- `workspaces/`（agent clone 服務 repo 的作業區，自動加入 .gitignore）
-- `.ade.json`（記錄來源與版本）
+- 作業區（agent clone 服務 repo 的位置；預設 `workspaces/` 並自動加入 .gitignore。已有固定放 repo 的資料夾時用 `init --workspaces <path>` 指向它，可為相對或絕對路徑，已下載的 repo 直接沿用不重 clone；路徑在本目錄外就不動 .gitignore）
+- `.ade.json`（設定檔：`source` 來源、`commit` 版本、`workspaces` 作業區路徑。直接編輯即可改設定，改 `workspaces` 後不需重跑任何指令）
 
 之後同指令改跑 `update` 拉取最新知識（update 會直接 clone 最新版，不受 dlx 快取影響）。
 
