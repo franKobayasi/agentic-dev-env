@@ -60,6 +60,7 @@ claude-md/       # CLAUDE.md managed 區段的內容
 
 ### 設計重點
 
+- **Context 管理是底層原則**：agent 的 context 是最稀缺資源，所有文件與流程設計都遵守「常駐最小化、細節按需載入、導航短細節深」——CLAUDE.md 區段只寫「何時做＋去哪看」，細節留在知識庫等被載入
 - **服務 registry 兩層結構**：`index.md` 是全服務概覽（模擬工程師「先總覽定位、再查細節」的認知路徑），每個服務一份 YAML 記錄 repo 位址、技術棧、依賴關係——agent 據此自主 clone 與開發
 - **知識分層**：ADE 只收「跨服務知識、取得服務的最小資訊、產品規格」三類；bootstrap 流程與服務內部慣例歸服務 repo 自己的文件，不複製會過期的副本
 - **PRD → Spec 生命週期**：PO 用 skill 建標準化 PRD（含盲點拷問）→ 轉入 spec 並標 `🚧 尚未實作` → RD 開發完成後由 skill 核對實作、移除標記、開 PR 收尾；另有 `ade-spec-audit` 定期巡檢，抓 hotfix 等計畫外變更造成的規格漂移

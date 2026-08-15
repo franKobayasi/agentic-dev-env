@@ -4,7 +4,7 @@
 
 - 既存 ADE repos 以 `^0.1.0` 依賴本套件，runner 的修改必須向後相容舊的 ADE repo 目錄結構；結構性 breaking change 一律 major bump
 - 各 ADE repo 會透過 `ade-feedback-upstream` skill 以 issue 回饋機制改良；review 時檢查不含任何公司知識內容
-- template 的文件載入設計一律考慮 context 成本：常駐層（section.md）最小化、只寫「何時做＋去哪看」，細節分檔按需載入（參考技巧）
+- **Context 管理是本專案與所有衍生 ADE 的底層設計原則**（canonical 定義在 `template/knowledge/README.md`）：任何文件或流程設計先問「這段內容值得在什麼時機、以什麼成本進入 context？」——常駐層最小化、細節分檔按需載入、導航短細節深
 
 ## Layout 契約（runner ↔ ADE repo）
 
