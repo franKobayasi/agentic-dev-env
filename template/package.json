@@ -1,0 +1,15 @@
+{
+  "name": "__ADE_NAME__",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "__ADE_NAME__": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "FILL_ME: git@github.com:ORG/__ADE_NAME__.git"
+  },
+  "dependencies": {
+    "create-agentic-dev-env": "^0.1.0"
+  }
+}

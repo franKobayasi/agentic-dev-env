@@ -1,0 +1,20 @@
+{
+  "name": "create-agentic-dev-env",
+  "version": "0.1.0",
+  "description": "Scaffold and manage team Agentic Dev Environment (ADE) knowledge repos",
+  "bin": {
+    "create-agentic-dev-env": "bin/create.js"
+  },
+  "exports": {
+    "./runner": "./lib/runner.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "template"
+  ],
+  "scripts": {
+    "test": "node test.js"
+  },
+  "license": "MIT"
+}
