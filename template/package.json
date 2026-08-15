@@ -13,6 +13,6 @@
     "upstream": null
   },
   "dependencies": {
-    "create-agentic-dev-env": "^0.2.0"
+    "create-agentic-dev-env": "0.0.0-stamped-by-create"
   }
 }

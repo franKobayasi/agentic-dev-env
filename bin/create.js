@@ -36,6 +36,8 @@ if (selfRepo && selfRepo.includes('FILL_ME')) selfRepo = null
 const destPkgPath = path.join(dest, 'package.json')
 const destPkg = JSON.parse(fs.readFileSync(destPkgPath, 'utf8'))
 destPkg.ade.upstream = selfRepo ? selfRepo.replace(/^git\+/, '') : null
+// 鎖精確版本：ADE repo 建立後即與上游迭代解耦，升級是 ADE repo 內顯式改版號的決定
+destPkg.dependencies['create-agentic-dev-env'] = require('../package.json').version
 fs.writeFileSync(destPkgPath, JSON.stringify(destPkg, null, 2) + '\n')
 
 execSync('git init', { cwd: dest, stdio: 'inherit' })

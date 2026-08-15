@@ -26,6 +26,11 @@ try {
     )
   }
   assert('upstream' in JSON.parse(fs.readFileSync(path.join(ade, 'package.json'), 'utf8')).ade, 'ade.upstream 應寫入')
+  assert.strictEqual(
+    JSON.parse(fs.readFileSync(path.join(ade, 'package.json'), 'utf8')).dependencies['create-agentic-dev-env'],
+    require('./package.json').version,
+    '依賴應鎖精確版本（create 時蓋章，建立後與上游解耦）'
+  )
   assert(!fs.readFileSync(path.join(ade, 'package.json'), 'utf8').includes('__ADE_NAME__'), '名稱應被替換')
   git('add -A', ade)
   git('commit -m init', ade)
