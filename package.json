@@ -2,6 +2,21 @@
   "name": "create-agentic-dev-env",
   "version": "0.1.0",
   "description": "Scaffold and manage team Agentic Dev Environment (ADE) knowledge repos",
+  "repository": {
+    "type": "git",
+    "url": "FILL_ME: https://github.com/ORG/agentic-dev-env.git"
+  },
+  "keywords": [
+    "agent",
+    "claude-code",
+    "knowledge-base",
+    "scaffold",
+    "ade"
+  ],
+  "author": "Frank Lin",
+  "engines": {
+    "node": ">=20"
+  },
   "bin": {
     "create-agentic-dev-env": "bin/create.js"
   },

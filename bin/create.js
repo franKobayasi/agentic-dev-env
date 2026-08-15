@@ -25,7 +25,8 @@ for (const rel of fs.readdirSync(dest, { recursive: true })) {
   if (s.includes('__ADE_NAME__')) fs.writeFileSync(p, s.replaceAll('__ADE_NAME__', name))
 }
 // 記錄上游位址，供 ade-feedback-upstream skill 回饋機制改良
-const selfRepo = (require('../package.json').repository || {}).url || null
+let selfRepo = (require('../package.json').repository || {}).url || null
+if (selfRepo && selfRepo.includes('FILL_ME')) selfRepo = null
 const destPkgPath = path.join(dest, 'package.json')
 const destPkg = JSON.parse(fs.readFileSync(destPkgPath, 'utf8'))
 destPkg.ade.upstream = selfRepo ? selfRepo.replace(/^git\+/, '') : null
