@@ -18,9 +18,11 @@ fs.cpSync(path.join(__dirname, '..', 'template'), dest, { recursive: true })
 // npm publish 會剝掉 dot 開頭的檔案/目錄，template 內以無點名稱存放，複製後改名
 fs.renameSync(path.join(dest, 'gitignore'), path.join(dest, '.gitignore'))
 fs.renameSync(path.join(dest, 'dot-claude'), path.join(dest, '.claude'))
-for (const f of ['package.json', 'README.md', 'CLAUDE.md', path.join('claude-md', 'section.md')]) {
-  const p = path.join(dest, f)
-  fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replaceAll('__ADE_NAME__', name))
+for (const rel of fs.readdirSync(dest, { recursive: true })) {
+  const p = path.join(dest, rel)
+  if (!fs.statSync(p).isFile()) continue
+  const s = fs.readFileSync(p, 'utf8')
+  if (s.includes('__ADE_NAME__')) fs.writeFileSync(p, s.replaceAll('__ADE_NAME__', name))
 }
 // 記錄上游位址，供 ade-feedback-upstream skill 回饋機制改良
 const selfRepo = (require('../package.json').repository || {}).url || null

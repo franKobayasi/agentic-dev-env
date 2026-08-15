@@ -45,6 +45,12 @@ try {
   // 重複 init 應被拒
   assert.throws(() => runner.init(work, ade), /update/, '重複 init 應報錯')
 
+  // 損壞的 marker 應明確失敗而非靜默寫壞
+  const work2 = path.join(tmp, 'work2')
+  fs.mkdirSync(work2)
+  fs.writeFileSync(path.join(work2, 'CLAUDE.md'), '<!-- ADE:END -->\n內容\n<!-- ADE:BEGIN -->\n')
+  assert.throws(() => runner.init(work2, ade), /損壞/, '顛倒的 marker 應報錯')
+
   // update: 指向本地 ADE repo，模擬上游更新
   const cfgPath = path.join(work, '.ade.json')
   const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
