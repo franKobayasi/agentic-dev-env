@@ -5,7 +5,7 @@
 
 ### Session 開始時
 
-- **檢查知識新鮮度**：讀 `.ade.json`，執行 `git ls-remote <source> HEAD`，若 hash 與 `commit` 不符，提醒使用者執行 update 後再繼續（勿自行修改 managed 內容）
+- **檢查知識新鮮度**：讀 `.ade.json`，執行 `git ls-remote <source> HEAD`，若 hash 與 `commit` 不符，提醒使用者用 `ade-update` skill 更新後再繼續（勿自行修改 managed 內容）
 - Session 一律從本目錄（hub 根）開啟；在 `workspaces/<service>/` 內開啟會失去 ade skills
 
 ### 知識分層
@@ -21,4 +21,4 @@
 
 ### 知識維護
 
-`.claude/ade/` 與 `.claude/skills/ade-*/` 為 managed 區域、視同唯讀；回流、註冊服務、建立流程等維護動作由 ade-* skills 引導。
+`.claude/ade/` 與 `.claude/skills/ade-*/` 為 managed 區域、視同唯讀；註冊服務、新增 skill／流程、建 PRD、更新 spec 等維護動作由 ade-* skills 引導，一律經 `ade-contribute` 改 `workspaces/` 下的 ADE 工作副本並開 PR。

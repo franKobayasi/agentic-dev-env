@@ -45,52 +45,64 @@ init 會在當前目錄建立：
 
 之後同指令改跑 `update` 拉取最新知識（update 會直接 clone 最新版，不受 dlx 快取影響）。
 
+### 裝好之後，先記這兩支 skill
+
+- **`/ade-help`** — 「有哪些 skill 可以用？」問它。它即時掃描當前位置真正載得到的 `ade-*` skills 並列出用途，不會像文件一樣過期
+- **`/ade-update`** — 說「更新 ADE」，它會先比對版本（一樣就不跑）、提醒手改過的 managed 內容先走 `ade-contribute` 回流（否則被覆蓋），更新完回報版本變化與期間新增的 skill。session 開始偵測到落後時也會主動提醒
+
 ## 結構
 
 ```
 knowledge/
-├── services/    # 服務 registry：index.md 總覽導航 + 一服務一檔
-├── process/     # 團隊流程知識
-├── specs/       # 當前功能規格，持續迭代的真相來源
+├── README.md    # 知識分層規則（canonical）
+├── services/    # 服務 registry：index.md 總覽導航 + 一服務一檔 yaml
+├── process/     # 跨服務流程與團隊級慣例
+├── specs/       # 產品規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/（六支，見下方 Skills 一覽）
-.claude/skills/  # 在本 repo 內工作用的 skills（三支＋add-service、add-skill 的 symlink，見下方 Skills 一覽）
+skills/          # init 時注入工作目錄的 .claude/skills/（十三支，見下方 Skills）
+.claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 七支的 symlink）
 claude-md/       # CLAUDE.md managed 區段的內容
 ```
 
-## Skills 一覽
+## Skills
 
 ### 注入工作目錄的 skills（init 後在工作目錄可用）
 
-- **`ade-contribute`** — 知識回流的核心通道。當 agent 在工作中發現知識庫內容與現實不符（服務資訊過期、文件缺漏），或學到值得保存的新知識時觸發。它會先查 ADE repo 的 open issues／PRs 避免重複回流（已有記錄就留言補充），沒有才開 issue 記錄缺口，接著 clone 本 ADE repo、建分支、修改對應文件、開 PR 連結該 issue。人只需要 review PR。**注意：絕不直接改工作目錄裡的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋，改了等於白改；這支 skill 存在的意義就是把修改導向正確的地方。其他三支 skill 的「開 PR」動作也都委派給它，所以回流機制只需要維護這一份。
+「本 repo」欄標 ✅ 者在本 ADE repo 內也可用（`.claude/skills/` 有 symlink，單一真相在 `skills/`）。
 
-- **`ade-add-service`** — 在知識庫註冊新服務。使用者說「新增服務」「把某某服務加進知識庫」時觸發。它會依 `knowledge/services/_template.yaml` 的欄位結構建立服務描述檔（`repo` 的 url 與 branch 為必填，因為 agent 之後要靠它自主 clone 服務），同步在 `services/index.md` 總覽表加一列。資訊不足時它會問人，不會留空猜測。**本 ADE repo 內也可用**（`.claude/skills/` 有 symlink，這是主要使用場景）：在本 repo 直接編輯、照一般 git 慣例收尾；在工作目錄則走 `ade-contribute` 流程開 PR。
-
-- **`ade-align-spec`** — 開發收尾的文件對齊。RD 完成一個 PRD 的開發後觸發。它對照 `workspaces/` 下的實際實作，逐一核對 spec 中屬於這次 PRD 的 `🚧 尚未實作` 標記：做完且行為一致的移除標記；實作與 spec 有出入的**以實作為準**修改 spec 並記下差異；沒做的保留。全部驗收項完成時把 PRD 狀態改為「已實作」。最後開 PR，把差異清單列給 PO 判斷是否接受。它只動屬於這次 PRD 的標記，同一份 spec 上其他進行中 PRD 的標記不會被誤刪。
-
-- **`ade-spec-audit`** — spec 的定期健檢。PRD 流程只覆蓋「計畫內」的開發，hotfix 和直接改 code 的計畫外變更會讓 spec 悄悄失真——這支 skill 補上這條偵測路徑。觸發後它逐份 spec 對照相關服務的實作（缺的 repo 會先 clone），找出「行為已變、功能已移除、實作有但 spec 沒記載」的漂移，產出清單讓人確認該修 spec 還是該修 code（漂移不一定是文件錯，也可能是實作偏離了規格），確認後開 PR 修正。建議在 release 後或定期執行。
-
-- **`ade-add-skill`** — 為 ADE 生態新增 skill 的 meta-skill。使用者說「新增 skill」「把這個做成 skill」時觸發。它先問使用對象再決定放置位置：消費端工作目錄用 → `skills/ade-*`（init/update 注入）；本 ADE repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `skills/` 加 symlink。並落實命名規則（`ade-` 前綴）、context 紀律與 README 同步。**本 ADE repo 內也可用**（`.claude/skills/` 有 symlink）。
-
-- **`ade-add-process`** — 為團隊建立或修改流程慣例的 meta-skill。使用者說「以後都這樣做」「定一個慣例」時觸發。它依三層機制選載體：無條件約束 → `claude-md/section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」（參考技巧）、常駐規則超過 10 行時新增前必須與使用者確認取捨。最後走 `ade-contribute` 流程開 PR。
+| Skill | 用途 | 本 repo |
+| --- | --- | --- |
+| **`ade-help`** | 列出當前位置可用的 ade-* skills 與各自用途（「有哪些 skill」）。清單由 `list-skills.sh` 掃 `.claude/skills/ade-*/SKILL.md` 的 frontmatter 即時產生——不寫死清單，skill 搬家或新增都不用回頭改。 | ✅ |
+| **`ade-update`** | 把工作目錄的 managed 內容拉到本 repo 最新版（「更新 ADE」，或 session 開始偵測到落後時）。先用 `git ls-remote` 比對 `.ade.json` 的 `commit`（一樣就不跑）、提醒把 managed 區域的手改先走 `ade-contribute` 回流，才執行 `pnpm dlx <source> update`，最後回報版本變化與期間新增的 skill。只在消費端工作目錄用——本 repo 內用一般 `git pull`。 | — |
+| **`ade-contribute`** | 從工作目錄修改本知識庫的**唯一通道**（「改 ADE 的 spec／skill」「回流」）。主動撰寫直接建分支開工；被動回流先查 open issues／PRs 避免重複，沒有才開 issue 記錄缺口、PR 再連回該 issue。工作副本放 `workspaces/<ade-repo-name>/`，已存在就重用、收尾切回主幹。**絕不直接改工作目錄的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋。其他 skill 的「開 PR」動作都委派給它。 | — |
+| **`ade-add-service`** | 在知識庫註冊新服務（「新增服務」）。依 `knowledge/services/_template.yaml` 建描述檔（`repo` 的 url 與 branch 必填，agent 之後要靠它自主 clone），並同步 `services/index.md` 總覽表。資訊不足會問人，不留空猜測。 | ✅ |
+| **`ade-list-service`** | 列出目前所有已註冊的服務（「有哪些服務」）。讀 `services/index.md` 並與目錄下的描述檔比對，回報清單與兩者不一致處。只讀不改。 | ✅ |
+| **`ade-create-prd`** | 引導 PO 產出標準化 PRD（「建 PRD」），涵蓋「只有模糊想法」到「照範本填寫」兩種起點。想法未成形先跑 **Discovery** 7 題（一批 2–3 題，已有答案的跳過），接著對照服務總覽、既有 spec 與進行中 PRD 用團隊詞彙寫入 `knowledge/prd/`，再進**盲點拷問**（邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收可測性、相鄰功能），最後用 `validate-prd.sh` 機械檢查。**不自動翻狀態**——留「草稿」，PO 確認才改「已確認」。 | ✅ |
+| **`ade-prd-to-spec`** | 把已確認的 PRD 落入規格（「PRD 轉 spec」）。找出受影響的 spec（必要時新建），將需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加 `🚧 尚未實作（PRD: …）`——spec 因此同時承載「已上線現況」與「已定案未開發」，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認。產出即 RD 開發時的規格依據。 | ✅ |
+| **`ade-align-spec`** | 開發收尾的文件對齊（「開發完了更新 spec」）。對照實際實作逐一核對該 PRD 的 `🚧 尚未實作` 標記：做完且一致的移除、有出入的**以實作為準**改 spec 並記差異、沒做的保留；驗收項全完成時 PRD 轉「已實作」。最後開 PR 把差異清單交 PO 判斷。只動屬於這次 PRD 的標記。 | — |
+| **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
+| **`ade-commit`** | commit 訊息慣例解析，任何要在服務 repo commit 的場景使用。依序找專案自述（CLAUDE.md／AGENTS.md／CONTRIBUTING）→ commitlint 等設定檔 → 既有 git log 風格 → 都沒有才用 ADE 預設（`knowledge/process/git-commit.md`，Conventional Commits）。一個 commit 一件事。 | — |
+| **`ade-ship`** | 從服務 repo 分支發出 MR／PR（「發 MR」「ship」）。偵測平台（GitHub → `gh`、GitLab → `glab`，退 API）、專案自有範本優先（GitHub 六個位置＋組織預設、GitLab 設定層與 `.gitlab/merge_request_templates/`）、沒有就用內建 `templates/mr.md`，依實際 diff 填寫後發出並回報 URL。不自動 merge。 | — |
+| **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：消費端工作目錄用 → `skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `skills/` 加 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
+| **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `claude-md/section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
 
 ### 在本 ADE repo 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
 
-- **`ade-create-prd`** — 引導 PO 產出標準化的 PRD。它依 `knowledge/prd/_template.md` 建檔並逐區塊陪 PO 填寫，過程中會先讀服務總覽與既有 spec，用團隊既有詞彙、找出與現有規格的衝突。填完後進行**盲點拷問**：邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收條件是否可測試、最容易被誤會包含在內的相鄰功能——問到每題都有明確答案或明確說「不在範圍」為止。PO 確認後狀態改「已確認」，才能進入下一步。
-
-- **`ade-prd-to-spec`** — 把已確認的 PRD 落入規格。它找出受影響的 spec 檔（必要時新建），將 PRD 需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加 `🚧 尚未實作（PRD: …）` 標記——spec 因此同時承載「已上線的現況」與「已定案未開發」兩種資訊，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認 spec 與預期相符才算結束。這一步的產出就是 RD 開發時的規格依據。
-
-- **`ade-feedback-upstream`** — 把本 repo 演化出的**機制**改良（更好的 skill 寫法、模板結構、流程設計）以 **issue** 回饋給上游 create-agentic-dev-env 框架，由上游維護者決定是否採納，讓所有 ADE repo 受益。它有一條鐵律：只回饋機制、**絕不回饋內容**——`knowledge/` 下的公司知識、服務資訊、規格全屬機密，送出前會逐行檢查 issue 內文、把公司語彙抽換成通用範例。上游位址記在 `package.json` 的 `ade.upstream`。
+| Skill | 用途 |
+| --- | --- |
+| **`ade-feedback-upstream`** | 把本 repo 演化出的**機制**改良（更好的 skill 寫法、模板結構、流程設計）以 **issue** 回饋給上游 create-agentic-dev-env 框架，由上游維護者決定是否採納，讓所有 ADE repo 受益。改良來源除了日常觀察，也包括本 repo 標題前綴 `[upstream-candidate]` 的 issues（各流程收尾沉澱時經 `ade-contribute` 開出）。鐵律：只回饋機制、**絕不回饋內容**——`knowledge/` 下的公司知識、服務資訊、規格全屬機密，送出前逐行檢查 issue 內文、把公司語彙抽換成通用範例。上游位址記在 `package.json` 的 `ade.upstream`。 |
 
 ## PRD / Spec 流程
 
-1. PO 在本 repo 用 `ade-create-prd` 建立標準化 PRD（含盲點拷問），定案後標「已確認」
+1. PO 用 `ade-create-prd` 建立標準化 PRD（含 Discovery 與盲點拷問），定案後標「已確認」
 2. PO 用 `ade-prd-to-spec` 把 PRD 融入 `specs/`，新行為標 `🚧 尚未實作`，逐項確認對齊
-3. RD 在工作目錄開發（`workspaces/`）
+3. RD 在工作目錄開發（`workspaces/`），`ade-commit`／`ade-ship` 交付
 4. 開發完成 RD 跑 `ade-align-spec`：核對實作、移除 🚧、PRD 標「已實作」，開 PR 回本 repo
+
+步驟 1、2 在本 repo 或工作目錄都能跑——在工作目錄時走 `ade-contribute`，改的是 `workspaces/` 下的工作副本，最後開 PR。
 
 ## 維護原則
 
-- 工作目錄裡的 ADE 內容是唯讀副本，update 會覆蓋。所有修改都回到本 repo 走 PR——agent 端由 `ade-contribute` / `ade-add-service` skills 引導完成
+- 工作目錄裡的 ADE 內容是唯讀副本，update 會覆蓋。所有修改都回到本 repo 走 PR——agent 端由 `ade-contribute` 引導完成
 - 知識分層：本 repo 只收跨服務知識、取得服務的最小資訊、產品規格三類——完整規則見 `knowledge/README.md`（canonical）
 - 使用中演化出的**機制**改良（skill 寫法、模板、流程），用 `ade-feedback-upstream` skill 回饋給 create-agentic-dev-env 上游；公司知識內容絕不外流

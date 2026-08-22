@@ -26,9 +26,9 @@ description: 為團隊建立或修改流程慣例並落地到 ADE 知識庫。�
 
 ## 3. 落地
 
-1. 依 `ade-contribute` skill 流程 clone ADE repo、建分支（含查重：同一流程已有 issue/PR 就別重開）
-2. 寫 `knowledge/process/<主題>.md`（細節層，kebab-case 檔名）
-3. 需要 skill 的：依 `ade-add-skill` skill 建立（它管使用對象選擇、放置位置與命名規則）
-4. 需要常駐行的：在 `claude-md/section.md` 適當小節加一行指標
-5. 更新 `process/README.md` 的主題索引
-6. 依 `ade-contribute` 慣例開 PR；merge 後各工作目錄 update 即生效
+0. **判斷所在位置**：repo 根有 `knowledge/process/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支（含查重：同一流程已有 issue/PR 就別重開），以下所有路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
+1. 寫 `knowledge/process/<主題>.md`（細節層，kebab-case 檔名）
+2. 需要 skill 的：依 `ade-add-skill` skill 建立（它管使用對象選擇、放置位置與命名規則）
+3. 需要常駐行的：在 `claude-md/section.md` 適當小節加一行指標
+4. 更新 `process/README.md` 的主題索引
+5. 收尾：ADE repo 內 → 照一般 git 慣例 commit；工作目錄 → 依 `ade-contribute` 流程開 PR。merge 後各工作目錄 update 即生效

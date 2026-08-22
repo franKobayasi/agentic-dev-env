@@ -15,10 +15,9 @@ try {
   execSync(`node "${path.join(__dirname, 'bin', 'create.js')}" my-ade`, { cwd: tmp, stdio: 'pipe' })
   const ade = path.join(tmp, 'my-ade')
   assert(fs.existsSync(path.join(ade, '.gitignore')), 'gitignore 應改名為 .gitignore')
-  assert(fs.existsSync(path.join(ade, '.claude/skills/ade-create-prd/SKILL.md')), 'dot-claude 應改名為 .claude')
+  assert(fs.existsSync(path.join(ade, '.claude/skills/ade-feedback-upstream/SKILL.md')), 'dot-claude 應改名為 .claude')
   assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
-  assert(fs.existsSync(path.join(ade, '.claude/skills/ade-feedback-upstream/SKILL.md')), 'feedback-upstream skill 應存在')
-  for (const s of ['ade-add-service', 'ade-add-skill']) {
+  for (const s of ['ade-add-service', 'ade-add-skill', 'ade-add-process', 'ade-create-prd', 'ade-prd-to-spec', 'ade-help', 'ade-list-service']) {
     assert(
       fs.lstatSync(path.join(ade, '.claude/skills', s)).isSymbolicLink() &&
         fs.existsSync(path.join(ade, '.claude/skills', s, 'SKILL.md')),
@@ -62,7 +61,13 @@ try {
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-spec-audit/SKILL.md')), 'spec-audit skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-add-skill/SKILL.md')), 'add-skill skill 應注入')
-  assert(!fs.existsSync(path.join(work, '.claude/skills/ade-create-prd')), 'ADE repo 專用 skill 不應注入工作目錄')
+  for (const s of ['ade-create-prd', 'ade-prd-to-spec', 'ade-update', 'ade-help', 'ade-commit', 'ade-ship', 'ade-list-service']) {
+    assert(fs.existsSync(path.join(work, '.claude/skills', s, 'SKILL.md')), `${s} 應注入工作目錄`)
+  }
+  assert(!fs.existsSync(path.join(work, '.claude/skills/ade-feedback-upstream')), 'ADE repo 專用 skill 不應注入工作目錄')
+  for (const f of ['ade-help/list-skills.sh', 'ade-create-prd/validate-prd.sh', 'ade-ship/templates/mr.md']) {
+    assert(fs.existsSync(path.join(work, '.claude/skills', f)), `skill 附檔應隨目錄注入：${f}`)
+  }
   assert(fs.existsSync(path.join(work, 'workspaces')), 'workspaces 應建立')
   assert(fs.readFileSync(path.join(work, '.gitignore'), 'utf8').split('\n').includes('workspaces'), '.gitignore 應含 workspaces')
   const md1 = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')

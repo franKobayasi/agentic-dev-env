@@ -1,6 +1,6 @@
 ---
 name: ade-feedback-upstream
-description: 將本 ADE repo 演化出的機制改良（skill 寫法、模板結構、流程設計）以 issue 回饋給上游 create-agentic-dev-env 框架。使用者說「回饋上游」「這個改良應該進框架」「feedback upstream」時使用。
+description: 將本 ADE repo 演化出的機制改良（skill 寫法、模板結構、流程設計）以 issue 回饋給上游 create-agentic-dev-env 框架。使用者說「回饋上游」「這個改良應該進框架」「feedback upstream」時使用。僅在 ADE repo 內使用。
 ---
 
 # 回饋上游
@@ -14,7 +14,7 @@ description: 將本 ADE repo 演化出的機制改良（skill 寫法、模板結
 
 ## 流程
 
-1. 取得上游 repo 位址：`package.json` 的 `ade.upstream`（為 null 則詢問使用者）
+1. 取得上游 repo 位址：`package.json` 的 `ade.upstream`（為 null 則詢問使用者）。改良來源除了日常觀察，也包括本 repo 標題前綴 `[upstream-candidate]` 的 issues（各流程在收尾沉澱時經 `ade-contribute` 開出）
 2. **查重**：查上游的 open issues（`gh issue list -R <upstream>`），同一改良已有記錄 → 在該 issue 留言補充使用經驗，不重複開
 3. 開 issue（`gh issue create -R <upstream>`），內容包含：
    - 這個改良解決什麼問題
