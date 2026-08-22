@@ -3,6 +3,11 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [1.3.1] - 2026-08-22
+
+- 兩份 README 改版：template README 採下游實際使用後的版面（解決什麼 → 兩個地方 → 四步安裝＋本地模式
+  → 核心概念五條 → 場景速查 → Skills 表）；本 repo README 同形式，面向建 ADE repo 的人
+
 ## [1.3.0] - 2026-08-22
 
 本地模式：ADE repo 不放 GitHub／GitLab，只是本機或共用磁碟上的 git repo。向後相容。
