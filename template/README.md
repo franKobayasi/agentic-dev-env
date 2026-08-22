@@ -4,7 +4,7 @@
 
 ## 初始設定（建 repo 後做一次）
 
-1. 填 `package.json` 的 `repository.url`（init 會記錄它作為 update 的來源）
+1. 填 `package.json` 的 `repository.url`（init 會記錄它作為 update 的來源）——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見下方「本地模式」）
 2. Push 到 GitHub / GitLab
 3. 開始填 `knowledge/`：服務用 `knowledge/services/_template.yaml` 格式，一服務一檔，並更新 `services/index.md` 總覽
 
@@ -44,6 +44,17 @@ init 會在當前目錄建立：
 - `.ade.json`（設定檔：`source` 來源、`commit` 版本、`workspaces` 作業區實際位置（symlink 目標，預設 null）。改 `workspaces` 後跑一次 update 重建 symlink）
 
 之後同指令改跑 `update` 拉取最新知識（update 會直接 clone 最新版，不受 dlx 快取影響）。
+
+### 本地模式：ADE repo 不放 GitHub／GitLab
+
+ADE repo 只是本機（或共用磁碟）上的一個 git repo 也能用，SSH 步驟跳過：
+
+```sh
+# package.json 的 repository.url 填絕對路徑，例如 /Users/me/team-ade
+pnpm dlx "file:/Users/me/team-ade" init     # 之後 update 同形式；file: 必要，直接給目錄會找不到相依
+```
+
+差別只在回流：沒有 issue／PR，`ade-contribute` 會把分支 push 回這個 repo、回報分支名，由你在 ADE repo 內 `git merge` 後各工作目錄 update。其他 skill 與新鮮度檢查（`git ls-remote <路徑>`）照常。
 
 ### 裝好之後，先記這兩支 skill
 

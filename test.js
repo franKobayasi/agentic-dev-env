@@ -114,6 +114,18 @@ try {
     'update 應沿用設定並保留 symlink'
   )
 
+  // 本地 ADE repo（source 為路徑）經 pnpm dlx file: 安裝時套件目錄不帶 .git → commit 應退問 source 取得
+  const work5 = path.join(tmp, 'work5')
+  fs.mkdirSync(work5)
+  const packed = path.join(tmp, 'packed-ade')
+  fs.cpSync(ade, packed, { recursive: true, filter: (p) => path.basename(p) !== '.git' })
+  runner.init(work5, packed)
+  assert.strictEqual(
+    JSON.parse(fs.readFileSync(path.join(work5, '.ade.json'), 'utf8')).commit,
+    git('rev-parse HEAD', ade).toString().trim(),
+    '套件目錄無 .git 時 commit 應由 source 取得（否則新鮮度檢查永遠判定落後）'
+  )
+
   // 既有實體 workspaces/ 目錄＋指定路徑 → 應報錯而非蓋掉
   const work4 = path.join(tmp, 'work4')
   fs.mkdirSync(path.join(work4, 'workspaces'), { recursive: true })

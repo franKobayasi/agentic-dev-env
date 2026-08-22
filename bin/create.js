@@ -46,7 +46,7 @@ console.log(`
 Created ADE repo: ${name}/
 
 Next steps:
-  1. Set repository.url in ${name}/package.json
+  1. Set repository.url in ${name}/package.json (git url; or an absolute path for a local-only ADE repo)
   2. Start filling knowledge/ (service format: knowledge/services/_template.yaml)
   3. After pushing, team members run: pnpm dlx "git+ssh://git@github.com/ORG/${name}.git" init
 `)

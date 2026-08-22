@@ -16,4 +16,5 @@ description: 把工作目錄的 ADE managed 內容（.claude/ade/knowledge/、.c
    ```bash
    pnpm dlx "git+ssh://git@github.com/ORG/REPO.git" update
    ```
+   `source` 是本地路徑（ADE repo 不在 GitHub／GitLab）時改用 `file:` 協定——`pnpm dlx "file:<source>" update`；直接給目錄會以 link 模式執行、找不到相依
 5. 回報更新結果：`.ade.json` 的 `commit` 前後變化，以及這段期間 ADE repo 的 commit 摘要（`git log --oneline <舊 commit>..<新 commit>`，用 `git ls-remote`／既有 clone 取得皆可）——特別點出新增或改名的 skill，使用者才知道多了什麼能用

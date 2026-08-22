@@ -3,6 +3,18 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [1.3.0] - 2026-08-22
+
+本地模式：ADE repo 不放 GitHub／GitLab，只是本機或共用磁碟上的 git repo。向後相容。
+
+- runner：`.ade.json` 的 `commit` 在套件目錄無 `.git` 時（`pnpm dlx file:<path>` 安裝不帶）
+  退 `git ls-remote <source> HEAD` 取得——否則本地模式的新鮮度檢查永遠判定落後；
+  本地路徑的 update 不再帶 `--depth 1`（只會印警告）
+- `ade-contribute`：`source` 為路徑即本地模式——查重改看分支與 log、不開 issue、push 分支後
+  交人在 ADE repo 內 merge，不開 PR
+- `ade-update`：本地路徑用 `pnpm dlx "file:<source>" update`
+- template README「本地模式」一節；create 的 next steps 與依賴契約文件同步
+
 ## [1.2.0] - 2026-08-22
 
 `ade-dev` 開發流程套件（下游兩顆任務、15 個 Phase 實戰後的 v1）。template 增修，runner 與契約不變。

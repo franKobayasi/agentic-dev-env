@@ -45,6 +45,7 @@ revert 即可」。
 - `claude-md/section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
 - `skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
 - `package.json` — `repository.url` 必填（0.2.8 起解析不到就 fail-fast，init 不落地、可重跑）；
+  git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE repo 不放 forge，`pnpm dlx file:<path>` 安裝）；
   `ade.upstream` 供 `ade-feedback-upstream` skill 使用
 - `cli.js` — 一行委派 `require('create-agentic-dev-env/runner').run(...)`，不得攜帶邏輯
 
@@ -52,8 +53,10 @@ revert 即可」。
 
 （改欄位語意、改標記格式、縮小容忍範圍 = breaking change）
 
-- `.ade.json` — `{ source, commit, workspaces }`；消費者有三個：runner update、CLAUDE.md
-  區段的保鮮檢查、`ade-contribute` skill。注意歷史狀態：0.2.8 之前的 init 可能留下
+- `.ade.json` — `{ source, commit, workspaces }`；`source` 是 git url 或本地路徑（`git clone`／
+  `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）；消費者有三個：runner update、CLAUDE.md
+  區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
+  （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`。注意歷史狀態：0.2.8 之前的 init 可能留下
   `source: null`；加 `workspaces` 欄位之前的檔案沒有該欄位。讀取端必須容忍缺省。
 - `CLAUDE.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更
 - `.claude/ade/` — 整個目錄視為 managed，update 全刪重建
