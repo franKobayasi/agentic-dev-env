@@ -28,3 +28,4 @@
 ## 現有主題
 
 - [git-commit.md](./git-commit.md) — commit 訊息採 Conventional Commits
+- [ade-dev-workflow/](./ade-dev-workflow/README.md) — `ade-dev`／`ade-dev-auto` 的唯一事實來源：狀態、六關、審查契約、auto-pilot、批次、CHANGELOG；各規則的證據盤點在上游框架的 `docs/research/ade-dev/`

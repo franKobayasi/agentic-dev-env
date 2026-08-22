@@ -1,6 +1,6 @@
 ---
 name: ade-commit
-description: 在服務 repo 產生符合慣例的 git commit——專案自有規範優先，沒有就用 ADE 預設（Conventional Commits）。使用者說「commit」「提交」「幫我 commit」，或任何流程（如 ade-ship）需要 commit 時使用。
+description: 在服務 repo 產生符合慣例的 git commit——專案自有規範優先，沒有就用 ADE 預設（Conventional Commits）。使用者說「commit」「提交」「幫我 commit」，或任何流程（ade-dev、ade-ship）需要 commit 時使用。
 ---
 
 # ade-commit：commit 訊息慣例解析

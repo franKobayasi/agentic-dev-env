@@ -9,6 +9,7 @@
 ## Layout 契約（runner ↔ ADE repo ↔ 消費端）
 
 - 依賴鏈、契約清單（ADE repo 結構＋消費端工作目錄狀態）、breaking change 判準與發版程序：**改 runner 或 template 前必讀 [docs/dependency-contract.md](docs/dependency-contract.md)**；`test.js` 是契約的可執行版本，改契約必改測試
+- `docs/research/ade-dev/` 是 `template/knowledge/process/ade-dev-workflow/` 各規則的證據盤點，**不進 template**（每個 ADE repo 複製 3K 行研究沒道理）；規則檔以本 repo 的 GitHub URL 引用它，搬動或改名時要同步那些 URL
 - template 內的 `gitignore` / `dot-claude` 在腳手架時改名為 `.gitignore` / `.claude`（npm publish 會剝 dot 檔）；任何文字檔都可含 `__ADE_NAME__` 佔位符，create 時全檔掃描替換
 
 ## Agent skills

@@ -59,9 +59,10 @@ knowledge/
 ├── process/     # 跨服務流程與團隊級慣例
 ├── specs/       # 產品規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/（十三支，見下方 Skills）
+skills/          # init 時注入工作目錄的 .claude/skills/（十五支，見下方 Skills）
 .claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 七支的 symlink）
 claude-md/       # CLAUDE.md managed 區段的內容
+CONTEXT.md       # ADE 開發流程的統一詞彙表（產品域詞彙另在 knowledge/specs/GLOSSARY.md）
 ```
 
 ## Skills
@@ -79,6 +80,8 @@ claude-md/       # CLAUDE.md managed 區段的內容
 | **`ade-list-service`** | 列出目前所有已註冊的服務（「有哪些服務」）。讀 `services/index.md` 並與目錄下的描述檔比對，回報清單與兩者不一致處。只讀不改。 | ✅ |
 | **`ade-create-prd`** | 引導 PO 產出標準化 PRD（「建 PRD」），涵蓋「只有模糊想法」到「照範本填寫」兩種起點。想法未成形先跑 **Discovery** 7 題（一批 2–3 題，已有答案的跳過），接著對照服務總覽、既有 spec 與進行中 PRD 用團隊詞彙寫入 `knowledge/prd/`，再進**盲點拷問**（邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收可測性、相鄰功能），最後用 `validate-prd.sh` 機械檢查。**不自動翻狀態**——留「草稿」，PO 確認才改「已確認」。 | ✅ |
 | **`ade-prd-to-spec`** | 把已確認的 PRD 落入規格（「PRD 轉 spec」）。找出受影響的 spec（必要時新建），將需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加 `🚧 尚未實作（PRD: …）`——spec 因此同時承載「已上線現況」與「已定案未開發」，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認。產出即 RD 開發時的規格依據。 | ✅ |
+| **`ade-dev`** | 判準制標準開發流程（「開始開發」「繼續開發」）。六關：規格（實作規格，人簽核後凍結）→ 規劃（Phase 地圖）→ 實作（逐 Phase 輪到才展開，TDD 紅→綠，交前兩軸審查）→ 測試審視 → 沉澱 → Ship。每關只定義產出與過關判準，不規定做法；狀態全在 `.ade-dev/`，session 可隨時 `/clear` 換手。內建 **Spec Ready gate G1–G8 與 auto-pilot 模式**，配零容忍煞車與有限重試。規則全在 `knowledge/process/ade-dev-workflow/`，skill 只是指標。 | — |
+| **`ade-dev-auto`** | 串接多個 ade-dev 任務的批次執行器（「批次開發」）。列出 `.ade-dev/` 下未完成任務供多選，逐顆跑 Spec Ready 判定，不合格的問人補齊或剔除，全數就緒後依序 auto-pilot 執行。只定義批次層 B1–B4 與批次熔斷，任務內判準全在 ade-dev。 | — |
 | **`ade-align-spec`** | 開發收尾的文件對齊（「開發完了更新 spec」）。對照實際實作逐一核對該 PRD 的 `🚧 尚未實作` 標記：做完且一致的移除、有出入的**以實作為準**改 spec 並記差異、沒做的保留；驗收項全完成時 PRD 轉「已實作」。最後開 PR 把差異清單交 PO 判斷。只動屬於這次 PRD 的標記。 | — |
 | **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
 | **`ade-commit`** | commit 訊息慣例解析，任何要在服務 repo commit 的場景使用。依序找專案自述（CLAUDE.md／AGENTS.md／CONTRIBUTING）→ commitlint 等設定檔 → 既有 git log 風格 → 都沒有才用 ADE 預設（`knowledge/process/git-commit.md`，Conventional Commits）。一個 commit 一件事。 | — |
@@ -96,8 +99,9 @@ claude-md/       # CLAUDE.md managed 區段的內容
 
 1. PO 用 `ade-create-prd` 建立標準化 PRD（含 Discovery 與盲點拷問），定案後標「已確認」
 2. PO 用 `ade-prd-to-spec` 把 PRD 融入 `specs/`，新行為標 `🚧 尚未實作`，逐項確認對齊
-3. RD 在工作目錄開發（`workspaces/`），`ade-commit`／`ade-ship` 交付
+3. RD 在工作目錄走 `ade-dev` 六關開發（`workspaces/`），`ade-ship` 發 MR
 4. 開發完成 RD 跑 `ade-align-spec`：核對實作、移除 🚧、PRD 標「已實作」，開 PR 回本 repo
+5. 補漏：hotfix 與直接改 code 不會經過上面四步，`ade-spec-audit` 定期抓出這種規格漂移
 
 步驟 1、2 在本 repo 或工作目錄都能跑——在工作目錄時走 `ade-contribute`，改的是 `workspaces/` 下的工作副本，最後開 PR。
 

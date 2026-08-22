@@ -53,10 +53,11 @@ knowledge/
 ├── process/     # 跨服務的團隊流程知識
 ├── specs/       # 當前功能規格，持續迭代的真相來源
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的十三支 ade-* skills（help / update / contribute / add-service /
-                 #   list-service / create-prd / prd-to-spec / align-spec / spec-audit / commit / ship /
-                 #   add-skill / add-process）；其中七支 symlink 進 .claude/skills/ 在 ADE repo 內也可用
+skills/          # init 時注入工作目錄的十五支 ade-* skills（help / update / contribute / add-service /
+                 #   list-service / create-prd / prd-to-spec / dev / dev-auto / align-spec / spec-audit /
+                 #   commit / ship / add-skill / add-process）；其中七支 symlink 進 .claude/skills/ 在 ADE repo 內也可用
 .claude/skills/  # 只在 ADE repo 內工作用（feedback-upstream）
+CONTEXT.md       # 開發流程詞彙表；產品域詞彙在 knowledge/specs/GLOSSARY.md
 claude-md/       # CLAUDE.md managed 區段的內容
 ```
 
@@ -67,6 +68,7 @@ claude-md/       # CLAUDE.md managed 區段的內容
 - **知識分層**：ADE 只收「跨服務知識、取得服務的最小資訊、產品規格」三類；bootstrap 流程與服務內部慣例歸服務 repo 自己的文件，不複製會過期的副本
 - **PRD → Spec 生命週期**：PO 用 skill 建標準化 PRD（模糊想法先跑 Discovery，再盲點拷問，`validate-prd.sh` 機械檢查）→ 轉入 spec 並標 `🚧 尚未實作` → RD 開發完成後由 skill 核對實作、移除標記、開 PR 收尾；另有 `ade-spec-audit` 定期巡檢，抓 hotfix 等計畫外變更造成的規格漂移
 - **Managed 區塊覆蓋**：工作目錄裡的 ADE 內容視同唯讀，`update` 無條件覆蓋——想改就回 ADE repo 開 PR，強迫知識回流中央
+- **判準制開發流程**：`ade-dev` 六關（規格→規劃→逐 Phase 實作→測試審視→沉澱→Ship），每關只定義產出與過關判準、狀態全落檔可換 session 接手；Spec Ready G1–G8 全 PASS 的任務可 auto-pilot 無人把關跑完，`ade-dev-auto` 批次串接。規則住在 `knowledge/process/ade-dev-workflow/`，證據盤點在本 repo `docs/research/ade-dev/`（不隨 ADE repo 複製）
 - **消費端自助**：`ade-help` 即時掃描列出可用 skills、`ade-update` 比對版本後更新並回報新增的 skill；交付走 `ade-commit`（專案慣例優先）與 `ade-ship`（平台偵測、專案範本優先）
 - **機制回饋上游**：各 ADE repo 演化出的 skill／模板改良，由 `ade-feedback-upstream` skill 開 issue 回本專案（改良來源含各流程沉澱出的 `[upstream-candidate]` issues；只回饋機制，公司知識絕不外流）
 
