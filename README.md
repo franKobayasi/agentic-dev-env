@@ -36,7 +36,7 @@ pnpm dlx create-agentic-dev-env my-ade
 生成的 `my-ade/` 帶完整結構、十五支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
-2. Push 到 GitHub／GitLab
+2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
 3. 在 `my-ade/` 開 Claude Code，說「新增服務」（`ade-add-service`）開始填 `knowledge/`
 
 ### 步驟 2：團隊成員安裝
@@ -73,13 +73,13 @@ pnpm dlx "git+ssh://git@github.com/ORG/my-ade.git" update
 
 ### 本地模式：ADE repo 不放 GitHub／GitLab
 
-ADE repo 只是本機（或共用磁碟）上的一個 git repo 也能用：`repository.url` 填絕對路徑，安裝與更新改用 `file:` 形式：
+ADE repo 只是本機（或共用磁碟）上的一個 git repo 也能用：`repository.url` 填絕對路徑、commit，安裝與更新改用 `file:` 形式：
 
 ```sh
 pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，直接給目錄會找不到相依
 ```
 
-差別只在回流：沒有 issue／PR，`ade-contribute` 把分支 push 回 repo、回報分支名，由人在 ADE repo 內 `git merge`。其他機制照常。
+迭代迴圈：**日常直接在 ADE repo 內開 Claude Code 改、commit 到 main**（八支 skill 可用，不需要分支或 PR）；從工作目錄回流時 `ade-contribute` push 分支回 repo、由人 `git merge`。改完回工作目錄「更新 ADE」。要知道的三件事：先 commit（沒有 commit 會被擋下，不留殘局）、ADE repo 停在 main（update 取的是當下 checked-out 的 HEAD）、`[upstream-candidate]` 改記在根目錄 `UPSTREAM-CANDIDATES.md`。生成的 ADE repo README 有完整說明。
 
 ---
 

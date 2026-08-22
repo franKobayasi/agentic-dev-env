@@ -32,6 +32,7 @@ try {
   )
   assert(!fs.readFileSync(path.join(ade, 'package.json'), 'utf8').includes('__ADE_NAME__'), '名稱應被替換')
   assert(fs.existsSync(path.join(ade, 'CONTEXT.md')), 'CONTEXT.md 詞彙表應存在')
+  assert(fs.existsSync(path.join(ade, 'UPSTREAM-CANDIDATES.md')), 'UPSTREAM-CANDIDATES.md 應存在')
   git('add -A', ade)
   git('commit -m init', ade)
 
@@ -62,6 +63,7 @@ try {
     assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow', f + '.md')), `ade-dev 規則檔應複製：${f}.md`)
   }
   assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow/research')), 'research 不應隨 template 複製')
+  assert(!fs.existsSync(path.join(work, '.claude/ade/UPSTREAM-CANDIDATES.md')), 'ADE repo 根目錄檔案不應複製進工作目錄')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), 'skills 應複製')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-spec-audit/SKILL.md')), 'spec-audit skill 應注入')
@@ -151,6 +153,25 @@ try {
   assert(md2.includes('使用者原有內容'), 'update 不應動到使用者內容')
   assert(md2.split('<!-- ADE:BEGIN -->').length === 2, '區段不應重複插入')
   assert(JSON.parse(fs.readFileSync(cfgPath, 'utf8')).commit, '.ade.json 應記錄 commit')
+
+  // 沒有 commit 的 ADE repo（本地模式：create 之後忘了 commit）→ init 應在寫檔前失敗；update 不得破壞既有安裝
+  const emptyAde = path.join(tmp, 'empty-ade')
+  fs.cpSync(ade, emptyAde, { recursive: true, filter: (p) => path.basename(p) !== '.git' })
+  git('init -q', emptyAde)
+  fs.writeFileSync(path.join(emptyAde, 'package.json'), JSON.stringify({ ...pkg, repository: { type: 'git', url: emptyAde } }))
+  const work6 = path.join(tmp, 'work6')
+  fs.mkdirSync(work6)
+  assert.throws(() => runner.init(work6, emptyAde), /commit/, '無 commit 的 ADE repo 應報錯')
+  assert(!fs.existsSync(path.join(work6, '.ade.json')) && !fs.existsSync(path.join(work6, '.claude')), '失敗的 init 不應留下檔案')
+  const cfgE = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
+  fs.writeFileSync(cfgPath, JSON.stringify({ ...cfgE, source: emptyAde }))
+  assert.throws(() => runner.update(work), /commit/, '來源為空 repo 的 update 應報錯')
+  assert(
+    fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')) &&
+      fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')),
+    'update 失敗時既有 managed 內容必須原封不動'
+  )
+  fs.writeFileSync(cfgPath, JSON.stringify(cfgE))
 
   // 非 ade- 前綴的 skill 應被拒裝（在破壞前驗證）
   fs.mkdirSync(path.join(ade, 'skills/rogue'))

@@ -15,7 +15,7 @@ description: 從工作目錄修改中央 ADE 知識庫並開 PR（ADE repo 只�
 3. **判斷起點**，兩種：
    - **主動撰寫**（使用者明確要求新增或調整 spec、skill、process、服務描述檔）→ 不開 issue，直接進第 4 步
    - **被動回流**（工作中發現知識庫過期或缺漏）→ 先查重：`gh issue list` / `gh pr list`，同一缺口已有記錄就在該 issue/PR 留言補充，到此結束；沒有才開 issue 描述缺什麼／哪裡過期／在哪個工作情境發現的，issue 是查重與追蹤的協調點
-   - 〔本地〕查重改看 `git branch -r` 與 `git log origin/main --oneline -30` 有無同一缺口的分支或 commit；不開 issue，缺口描述（缺什麼／哪裡過期／在哪個情境發現）寫進 commit body
+   - 〔本地〕查重改看 `git branch -r` 與 `git log origin/main --oneline -30` 有無同一缺口的分支或 commit；不開 issue，缺口描述（缺什麼／哪裡過期／在哪個情境發現）寫進 commit body；`[upstream-candidate]` 類的機制改良則 append 到 ADE repo 根的 `UPSTREAM-CANDIDATES.md`（同樣走分支）
 4. 修改 `knowledge/` 下對應文件
    - 修改前先讀原文，沿用既有格式與詞彙
    - 服務描述檔必須符合 `knowledge/services/_template.yaml` 的欄位結構；收錄範圍遵守 `knowledge/README.md` 的分層規則與「底層原則：Context 管理」（常駐最小、細節分檔按需載入）

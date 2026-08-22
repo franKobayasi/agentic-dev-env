@@ -56,7 +56,8 @@ revert 即可」。
 - `.ade.json` — `{ source, commit, workspaces }`；`source` 是 git url 或本地路徑（`git clone`／
   `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）；消費者有三個：runner update、CLAUDE.md
   區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
-  （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`。注意歷史狀態：0.2.8 之前的 init 可能留下
+  （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`；兩者都取不到（repo 尚無 commit）init 在寫檔前失敗。
+  update 先 clone 並驗證 `knowledge/`＋`claude-md/section.md` 存在才清 managed 區域——來源是空 repo 時既有安裝原封不動。注意歷史狀態：0.2.8 之前的 init 可能留下
   `source: null`；加 `workspaces` 欄位之前的檔案沒有該欄位。讀取端必須容忍缺省。
 - `CLAUDE.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更
 - `.claude/ade/` — 整個目錄視為 managed，update 全刪重建

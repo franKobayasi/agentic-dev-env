@@ -48,7 +48,7 @@
 
 - 產品規格與實作一致：有 PRD 走 `ade-align-spec`；無 PRD 但動了產品行為 → 起草產品規格更新、**人確認後**依 `ade-contribute` 流程送出
 - `notes.md` 收整成清單給人審視：關鍵發現、決策、流程摩擦與改良建議
-- 清單中屬**機制層**的改良（skill 寫法、模板結構、流程設計，非本服務專屬），依 `ade-contribute` 在 ADE repo 開一則標題前綴 `[upstream-candidate]` 的 issue——內文只描述機制、不含服務名稱與程式碼；是否回饋上游由 ADE repo 維護者判斷，**不在本流程內執行**
+- 清單中屬**機制層**的改良（skill 寫法、模板結構、流程設計，非本服務專屬），依 `ade-contribute` 在 ADE repo 開一則標題前綴 `[upstream-candidate]` 的 issue（本地模式沒有 issue：append 到 ADE repo 根的 `UPSTREAM-CANDIDATES.md`）——內文只描述機制、不含服務名稱與程式碼；是否回饋上游由 ADE repo 維護者判斷，**不在本流程內執行**
 
 ## 第 6 關：Ship
 

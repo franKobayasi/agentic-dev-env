@@ -26,8 +26,8 @@ ADE 把這兩件事抽出來共用：
 ## 初始設定（建 repo 後做一次）
 
 1. 填 `package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
-2. Push 到 GitHub／GitLab（本地模式跳過）
-3. 開始填 `knowledge/`：服務用 `ade-add-service` 註冊（或手填 `knowledge/services/_template.yaml` 格式並更新 `services/index.md`）
+2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
+3. 開始填 `knowledge/`：在本 repo 開 Claude Code 說「新增服務」（`ade-add-service`），或手填 `knowledge/services/_template.yaml` 格式並更新 `services/index.md`
 
 ---
 
@@ -120,14 +120,25 @@ update 直接 clone 最新版，不受 dlx 快取影響。
 
 ### 本地模式：ADE repo 不放 GitHub／GitLab
 
-ADE repo 只是本機（或共用磁碟）上的一個 git repo 也能用，步驟 1 跳過、步驟 2／4 的指令換成 `file:` 形式：
+ADE repo 只是本機（或共用磁碟）上的一個 git repo 也能用。步驟 1 跳過，步驟 2／4 的指令換成 `file:` 形式：
 
 ```sh
-# package.json 的 repository.url 填絕對路徑，例如 /Users/me/__ADE_NAME__
-pnpm dlx "file:/Users/me/__ADE_NAME__" init     # update 同形式；file: 必要，直接給目錄會找不到相依
+# 一次性：package.json 的 repository.url 填絕對路徑，commit，然後在工作目錄
+pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必要，直接給目錄會找不到相依
 ```
 
-差別只在回流：沒有 issue／PR，`ade-contribute` 會把分支 push 回這個 repo、回報分支名，由你在 ADE repo 內 `git merge` 後各工作目錄 update。其他 skill 與新鮮度檢查（`git ls-remote <路徑>`）照常。
+之後的迭代迴圈有兩條路，**日常以 A 為主**：
+
+- **A. 直接在本 repo 開 Claude Code** — `ade-add-service`／`ade-create-prd`／`ade-prd-to-spec`／`ade-add-skill`／`ade-add-process` 等八支 skill 都能用，改完 commit 到 main 即可，不需要分支或 PR
+- **B. 從工作目錄回流** — 開發服務時 agent 發現知識過期，`ade-contribute` 會 clone 到 `workspaces/__ADE_NAME__/`、開分支、push 回本 repo 並回報分支名；你回到本 repo `git merge` 即可（沒有 issue／PR）
+
+兩條路收尾都一樣：回工作目錄說「更新 ADE」。session 開始的新鮮度檢查（`git ls-remote <路徑> HEAD`）會自動提醒落後。
+
+三件要知道的：
+
+- **先 commit**：init／update 都從 commit 取內容，create 完沒 commit 會被擋下（不會留殘局）
+- **本 repo 停在 main**：`update` 取的是本 repo 當下 checked-out 的 HEAD；在分支上工作時先不要 update，merge 回 main 再更新
+- **機制改良沒有 issue 可開**：各流程沉澱出的 `[upstream-candidate]` 改為 append 到根目錄 `UPSTREAM-CANDIDATES.md`，`ade-feedback-upstream` 從那裡收
 
 ### 裝好之後，先記這兩支 skill
 
@@ -268,6 +279,7 @@ skills/          # init 時注入工作目錄的 .claude/skills/（十五支，�
 .claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 七支的 symlink）
 claude-md/       # CLAUDE.md managed 區段的內容
 CONTEXT.md       # ADE 開發流程的統一詞彙表
+UPSTREAM-CANDIDATES.md  # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
 ```
 
 ## 維護原則
