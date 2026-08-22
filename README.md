@@ -9,7 +9,7 @@
 本工具生成並維護一種 repo（**ADE repo**）來把這兩件事抽出來共用：
 
 - **知識**（`knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`skills/`）— 十五支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`skills/`）— 十六支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -33,7 +33,7 @@
 pnpm dlx create-agentic-dev-env my-ade
 ```
 
-生成的 `my-ade/` 帶完整結構、十五支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
+生成的 `my-ade/` 帶完整結構、十六支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
@@ -70,6 +70,8 @@ pnpm dlx "git+ssh://git@github.com/ORG/my-ade.git" update
 ```
 
 或在工作目錄對 agent 說「更新 ADE」（`ade-update`）：比對版本、提醒未回流的手改、更新後回報新增的 skill。session 開始偵測到落後時也會主動提醒。
+
+要換來源、切換本地／遠端、或把 `workspaces` 指到別處，說「ADE 設定」（`ade-config`）——它改 `.ade.json` 後直接重建；`.ade.json` 的 `source` 一經設定就以它為準，ADE repo 的 `repository.url` 只是 init 時的初值。
 
 ### 本地模式：ADE repo 不放 GitHub／GitLab
 
@@ -138,12 +140,13 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ## Skills
 
-ADE repo 帶十六支 skill，逐支詳解在生成的 ADE repo README；這裡只列用途。「兩邊」＝工作目錄與 ADE repo 內都可用。
+ADE repo 帶十七支 skill，逐支詳解在生成的 ADE repo README；這裡只列用途。「兩邊」＝工作目錄與 ADE repo 內都可用。
 
 | Skill | 一句話 | 可用處 |
 | --- | --- | --- |
 | `ade-help` | 即時掃描列出當前位置可用的 ade-* skills | 兩邊 |
 | `ade-update` | 比對版本、提醒未回流手改、更新並回報新增 skill | 工作目錄 |
+| `ade-config` | 看／改工作目錄安裝設定 `.ade.json`：本地／遠端模式、來源 url 或路徑、workspaces 位置；改完直接 update 重建 | 兩邊 |
 | `ade-contribute` | 修改 ADE 知識庫的唯一通道：工作副本、查重、開 PR（本地模式 push 分支交人 merge） | 工作目錄 |
 | `ade-add-service` | 依 `_template.yaml` 註冊服務並同步總覽 | 兩邊 |
 | `ade-list-service` | 列出已註冊服務，回報總覽與描述檔不一致處 | 兩邊 |

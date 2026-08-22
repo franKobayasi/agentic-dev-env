@@ -54,7 +54,9 @@ revert 即可」。
 （改欄位語意、改標記格式、縮小容忍範圍 = breaking change）
 
 - `.ade.json` — `{ source, commit, workspaces }`；`source` 是 git url 或本地路徑（`git clone`／
-  `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）；消費者有三個：runner update、CLAUDE.md
+  `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）。**已設定的 `source` 優先**：
+  ADE repo 的 `repository.url` 只在 init 時當初值，之後 update 不覆寫（1.4.0 起；`ade-config` 靠此讓工作目錄
+  自行切換來源或本地／遠端模式）；消費者有三個：runner update、CLAUDE.md
   區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
   （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`；兩者都取不到（repo 尚無 commit）init 在寫檔前失敗。
   update 先 clone 並驗證 `knowledge/`＋`claude-md/section.md` 存在才清 managed 區域——來源是空 repo 時既有安裝原封不動。注意歷史狀態：0.2.8 之前的 init 可能留下

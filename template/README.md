@@ -9,7 +9,7 @@
 ADE 把這兩件事抽出來共用：
 
 - **知識**（`knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`skills/`）— 十五支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`skills/`）— 十六支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -105,7 +105,7 @@ init 在**當前目錄**建立以下內容，既有檔案不會被覆蓋：
 pnpm dlx "git+ssh://git@github.com/ORG/__ADE_NAME__.git" init --workspaces ~/projects
 ```
 
-`workspaces/` 會建成該資料夾的 symlink：`cd workspaces` 就到 `~/projects`，底下已下載的 repo 直接沿用。實際位置記在 `.ade.json` 的 `workspaces`，事後改這個欄位再跑一次 update 即可重建 symlink。
+`workspaces/` 會建成該資料夾的 symlink：`cd workspaces` 就到 `~/projects`，底下已下載的 repo 直接沿用。實際位置記在 `.ade.json` 的 `workspaces`；事後要換位置、換來源或切換本地／遠端模式，對 agent 說「ADE 設定」（`ade-config`）即可。
 
 ### 步驟 4：日後更新
 
@@ -231,6 +231,7 @@ flowchart LR
 | 發現 ADE 的知識有錯或缺漏 | 「把這個記回知識庫」 | `ade-contribute` |
 | 想把某個做法定成團隊慣例 | 「以後都這樣做」 | `ade-add-process` |
 | 想把某個流程做成 skill | 「新增 skill」 | `ade-add-skill` |
+| 看或改安裝設定：本地／遠端、來源、作業區位置 | 「ADE 設定」「改成本地模式」「workspaces 指到…」 | `ade-config` |
 
 ---
 
@@ -244,6 +245,7 @@ flowchart LR
 | --- | --- | --- |
 | **`ade-help`** | 列出當前位置可用的 ade-* skills 與各自用途（「有哪些 skill」「ADE 支援什麼」）。清單由 `list-skills.sh` 掃 `.claude/skills/ade-*/SKILL.md` 的 frontmatter 即時產生——**不寫死清單**，skill 搬家或新增都不用回頭改；掃的是當前位置真正載得到的目錄，工作目錄與 ADE repo 自然列出各自那套。 | ✅ |
 | **`ade-update`** | 把工作目錄的 managed 內容拉到本 repo 最新版（「更新 ADE」，或 session 開始偵測到落後時）。先用 `git ls-remote` 比對 `.ade.json` 的 `commit`（一樣就不跑）、提醒把 managed 區域的手改先走 `ade-contribute` 回流，才執行 `pnpm dlx <source> update`，最後回報版本變化與期間新增的 skill。**只在消費端工作目錄用**——本 repo 內沒有 managed 副本，用一般 `git pull`。 | — |
+| **`ade-config`** | 查看或修改工作目錄的安裝設定 `.ade.json`（「ADE 設定」「改成本地模式」「作業區換位置」）：模式（由 `source` 是路徑還是 url 判定）、來源 repo、`workspaces` 位置。改完直接跑 update 重建；`.ade.json` 的 `source` 一經設定就以它為準，不會被本 repo 的 `repository.url` 蓋回——所以可以用自己的本地 clone 當來源快速迭代、再切回遠端。在本 repo 內則是看／改 `package.json` 的 `repository.url`（init 的初值）與 `ade.upstream`。 | ✅ |
 | **`ade-contribute`** | 從工作目錄修改本知識庫的**唯一通道**（「改 ADE 的 spec／skill」「回流」）。主動撰寫直接建分支開工；被動回流先查 open issues／PRs 避免重複，沒有才開 issue 記錄缺口、PR 再連回該 issue。工作副本放 `workspaces/<ade-repo-name>/`，已存在就重用、收尾切回主幹，人只需 review PR。本地模式（`source` 是路徑）沒有 issue／PR：push 分支交人 merge。**絕不直接改工作目錄的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋。其他 skill 的「開 PR」動作都委派給它。 | — |
 | **`ade-add-service`** | 在知識庫註冊新服務（「新增服務」）。依 `knowledge/services/_template.yaml` 建描述檔（`repo` 的 url 與 branch 必填，agent 之後要靠它自主 clone），並同步 `services/index.md` 總覽表。資訊不足會問人，不留空猜測。在本 repo 直接編輯收尾，在工作目錄則走 `ade-contribute`。 | ✅ |
 | **`ade-list-service`** | 列出目前所有已註冊的服務（「有哪些服務」）。讀 `services/index.md` 並與目錄下的描述檔比對，回報清單與兩者不一致處。只讀不改。 | ✅ |
@@ -275,8 +277,8 @@ knowledge/
 ├── process/     # 跨服務流程與團隊級慣例（含 ade-dev-workflow/ 開發流程規則）
 ├── specs/       # 產品規格，持續迭代的真相來源；GLOSSARY.md 是產品域詞彙
 └── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/（十五支，見上方 Skills）
-.claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 七支的 symlink）
+skills/          # init 時注入工作目錄的 .claude/skills/（十六支，見上方 Skills）
+.claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 八支的 symlink）
 claude-md/       # CLAUDE.md managed 區段的內容
 CONTEXT.md       # ADE 開發流程的統一詞彙表
 UPSTREAM-CANDIDATES.md  # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）

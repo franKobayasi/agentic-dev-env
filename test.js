@@ -17,7 +17,7 @@ try {
   assert(fs.existsSync(path.join(ade, '.gitignore')), 'gitignore 應改名為 .gitignore')
   assert(fs.existsSync(path.join(ade, '.claude/skills/ade-feedback-upstream/SKILL.md')), 'dot-claude 應改名為 .claude')
   assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
-  for (const s of ['ade-add-service', 'ade-add-skill', 'ade-add-process', 'ade-create-prd', 'ade-prd-to-spec', 'ade-help', 'ade-list-service']) {
+  for (const s of ['ade-add-service', 'ade-add-skill', 'ade-add-process', 'ade-create-prd', 'ade-prd-to-spec', 'ade-help', 'ade-list-service', 'ade-config']) {
     assert(
       fs.lstatSync(path.join(ade, '.claude/skills', s)).isSymbolicLink() &&
         fs.existsSync(path.join(ade, '.claude/skills', s, 'SKILL.md')),
@@ -68,7 +68,7 @@ try {
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-spec-audit/SKILL.md')), 'spec-audit skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-add-skill/SKILL.md')), 'add-skill skill 應注入')
-  for (const s of ['ade-create-prd', 'ade-prd-to-spec', 'ade-update', 'ade-help', 'ade-commit', 'ade-ship', 'ade-list-service', 'ade-dev', 'ade-dev-auto']) {
+  for (const s of ['ade-create-prd', 'ade-prd-to-spec', 'ade-update', 'ade-help', 'ade-commit', 'ade-ship', 'ade-list-service', 'ade-dev', 'ade-dev-auto', 'ade-config']) {
     assert(fs.existsSync(path.join(work, '.claude/skills', s, 'SKILL.md')), `${s} 應注入工作目錄`)
   }
   assert(!fs.existsSync(path.join(work, '.claude/skills/ade-feedback-upstream')), 'ADE repo 專用 skill 不應注入工作目錄')
@@ -128,10 +128,14 @@ try {
     '套件目錄無 .git 時 commit 應由 source 取得（否則新鮮度檢查永遠判定落後）'
   )
 
-  // 既有實體 workspaces/ 目錄＋指定路徑 → 應報錯而非蓋掉
+  // 既有實體 workspaces/：空的直接換成 symlink（init 預設就建空目錄，之後改位置不該卡住）；非空才報錯
   const work4 = path.join(tmp, 'work4')
   fs.mkdirSync(path.join(work4, 'workspaces'), { recursive: true })
-  assert.throws(() => runner.init(work4, ade, '../shared-repos'), /not a symlink/, '實體目錄應報錯')
+  runner.init(work4, ade, '../shared-repos')
+  assert(fs.lstatSync(path.join(work4, 'workspaces')).isSymbolicLink(), '空的實體 workspaces 應被換成 symlink')
+  const work4b = path.join(tmp, 'work4b')
+  fs.mkdirSync(path.join(work4b, 'workspaces', 'my-repo'), { recursive: true })
+  assert.throws(() => runner.init(work4b, ade, '../shared-repos'), /not a symlink/, '非空實體目錄應報錯')
 
   // update: 指向本地 ADE repo，模擬上游更新
   const cfgPath = path.join(work, '.ade.json')
@@ -153,6 +157,15 @@ try {
   assert(md2.includes('使用者原有內容'), 'update 不應動到使用者內容')
   assert(md2.split('<!-- ADE:BEGIN -->').length === 2, '區段不應重複插入')
   assert(JSON.parse(fs.readFileSync(cfgPath, 'utf8')).commit, '.ade.json 應記錄 commit')
+
+  // 工作目錄的 .ade.json.source 優先於 ADE repo 的 repository.url（ade-config 改來源後 update 不得蓋回）
+  const pkg2 = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+  pkg2.repository = { type: 'git', url: 'git@example.com:org/moved.git' }
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg2, null, 2))
+  git('add -A', ade)
+  git('commit -m move-url', ade)
+  runner.update(work)
+  assert.strictEqual(JSON.parse(fs.readFileSync(cfgPath, 'utf8')).source, ade, 'update 不應用 repository.url 蓋掉工作目錄設定的 source')
 
   // 沒有 commit 的 ADE repo（本地模式：create 之後忘了 commit）→ init 應在寫檔前失敗；update 不得破壞既有安裝
   const emptyAde = path.join(tmp, 'empty-ade')
