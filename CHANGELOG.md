@@ -3,7 +3,7 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
-## [Unreleased]
+## [1.4.0] - 2026-08-22
 
 - **`ade-config` skill**：查看／修改工作目錄的安裝設定 `.ade.json`——本地或遠端模式（由 `source` 形態判定）、
   來源 git url 或本地路徑、`workspaces` 作業區位置；改完直接跑 update 重建。在 ADE repo 內則看／改
