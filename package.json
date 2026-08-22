@@ -1,6 +1,6 @@
 {
   "name": "create-agentic-dev-env",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Scaffold and manage team Agentic Dev Environment (ADE) knowledge repos",
   "repository": {
     "type": "git",
