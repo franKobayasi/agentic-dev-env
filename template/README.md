@@ -39,7 +39,7 @@ ADE 把這兩件事抽出來共用：
 
 | | 是什麼 | 誰在動它 |
 | --- | --- | --- |
-| **ADE repo**（就是本 repo） | 團隊知識與 skills 的**唯一真相來源**，全隊共用一份。 | 一律走 PR（agent 端由 `ade-contribute` 引導） |
+| **ADE repo**（就是本 repo） | 團隊知識與 skills 的**唯一真相來源**，全隊共用一份。 | 一律走 PR（agent 端由 `ade-contribute` 引導）；[本地模式](#本地模式ade-repo-不放-githubgitlab)沒有 PR，在本 repo 內直接 commit、或由人 merge 回流分支 |
 | **工作目錄**（hub） | 你自己電腦上的一個資料夾，是**開 Claude Code 的起點**。裡面有一份 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo。 | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
 
 ### 步驟 1：設定 SSH（只做一次）

@@ -3,6 +3,11 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [1.3.3] - 2026-08-22
+
+- `ade-contribute` 不再假設主幹叫 `main`：開分支用 `origin/HEAD`，切回主幹寫「預設分支」
+- template README「兩個地方」表補本地模式的修改方式（原文「一律走 PR」與本地模式矛盾）
+
 ## [1.3.2] - 2026-08-22
 
 本地模式的完整生命週期。向後相容。
