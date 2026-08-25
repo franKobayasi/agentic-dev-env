@@ -26,7 +26,15 @@
 
 - 每條 AC 可回溯到交付定義的某一句
 - 每完成一個 Task 即勾掉 `phase-N.md` 的 checkbox——這是 Phase 內唯一的進度紀錄，寫在任何 compaction 之前；Phase 內發生 compaction 後的**第一個動作**固定是重讀 `spec.md`＋`phase-N.md`，覆述當前 AC 與下一個未勾 Task 再續（文檔是真相、context 是快取）
-- 硬觸發（命中必拆，停下回報）：預估 diff **> 400 行**或改動**> 10 個檔案**——以「人要逐行讀的行數」計，整檔刪除、工具產生的機械 refactor、產生檔豁免。提示訊號（不強制拆但要說明理由）：AC > 8 條；AC 需要先建測試基礎設施才寫得出來 → 把基礎設施抽成前置 Phase。數字依據與校準方式見 [research-phase-sizing.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-phase-sizing.md)
+- **規模板機**（原「硬觸發」；命中＝必做一次拆分判斷，**不是必拆**）：預估 diff **> 400 行**或改動**> 10 個檔案**——以「人要逐行讀的行數」計；整檔刪除、工具產生的機械 refactor、產生檔、註解與檔頭說明、表格驅動測試的資料列豁免。扣板機後依下列原則決定切點或不拆，結論（切點／不拆＋所依原則）寫進 `phase-N.md`，**不停下問人**；切法變動依第 2 關修訂 `plan.md` 並在 `notes.md` 留痕：
+  - **依賴方向**：被依賴的部分抽成前置 Phase（stacking）
+  - **可獨立驗證**：切出的每一半各自能驗收，不靠另一半的產出
+  - **風險隔離**：已知踩過坑、或機制自成一塊的部分獨立成 Phase
+  - **共用面最小**：兩半只共用 pre-flight、擺放位置之類的殼 → 切得下去
+  - **基礎設施先行**：AC 需要先建 fixture／harness 才寫得出 → 抽成前置 Phase
+  - **正當不拆**（理由**限**下列三種，不得自由發揮）：多條 AC 是同一不變式的兩面／拆開會出現不一致的中間狀態／AC 共用同一條 fixture 引用鏈——這是「切錯」不是「切大」，拆小救不了
+
+  停下回報的線是板機值的 **2 倍**（以實際規模計；auto 模式的煞車同此線，見 `auto-pilot.md`）。提示訊號（不扣板機，但要說明理由）：AC > 8 條。數字依據見 [research-phase-sizing.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-phase-sizing.md) §1；原則採其 §1 規劃段「可獨立交付性不成立→重畫邊界」與 §2.2 Google 四種拆法，白名單三條取自實戰裁決
 - Phase 交付後在 `notes.md` 記**一行量測**（固定欄位，供跨任務 grep）：`[量測] P<N> 行數=<n> 檔數=<n> 預估行數=<n> 分鐘=<n> compaction=<n> blocking=<真/不成立> 修正輪=<n> 人介入=<n> session=<$CLAUDE_CODE_SESSION_ID> agent=<id或main>`——session 與 agent 用來定位 transcript（`~/.claude/projects/<proj>/<session>/subagents/agent-<id>.jsonl`），回顧時據此判定 agent 實際讀了什麼、派了什麼；審查處置、預估 vs 實際的分析、AC 證據（測試檔名與結果摘要）寫進 `phase-N.md` 的「交付紀錄」段，不進 `notes.md`
 - 每條 AC 有自動化測試，且該測試在實作完成前**失敗過**（紅→綠，順序本身就是證據）
 - 既有代碼的順手優化僅限本 Phase 觸及的檔案；更大的重構記進 `notes.md`，不做
@@ -44,7 +52,14 @@
 
 ## 第 5 關：沉澱
 
-過關判準：
+產出：`notes.md` 末尾的**交付對帳**＋給人審視的清單。過關判準：
+
+- **交付對帳**：第 3 關的兩軸審查只看得到當前 Phase 的 diff，第 4 關只看測試——**跨 Phase 的漂移沒有任何一關看得到**，整次開發的正確性在此對一次帳。四項來源逐條走完，結論寫進 `notes.md`：
+  - `spec.md` 的**每條行為規格** → 達成／**以不同方式達成**／未達成。「以不同方式達成」要寫下與字面的差異與理由——它是下一條產品規格回寫的來源，不是註腳
+  - `spec.md` 的「不在本次範圍」與「衝突與處置」**逐列**核對：處置欄寫的與實際做的是不是同一件事（「改成 X」做成了「整個刪掉」是最常見的一種）
+  - 各 `phase-N.md` 裡「留給第 N 關再決定／記進 `notes.md`」的**承諾逐條收斂**：兌現了，還是掉了。承諾自己就是證據鏈，**斷在這裡不會有任何測試會紅**
+  - `plan.md` 的 checkbox 與實際 commit 對帳；彙總各 Phase `[量測]` 行的估實差（第 3 關已逐 Phase 記，此處只是校準用的合計）
+- **對帳結果不得只停在紀錄**，逐條落地：與產品規格分歧 → 進下一條的回寫；**規劃有寫而實際沒做、又沒有對應待辦 → 當場開 issue 或明說放棄**；帳面錯誤（checkbox、過期文件）當場修
 
 - 產品規格與實作一致：有 PRD 走 `ade-align-spec`；無 PRD 但動了產品行為 → 起草產品規格更新、**人確認後**依 `ade-contribute` 流程送出
 - `notes.md` 收整成清單給人審視：關鍵發現、決策、流程摩擦與改良建議
@@ -56,5 +71,5 @@
 
 - 分支上的 commits 符合 `ade-commit` 解析出的慣例（專案自有規範優先，無則 ADE 預設）
 - MR 依 `ade-ship` 發出：專案有 PR／MR 範本用專案的，沒有用 ADE 內建預設範本
-- MR 描述涵蓋交付定義、AC 驗證證據、與規格的已知差異
+- MR 描述涵蓋交付定義、AC 驗證證據、與規格的已知差異（後者取自第 5 關的交付對帳）
 - 發出即過關；**merge 由人執行**，不等 merge 才勾（Phase 級的合併若也走 MR，同樣用 `ade-ship` 發）。**auto 模式加一條**：MR 發出後 CI 須轉綠才算交付完成——CI 未跑完就結束的任務標記為未完成，不計入批次成功
