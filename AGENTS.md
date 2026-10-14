@@ -10,7 +10,7 @@
 
 - 依賴鏈、契約清單（ADE repo 結構＋消費端工作目錄狀態）、breaking change 判準與發版程序：**改 runner 或 seed 前必讀 [docs/dependency-contract.md](docs/dependency-contract.md)**；`test.js` 是契約的可執行版本，改契約必改測試
 - `docs/research/ade-dev/` 是 `seed/knowledge/process/ade-dev-workflow/` 各規則的證據盤點，**不進 seed**（每個 ADE repo 複製 3K 行研究沒道理）；規則檔以本 repo 的 GitHub URL 引用它，搬動或改名時要同步那些 URL
-- seed 內的 `gitignore` / `dot-claude` 在腳手架時改名為 `.gitignore` / `.claude`（npm publish 會剝 dot 檔）；任何文字檔都可含 `__ADE_NAME__` 佔位符，create 時全檔掃描替換
+- **改 seed 前讀 [docs/development-guide.md](docs/development-guide.md)**：seed 的定位、各部分在 ADE repo 與工作目錄的去向、create 的處理步驟、改動時要同步的地方
 
 ## Agent skills
 

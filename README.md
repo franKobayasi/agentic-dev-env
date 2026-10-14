@@ -171,6 +171,7 @@ bin/create.js        # 腳手架：由 seed/ 生成 ADE repo（一次性快照�
 lib/runner.js        # 執行期：init / update 的全部邏輯（ADE repo 的 cli.js 一行委派）
 seed/                # ADE repo 的種子：knowledge/、skills/、dot-claude/、claude-md/、CONTEXT.md、README
 docs/
+├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
 ├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 seed 前必讀
 └── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用
 test.js              # 端到端自測：create → init → update，是契約的可執行版本
