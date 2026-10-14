@@ -51,7 +51,38 @@
 - seed 只剩 `hub/` 與 `repo/` 兩個子目錄：`hub/` 原樣成為 ADE repo 的 `hub/`，`repo/` 攤平成 ADE repo 根目錄（`repo/skills/` 成為 `.claude/skills/`，取代原本的 `dot-claude/`）
 - runner 相容舊的扁平結構：repo 根沒有 `hub/` 時改讀 `knowledge/`、`claude-md/section.md`、`skills/`，既存 ADE repo 升級 runner 時不需遷移
 
-**證據**：`test.js` 涵蓋新結構的 create／init／update 與舊扁平結構的 init／update；將 runner 的結構判斷分別改為「只認新結構」與「只認舊結構」時，測試各自失敗。
+既存 ADE repo 不遷移也能繼續使用。想改用新結構時，依序：
+
+1. **先升級 runner**：`package.json` 的 `create-agentic-dev-env` 改為本版並 commit，在工作目錄 update 一次確認正常。順序不可對調——鎖定的舊版 runner 讀不懂 `hub/`，先改結構會讓所有工作目錄的 update 失敗（失敗發生在清除 managed 內容之前，既有安裝不受損）
+2. **搬移結構**：在 ADE repo 根執行。兩邊都用的 skill 由原本 `.claude/skills/` 下的 symlink 判定；其中的實體目錄是 ADE repo 專用 skill，不需搬動
+
+   ```sh
+   set -e
+   both=$(for l in .claude/skills/*; do [ -L "$l" ] && basename "$l"; done)
+   mkdir hub
+   git mv knowledge hub/knowledge
+   git mv skills hub/skills
+   git mv claude-md/section.md hub/CLAUDE.section.md && rmdir claude-md
+   for s in $both; do
+     git rm -q ".claude/skills/$s"
+     ln -s "../../hub/skills/$s" ".claude/skills/$s"
+     perl -0pi -e 's/\A(---\n(?:.*\n)*?)---\n/$1metadata:\n  ade-scope: both\n---\n/' "hub/skills/$s/SKILL.md"
+   done
+   git add -A
+   ```
+
+   frontmatter 已有 `metadata` 的 skill，會多出第二個 `metadata` 鍵，需手動合併
+3. **改寫講 repo 結構的文字**：**不要**以本版 seed 的 skill 整份取代——既存 repo 的 skill 多半已自行演化，也可能有 seed 沒有的自有 skill。用下列指令找出要改的行，對照本版 seed 的寫法逐處改為 `hub/` 路徑：
+
+   ```sh
+   grep -rnE 'repo 根有 `knowledge/|claude-md/|dot-claude|`skills/|\.\./\.\./skills/|\]\(knowledge/' hub .claude/skills CLAUDE.md README.md
+   ```
+
+   歷史紀錄類檔案（如各 `CHANGELOG.md`）的命中不改。README 的 repo 結構圖要整段重寫（樹狀行 grep 抓不全）。指知識庫內位置的 `knowledge/…` 不必改，在 `CLAUDE.md` 的編輯慣例加一行約定即可，寫法見本版 `seed/repo/CLAUDE.md`
+4. **更新自有的檢查腳本**：寫死舊路徑的腳本一併改。注意以 glob 列檔的檢查——舊路徑在新結構下列不到任何檔案時，迴圈不執行、結果顯示通過
+5. **驗證**：commit 後在工作目錄 update 一次，確認知識庫、skills 與 `CLAUDE.md` 區段都在
+
+**證據**：`test.js` 涵蓋新結構的 create／init／update 與舊扁平結構的 init／update；將 runner 的結構判斷分別改為「只認新結構」與「只認舊結構」時，測試各自失敗。以一個已演化的既存 ADE repo（16 支 skill，含一支 seed 沒有的自有 skill）實測：不遷移時新舊 runner 產出的工作目錄逐位元組相同；依上述第 2 步遷移後，新 runner 產出的知識庫與常駐區段與遷移前相同，skill 差異僅為新增的 `ade-scope`；遷移後仍用舊版 runner 則 update 失敗，此即第 1 步順序的依據。
 
 ## [1.5.0] - 2026-08-26
 
