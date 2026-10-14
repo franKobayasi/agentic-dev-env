@@ -16,8 +16,8 @@ if (fs.existsSync(dest)) {
   process.exit(1)
 }
 
-fs.cpSync(path.join(__dirname, '..', 'template'), dest, { recursive: true })
-// npm publish 會剝掉 dot 開頭的檔案/目錄，template 內以無點名稱存放，複製後改名
+fs.cpSync(path.join(__dirname, '..', 'seed'), dest, { recursive: true })
+// npm publish 會剝掉 dot 開頭的檔案/目錄，seed 內以無點名稱存放，複製後改名
 fs.renameSync(path.join(dest, 'gitignore'), path.join(dest, '.gitignore'))
 fs.renameSync(path.join(dest, 'dot-claude'), path.join(dest, '.claude'))
 // 這些 skill 在 ADE repo 內也要可觸發，symlink 進 .claude/skills/（單一真相在 skills/）

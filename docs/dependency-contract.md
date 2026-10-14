@@ -1,19 +1,19 @@
 # 依賴關係與相容性契約（framework ↔ ADE repos ↔ 消費端）
 
 本文件說明 `create-agentic-dev-env` 與它生成的每個 ADE repo、以及 ADE repo 的消費端
-工作目錄之間的依賴關係——**修改 runner 或 template 前必讀**，這裡定義了什麼樣的改動
+工作目錄之間的依賴關係——**修改 runner 或 seed 前必讀**，這裡定義了什麼樣的改動
 會讓已建立的 ADE repo 全部異常。
 
 ## 三方角色
 
 ```
 create-agentic-dev-env（本 repo，發佈到 npm）
-├── bin/create.js + template/   …… 腳手架：生成 ADE repo（一次性）
+├── bin/create.js + seed/       …… 腳手架：生成 ADE repo（一次性）
 └── lib/runner.js               …… 執行期：init / update 的全部邏輯
         ▲
         │ dependencies: "create-agentic-dev-env": "<精確版號>"（create 時蓋章；cli.js 一行委派 runner）
         │
-ADE repo（create 當下 template 的快照）
+ADE repo（create 當下 seed 的快照）
         ▲
         │ pnpm dlx "git+ssh://…/<ade-repo>.git" init | update
         │
@@ -24,7 +24,7 @@ ADE repo（create 當下 template 的快照）
 
 | 路徑 | 傳播方式 | 時效 |
 |---|---|---|
-| template → ADE repo | `create` 時複製 | **一次性快照**，之後永不自動更新 |
+| seed → ADE repo | `create` 時複製 | **一次性快照**，之後永不自動更新 |
 | runner → ADE repo | 消費端 `pnpm dlx` 時安裝 ADE repo **鎖定的精確版本** | **凍結**；升級 = ADE repo 顯式改版號 |
 
 設計意圖：**ADE repo 建立後即與上游迭代解耦**。create 把當下版本寫死進 ADE repo 的
@@ -32,7 +32,7 @@ dependencies（不帶 `^`），npm 舊版本永久可裝（publish 逾 72 小時
 上游怎麼發版都不影響既存 repo。要吃新 runner，就在 ADE repo 改那一行版號、走 git
 review——升級點只有一個、可 revert，消費端在下一次 `dlx … update` 跟上。
 
-仍要注意的相容性壓力：ADE repo 各自決定升級時機，新 runner 仍會遇上「**舊版 template
+仍要注意的相容性壓力：ADE repo 各自決定升級時機，新 runner 仍會遇上「**舊版 seed
 結構的 ADE repo × 舊版 runner 留下的工作目錄狀態**」——契約 A / B 的向後相容仍然必要，
 只是破壞的影響範圍從「全部既存 repo 即刻異常」縮小為「升級版號的那個 repo 發現問題、
 revert 即可」。
@@ -77,7 +77,7 @@ revert 即可」。
 1. **優先向後相容**：讀舊寫新、缺省容忍（參考 `workspaces` 欄位與 `prev.source` fallback 的作法）
 2. 做不到才走 breaking：照樣 **major bump** 標示語意，並附遷移說明——鎖版本讓既存 repo
    天然不受影響，版號的作用是讓升級者一眼看出「這次升級需要動結構」
-3. template 與 runner 同一 PR 內同步修改，`test.js` 是契約的可執行版本——改契約必改測試，
+3. seed 與 runner 同一 PR 內同步修改，`test.js` 是契約的可執行版本——改契約必改測試，
    並保留「舊結構仍可 update」的案例
 4. 發版：`npm version patch && git push --follow-tags`，再 `gh release create vX.Y.Z`
    （release 事件觸發 `.github/workflows/publish.yml` 跑測試並 publish）

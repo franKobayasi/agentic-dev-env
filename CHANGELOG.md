@@ -33,6 +33,12 @@
 
 **怎麼做**：`ade-create-prd` 結束前在對話中列出這類假設，不寫進 PRD；沒有就明確宣告無已知風險。
 
+### `template/` 更名為 `seed/`
+
+**為什麼**：這個目錄在 create 時複製一次就與 ADE repo 脫鉤，「種子」比「範本」更貼近這個語意；也避開與 `_template.md`、`templates/mr.md` 撞名。
+
+**怎麼做**：純搬移，內容不變。只影響本 repo 的 `bin/create.js` 與 `package.json` 的 `files`；下游依賴的是 `create-agentic-dev-env/runner`，不受影響。
+
 ## [1.5.0] - 2026-08-26
 
 `ade-dev` 規則校準。只動 template 的 `gates.md`、`auto-pilot.md`；runner 與契約不變，不新增關、不改編號、不改任何數字。

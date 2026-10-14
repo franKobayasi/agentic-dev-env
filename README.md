@@ -167,18 +167,18 @@ ADE repo 帶十七支 skill，逐支詳解在生成的 ADE repo README；這裡�
 ## 本 repo 結構
 
 ```
-bin/create.js        # 腳手架：由 template/ 生成 ADE repo（一次性快照）
+bin/create.js        # 腳手架：由 seed/ 生成 ADE repo（一次性快照）
 lib/runner.js        # 執行期：init / update 的全部邏輯（ADE repo 的 cli.js 一行委派）
-template/            # ADE repo 範本：knowledge/、skills/、dot-claude/、claude-md/、CONTEXT.md、README
+seed/                # ADE repo 的種子：knowledge/、skills/、dot-claude/、claude-md/、CONTEXT.md、README
 docs/
-├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 template 前必讀
+├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 seed 前必讀
 └── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用
 test.js              # 端到端自測：create → init → update，是契約的可執行版本
 ```
 
 ## 版本與相容性
 
-ADE repo 建立時鎖本套件的**精確版本**（create 蓋章），之後上游迭代不影響既存 repo；升級是各 ADE repo 顯式改版號的決定。template 的增修（新 skill、規則）只影響新建的 repo——既有 repo 想要，照 [CHANGELOG](./CHANGELOG.md) 把對應檔案搬進去即可。結構性 breaking change 一律 major bump 並附遷移說明。契約全文見 [`docs/dependency-contract.md`](docs/dependency-contract.md)。
+ADE repo 建立時鎖本套件的**精確版本**（create 蓋章），之後上游迭代不影響既存 repo；升級是各 ADE repo 顯式改版號的決定。seed 的增修（新 skill、規則）只影響新建的 repo——既有 repo 想要，照 [CHANGELOG](./CHANGELOG.md) 把對應檔案搬進去即可。結構性 breaking change 一律 major bump 並附遷移說明。契約全文見 [`docs/dependency-contract.md`](docs/dependency-contract.md)。
 
 ## 開發與發版
 

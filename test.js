@@ -62,7 +62,7 @@ try {
   for (const f of ['README', 'state', 'gates', 'review', 'auto-pilot', 'batch', 'CHANGELOG']) {
     assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow', f + '.md')), `ade-dev 規則檔應複製：${f}.md`)
   }
-  assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow/research')), 'research 不應隨 template 複製')
+  assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow/research')), 'research 不應隨 seed 複製')
   assert(!fs.existsSync(path.join(work, '.claude/ade/UPSTREAM-CANDIDATES.md')), 'ADE repo 根目錄檔案不應複製進工作目錄')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), 'skills 應複製')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
