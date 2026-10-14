@@ -3,6 +3,36 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [1.6.0] - 2026-10-14
+
+`ade-create-prd` 收緊 PRD 的結構與生命週期。只動 template 的 PRD 範本、PRD README、`ade-create-prd`、`ade-spec-audit`；runner 與契約不變。既存 ADE repo 的舊格式 PRD 不受影響——validator 只在建新 PRD 時跑。
+
+### 需求描述改為 GWT 決策表，Fallback 欄必填
+
+**為什麼**：使用者故事寫得出正常路徑，寫不出例外路徑；盲點拷問問到的邊界答案沒有固定落點，常散在敘述裡或直接遺失。
+
+**怎麼做**：「需求描述」只允許 `Given / When / Then / Fallback` 決策表，一列一個情境。盲點拷問中「邊界與錯誤」的答案寫成新列或該列的 Fallback。validator 檢查表頭、不允許非表格行、至少一列、每列 Fallback 非空（不適用要寫「不適用：<理由>」）。
+
+### 新增「已廢止」狀態
+
+**為什麼**：PRD 在實作前被取消或被另一份整併時沒有合法狀態可標，只能停在「草稿」或「已確認」，與進行中的需求混在一起；已確認的 PRD 還會在 spec 留下沒人要做的 `🚧` 承諾。
+
+**怎麼做**：`草稿`／`已確認` 可轉 `已廢止`，必填 `- 廢止原因:`；從已確認廢止時，同一個 PR 撤回它在 spec 帶入的 `🚧` 區塊。`ade-spec-audit` 把指向已廢止 PRD 的 `🚧` 列為漂移，接住漏撤的殘留。
+
+### validator 檢查檔名；修正 macOS 上區塊檢查失效
+
+**為什麼**：spec 的 `🚧` 標記靠 PRD 檔名指回來，檔名格式錯了連結就對不上。另外原本用 `awk '$0==s'` 比對中文標題，macOS 內建的 BSD awk 比較多位元組字串恆為真，每個 `##` 標題都被當成命中——「區塊沒內容」在 macOS 上從未報錯過。
+
+**怎麼做**：檔名須為 `YYYY-MM-DD-<kebab-case>.md`；標題改用 `grep -nxF` 定位，awk 只比對 ASCII 的 `^## `。
+
+**證據**：12 份合成 PRD 逐項驗證（合格、檔名錯、slug 非 kebab、缺 Fallback、少一欄、混散文、表頭無 Fallback、無情境列、已廢止有無原因、原封範本、空區塊），結果全數符合預期；修正前同一份空區塊檔在 macOS 上通過檢查。
+
+### 收尾輸出風險與未決清單
+
+**為什麼**：「開放問題」承接的是待 PO 拍板的事；agent 自己沒驗證過的假設（只憑服務總覽推定的相依、沒讀實作就寫的現況行為）沒有出口，PO 看不到。
+
+**怎麼做**：`ade-create-prd` 結束前在對話中列出這類假設，不寫進 PRD；沒有就明確宣告無已知風險。
+
 ## [1.5.0] - 2026-08-26
 
 `ade-dev` 規則校準。只動 template 的 `gates.md`、`auto-pilot.md`；runner 與契約不變，不新增關、不改編號、不改任何數字。

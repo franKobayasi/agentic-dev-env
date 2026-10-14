@@ -1,7 +1,14 @@
 # PRD
 
-一次開發需求一檔：`YYYY-MM-DD-<slug>.md`，依 [_template.md](./_template.md) 格式撰寫（用 `ade-create-prd` skill 建立）。
+一次開發需求一檔：`YYYY-MM-DD-<slug>.md`（slug 用 kebab-case），依 [_template.md](./_template.md) 格式撰寫（用 `ade-create-prd` skill 建立）。
 
-PRD 是**歷史文件**：狀態走到「已實作」後即封存，不再迭代。當前功能的真相在 `../specs/`。
+PRD 是**歷史文件**：狀態走到「已實作」或「已廢止」後即封存，不再迭代。當前功能的真相在 `../specs/`。
 
 生命週期：`草稿`（撰寫中）→ `已確認`（PO 定案，可跑 `ade-prd-to-spec`）→ `已實作`（開發完成，`ade-align-spec` 收尾時標記）。
+
+## 已廢止
+
+實作前（`草稿` 或 `已確認`）被取消、或被另一份 PRD 整併取代時，狀態改 `已廢止`。不刪檔、不改檔名——其他文件靠檔名引用它。
+
+- 在狀態欄下一行加 `- 廢止原因: <原因，或取代它的 PRD 連結>`
+- 從 `已確認` 廢止時，`ade-prd-to-spec` 已在 spec 帶入的內容要在**同一個 PR** 撤回：刪掉標此 PRD 檔名的 `🚧` 標記行；該區塊沒有其他 PRD 的標記時，內容一併還原成帶入前的樣子（動過哪些檔見本 PRD 的「Spec 異動摘要」）。有其他 PRD 標記的區塊只撤回本 PRD 帶入的部分
