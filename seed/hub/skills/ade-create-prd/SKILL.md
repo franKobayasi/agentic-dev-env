@@ -1,13 +1,15 @@
 ---
 name: ade-create-prd
 description: 依統一範本建立標準化 PRD，寫入 knowledge/prd/。想法還模糊就先用 Discovery 問成形，已想清楚就直接填。使用者說「建 PRD」「寫需求文件」「幫我寫一份 PRD」「把這個想法變成 PRD」「新的開發需求」「這個需求整理一下」「create PRD」時使用。bug fix／refactor／文字調整不用開 PRD。
+metadata:
+  ade-scope: both
 ---
 
 # 建立 PRD
 
 PRD 的定位、生命週期與檔名規則見 `knowledge/prd/README.md`，欄位結構以 `knowledge/prd/_template.md` 為準。本檔只寫「怎麼跑」。
 
-0. **判斷所在位置**：repo 根有 `knowledge/prd/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支，以下所有 `knowledge/...` 路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
+0. **判斷所在位置**：repo 根有 `hub/knowledge/prd/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支，以下所有 `knowledge/...` 路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
 
 ## 1. Discovery——問到想法成形
 

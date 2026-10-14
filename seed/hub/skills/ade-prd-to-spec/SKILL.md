@@ -1,6 +1,8 @@
 ---
 name: ade-prd-to-spec
 description: 將已確認的 PRD 融入 specs，標記尚未實作區塊，供 PO 確認 PRD 與 spec 對齊。使用者說「PRD 轉 spec」「更新規格」「把 PRD 落到 spec」時使用。
+metadata:
+  ade-scope: both
 ---
 
 # PRD → Spec
@@ -9,7 +11,7 @@ description: 將已確認的 PRD 融入 specs，標記尚未實作區塊，供 P
 
 ## 流程
 
-0. **判斷所在位置**：repo 根有 `knowledge/specs/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支，以下所有 `knowledge/...` 路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
+0. **判斷所在位置**：repo 根有 `hub/knowledge/specs/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支，以下所有 `knowledge/...` 路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
 
 1. 讀目標 PRD 與 `knowledge/specs/` 現況，找出受影響的 spec 檔（沒有對應檔就依 `specs/README.md` 慣例新建）
 2. 將 PRD 需求融入 spec：描述「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加標記行，**格式逐字照抄、只替換檔名**（align-spec 靠精確匹配移除，變體會漏抓）：

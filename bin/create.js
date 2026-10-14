@@ -16,13 +16,21 @@ if (fs.existsSync(dest)) {
   process.exit(1)
 }
 
-fs.cpSync(path.join(__dirname, '..', 'seed'), dest, { recursive: true })
-// npm publish 會剝掉 dot 開頭的檔案/目錄，seed 內以無點名稱存放，複製後改名
+// seed/repo/ 攤平成 ADE repo 本身，seed/hub/ 原樣成為 ADE repo 的 hub/
+const seed = path.join(__dirname, '..', 'seed')
+fs.cpSync(path.join(seed, 'repo'), dest, { recursive: true })
+fs.cpSync(path.join(seed, 'hub'), path.join(dest, 'hub'), { recursive: true })
+// npm publish 會剝掉 dot 開頭的檔案/目錄，seed 內以無點名稱存放，複製後歸位
 fs.renameSync(path.join(dest, 'gitignore'), path.join(dest, '.gitignore'))
-fs.renameSync(path.join(dest, 'dot-claude'), path.join(dest, '.claude'))
-// 這些 skill 在 ADE repo 內也要可觸發，symlink 進 .claude/skills/（單一真相在 skills/）
-for (const s of ['ade-add-service', 'ade-add-skill', 'ade-add-process', 'ade-create-prd', 'ade-prd-to-spec', 'ade-help', 'ade-list-service', 'ade-config']) {
-  fs.symlinkSync(path.join('..', '..', 'skills', s), path.join(dest, '.claude', 'skills', s), 'dir')
+fs.mkdirSync(path.join(dest, '.claude'))
+fs.renameSync(path.join(dest, 'skills'), path.join(dest, '.claude', 'skills'))
+// 兩邊都用的 skill 單一真相在 hub/skills/，frontmatter 宣告 ade-scope: both 者 symlink 進 .claude/skills/
+const skillsDir = path.join(dest, '.claude', 'skills')
+for (const s of fs.readdirSync(path.join(dest, 'hub', 'skills'))) {
+  const fm = (fs.readFileSync(path.join(dest, 'hub', 'skills', s, 'SKILL.md'), 'utf8').match(/^---\n([\s\S]*?)\n---/) || [])[1] || ''
+  if (/^\s+ade-scope:\s*both\s*$/m.test(fm)) {
+    fs.symlinkSync(path.join('..', '..', 'hub', 'skills', s), path.join(skillsDir, s), 'dir')
+  }
 }
 for (const rel of fs.readdirSync(dest, { recursive: true })) {
   const p = path.join(dest, rel)
@@ -47,6 +55,6 @@ Created ADE repo: ${name}/
 
 Next steps:
   1. Set repository.url in ${name}/package.json (git url; or an absolute path for a local-only ADE repo)
-  2. Start filling knowledge/ (service format: knowledge/services/_template.yaml)
+  2. Start filling hub/knowledge/ (service format: hub/knowledge/services/_template.yaml)
   3. After pushing, team members run: pnpm dlx "git+ssh://git@github.com/ORG/${name}.git" init
 `)

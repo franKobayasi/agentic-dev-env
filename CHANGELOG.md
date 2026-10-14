@@ -39,6 +39,20 @@
 
 **怎麼做**：純搬移，內容不變。只影響本 repo 的 `bin/create.js` 與 `package.json` 的 `files`；下游依賴的是 `create-agentic-dev-env/runner`，不受影響。
 
+### ADE repo 依去向分層：`hub/` 與其餘
+
+**為什麼**：ADE repo 根目錄混放「發給工作目錄的內容」（`knowledge/`、`skills/`、`claude-md/section.md`）與「repo 本身」（設定檔、文件、ADE repo 專用 skill），維護者無法從結構看出哪些內容會進入工作目錄；兩邊都用的 skill 另在 `bin/create.js` 與 `test.js` 各維護一份 symlink 清單；常駐區段的名稱也看不出用途。
+
+**怎麼做**：
+
+- `hub/` 收 init／update 注入工作目錄的全部內容：`hub/knowledge/`、`hub/skills/`、`hub/CLAUDE.section.md`（原 `claude-md/section.md`；不取名 `CLAUDE.md`，避免 Claude Code 在 ADE repo 內編輯 `hub/` 時自動載入工作目錄的指引）
+- 其餘都屬於 repo 本身，留在根目錄；ADE repo 專用的 skill 照舊是 `.claude/skills/` 下的實體目錄
+- 兩邊都用的 skill 留在 `hub/skills/`，frontmatter 以 `metadata.ade-scope: both` 宣告，create 據此在 `.claude/skills/` 建立 symlink，寫死的清單移除
+- seed 只剩 `hub/` 與 `repo/` 兩個子目錄：`hub/` 原樣成為 ADE repo 的 `hub/`，`repo/` 攤平成 ADE repo 根目錄（`repo/skills/` 成為 `.claude/skills/`，取代原本的 `dot-claude/`）
+- runner 相容舊的扁平結構：repo 根沒有 `hub/` 時改讀 `knowledge/`、`claude-md/section.md`、`skills/`，既存 ADE repo 升級 runner 時不需遷移
+
+**證據**：`test.js` 涵蓋新結構的 create／init／update 與舊扁平結構的 init／update；將 runner 的結構判斷分別改為「只認新結構」與「只認舊結構」時，測試各自失敗。
+
 ## [1.5.0] - 2026-08-26
 
 `ade-dev` 規則校準。只動 template 的 `gates.md`、`auto-pilot.md`；runner 與契約不變，不新增關、不改編號、不改任何數字。

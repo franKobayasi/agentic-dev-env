@@ -41,9 +41,11 @@ revert 即可」。
 
 （新增「必要」項目 = breaking change）
 
-- `knowledge/` — 必要；整份複製到工作目錄 `.claude/ade/knowledge/`
-- `claude-md/section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
-- `skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
+- `hub/knowledge/` — 必要；整份複製到工作目錄 `.claude/ade/knowledge/`
+- `hub/CLAUDE.section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
+- `hub/skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
+- 扁平結構 — repo 根沒有 `hub/` 時，runner 改讀 `knowledge/`、`claude-md/section.md`、`skills/*/`，規則同上。
+  1.6.0 之前 create 的 ADE repo 都是這個結構，升級 runner 時不需先遷移；`test.js` 保留此案例
 - `package.json` — `repository.url` 必填（0.2.8 起解析不到就 fail-fast，init 不落地、可重跑）；
   git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE repo 不放 forge，`pnpm dlx file:<path>` 安裝）；
   `ade.upstream` 供 `ade-feedback-upstream` skill 使用
@@ -59,7 +61,7 @@ revert 即可」。
   自行切換來源或本地／遠端模式）；消費者有三個：runner update、CLAUDE.md
   區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
   （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`；兩者都取不到（repo 尚無 commit）init 在寫檔前失敗。
-  update 先 clone 並驗證 `knowledge/`＋`claude-md/section.md` 存在才清 managed 區域——來源是空 repo 時既有安裝原封不動。注意歷史狀態：0.2.8 之前的 init 可能留下
+  update 先 clone 並驗證知識庫與常駐區段（依上面兩種結構之一）存在才清 managed 區域——來源是空 repo 時既有安裝原封不動。注意歷史狀態：0.2.8 之前的 init 可能留下
   `source: null`；加 `workspaces` 欄位之前的檔案沒有該欄位。讀取端必須容忍缺省。
 - `CLAUDE.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更
 - `.claude/ade/` — 整個目錄視為 managed，update 全刪重建

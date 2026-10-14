@@ -8,8 +8,8 @@
 
 ADE 把這兩件事抽出來共用：
 
-- **知識**（`knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`skills/`）— 十六支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
+- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -27,7 +27,7 @@ ADE 把這兩件事抽出來共用：
 
 1. 填 `package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
-3. 開始填 `knowledge/`：在本 repo 開 Claude Code 說「新增服務」（`ade-add-service`），或手填 `knowledge/services/_template.yaml` 格式並更新 `services/index.md`
+3. 開始填 `hub/knowledge/`：在本 repo 開 Claude Code 說「新增服務」（`ade-add-service`），或手填 `hub/knowledge/services/_template.yaml` 格式並更新 `services/index.md`
 
 ---
 
@@ -161,7 +161,7 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
 
 ### 2. 只收三類知識
 
-寫進 ADE 的東西要能通過這關（完整規則見 [`knowledge/README.md`](knowledge/README.md)，那份是 canonical）：
+寫進 ADE 的東西要能通過這關（完整規則見 [`hub/knowledge/README.md`](hub/knowledge/README.md)，那份是 canonical）：
 
 | 收 | 為什麼 |
 | --- | --- |
@@ -239,7 +239,7 @@ flowchart LR
 
 ### 注入工作目錄的 skills（init 後在工作目錄可用）
 
-「本 repo」欄標 ✅ 者在本 ADE repo 內也可用（`.claude/skills/` 有 symlink，單一真相在 `skills/`）。
+「本 repo」欄標 ✅ 者在本 ADE repo 內也可用（frontmatter 標 `ade-scope: both`，`.claude/skills/` 有 symlink，單一真相在 `hub/skills/`）。
 
 | Skill | 用途 | 本 repo |
 | --- | --- | --- |
@@ -257,8 +257,8 @@ flowchart LR
 | **`ade-commit`** | commit 訊息慣例解析，任何要在服務 repo commit 的場景使用。依序找專案自述（CLAUDE.md／AGENTS.md／CONTRIBUTING）→ commitlint 等設定檔 → 既有 git log 風格 → 都沒有才用 ADE 預設（`knowledge/process/git-commit.md`，Conventional Commits）。一個 commit 一件事。 | — |
 | **`ade-align-spec`** | 開發收尾的文件對齊（「開發完了更新 spec」）。對照實際實作逐一核對該 PRD 的 `🚧 尚未實作` 標記：做完且一致的移除、有出入的**以實作為準**改 spec 並記差異、沒做的保留；驗收項全完成時 PRD 轉「已實作」。最後開 PR 把差異清單交 PO 判斷。只動屬於這次 PRD 的標記。 | — |
 | **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
-| **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：消費端工作目錄用 → `skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `skills/` 加 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
-| **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `claude-md/section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
+| **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：消費端工作目錄用 → `hub/skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `hub/skills/` 並在 frontmatter 標 `ade-scope: both`，再於 `.claude/skills/` 建 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
+| **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `hub/CLAUDE.section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
 
 ### 在本 ADE repo 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
 
@@ -271,21 +271,22 @@ flowchart LR
 ## 本 repo 結構
 
 ```
-knowledge/
-├── README.md    # 知識分層規則（canonical）
-├── services/    # 服務 registry：index.md 總覽導航 + 一服務一檔 yaml
-├── process/     # 跨服務流程與團隊級慣例（含 ade-dev-workflow/ 開發流程規則）
-├── specs/       # 產品規格，持續迭代的真相來源；GLOSSARY.md 是產品域詞彙
-└── prd/         # 一次開發一檔的需求文件，歷史文件不迭代
-skills/          # init 時注入工作目錄的 .claude/skills/（十六支，見上方 Skills）
-.claude/skills/  # 在本 repo 內工作用的 skills（ade-feedback-upstream ＋ 八支的 symlink）
-claude-md/       # CLAUDE.md managed 區段的內容
-CONTEXT.md       # ADE 開發流程的統一詞彙表
-UPSTREAM-CANDIDATES.md  # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
+hub/                     # init／update 注入每個工作目錄的內容
+├── CLAUDE.section.md    # 工作目錄 CLAUDE.md 的 managed 區段
+├── knowledge/           # 工作目錄的 .claude/ade/knowledge/
+│   ├── README.md        # 知識分層規則（canonical）
+│   ├── services/        # 服務 registry：index.md 總覽導航 + 一服務一檔 yaml
+│   ├── process/         # 跨服務流程與團隊級慣例（含 ade-dev-workflow/ 開發流程規則）
+│   ├── specs/           # 產品規格，持續迭代的真相來源；GLOSSARY.md 是產品域詞彙
+│   └── prd/             # 一次開發一檔的需求文件，歷史文件不迭代
+└── skills/              # 工作目錄的 .claude/skills/（十六支，見上方 Skills）
+.claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
+CONTEXT.md               # ADE 開發流程的統一詞彙表
+UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
 ```
 
 ## 維護原則
 
 - **副本唯讀**：工作目錄裡的 ADE 內容 update 會覆蓋，所有修改都回到本 repo 走 PR——agent 端由 `ade-contribute` 引導完成
-- **分層有界**：本 repo 只收跨服務知識、取得服務的最小資訊、產品規格三類，完整規則以 [`knowledge/README.md`](knowledge/README.md) 為準
+- **分層有界**：本 repo 只收跨服務知識、取得服務的最小資訊、產品規格三類，完整規則以 [`hub/knowledge/README.md`](hub/knowledge/README.md) 為準
 - **機制回饋、內容不外流**：使用中演化出的**機制**改良（skill 寫法、模板、流程）用 `ade-feedback-upstream` 回饋給 [create-agentic-dev-env](https://github.com/franKobayasi/agentic-dev-env) 上游；`knowledge/` 下的公司知識絕不外流

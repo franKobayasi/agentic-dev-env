@@ -15,15 +15,18 @@ try {
   execSync(`node "${path.join(__dirname, 'bin', 'create.js')}" my-ade`, { cwd: tmp, stdio: 'pipe' })
   const ade = path.join(tmp, 'my-ade')
   assert(fs.existsSync(path.join(ade, '.gitignore')), 'gitignore 應改名為 .gitignore')
-  assert(fs.existsSync(path.join(ade, '.claude/skills/ade-feedback-upstream/SKILL.md')), 'dot-claude 應改名為 .claude')
-  assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
-  for (const s of ['ade-add-service', 'ade-add-skill', 'ade-add-process', 'ade-create-prd', 'ade-prd-to-spec', 'ade-help', 'ade-list-service', 'ade-config']) {
-    assert(
-      fs.lstatSync(path.join(ade, '.claude/skills', s)).isSymbolicLink() &&
-        fs.existsSync(path.join(ade, '.claude/skills', s, 'SKILL.md')),
-      `${s} 應 symlink 進 ADE repo 的 .claude/skills 且可解析`
-    )
+  for (const d of ['repo', 'skills', 'dot-claude', 'claude-md']) {
+    assert(!fs.existsSync(path.join(ade, d)), `seed 的分層與舊結構目錄不應出現在 ADE repo 根：${d}`)
   }
+  // .claude/skills/：實體目錄是 ADE repo 專用（來自 seed/repo/skills/），symlink 是 hub/skills/ 中宣告 ade-scope: both 的
+  const repoSkills = path.join(ade, '.claude/skills')
+  for (const d of fs.readdirSync(repoSkills)) {
+    assert(fs.existsSync(path.join(repoSkills, d, 'SKILL.md')), `.claude/skills/${d} 應可解析`)
+  }
+  assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
+  assert(fs.lstatSync(path.join(repoSkills, 'ade-feedback-upstream')).isDirectory(), 'ADE repo 專用 skill 應為 .claude/skills 下的實體目錄')
+  assert.strictEqual(fs.readlinkSync(path.join(repoSkills, 'ade-create-prd')), path.join('..', '..', 'hub', 'skills', 'ade-create-prd'), 'ade-scope: both 的 skill 應 symlink 進 .claude/skills')
+  assert(!fs.existsSync(path.join(repoSkills, 'ade-dev')), '未宣告 both 的 hub skill 不應出現在 ADE repo 的 .claude/skills')
   assert('upstream' in JSON.parse(fs.readFileSync(path.join(ade, 'package.json'), 'utf8')).ade, 'ade.upstream 應寫入')
   assert.strictEqual(
     JSON.parse(fs.readFileSync(path.join(ade, 'package.json'), 'utf8')).dependencies['create-agentic-dev-env'],
@@ -142,8 +145,9 @@ try {
   const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
   cfg.source = ade
   fs.writeFileSync(cfgPath, JSON.stringify(cfg))
-  fs.appendFileSync(path.join(ade, 'knowledge/services/index.md'), '\n上游新知識\n')
-  fs.rmSync(path.join(ade, 'skills/ade-add-service'), { recursive: true })
+  fs.appendFileSync(path.join(ade, 'hub/knowledge/services/index.md'), '\n上游新知識\n')
+  fs.rmSync(path.join(ade, 'hub/skills/ade-add-service'), { recursive: true })
+  fs.rmSync(path.join(ade, '.claude/skills/ade-add-service'))
   git('add -A', ade)
   git('commit -m update', ade)
   fs.writeFileSync(path.join(work, '.claude/ade/knowledge/services/index.md'), '本地竄改')
@@ -187,11 +191,33 @@ try {
   fs.writeFileSync(cfgPath, JSON.stringify(cfgE))
 
   // 非 ade- 前綴的 skill 應被拒裝（在破壞前驗證）
-  fs.mkdirSync(path.join(ade, 'skills/rogue'))
-  fs.writeFileSync(path.join(ade, 'skills/rogue/SKILL.md'), 'x')
+  fs.mkdirSync(path.join(ade, 'hub/skills/rogue'))
+  fs.writeFileSync(path.join(ade, 'hub/skills/rogue/SKILL.md'), 'x')
   git('add -A', ade)
   git('commit -m rogue', ade)
   assert.throws(() => runner.update(work), /ade-/, '非 ade- 前綴 skill 應報錯')
+
+  // 舊的扁平結構（knowledge/、skills/、claude-md/section.md）仍可 init／update：既存 ADE repo 升級 runner 時不需先遷移
+  const flat = path.join(tmp, 'flat-ade')
+  fs.cpSync(ade, flat, { recursive: true, verbatimSymlinks: true })
+  fs.rmSync(path.join(flat, 'hub/skills/rogue'), { recursive: true })
+  fs.renameSync(path.join(flat, 'hub/knowledge'), path.join(flat, 'knowledge'))
+  fs.renameSync(path.join(flat, 'hub/skills'), path.join(flat, 'skills'))
+  fs.mkdirSync(path.join(flat, 'claude-md'))
+  fs.renameSync(path.join(flat, 'hub/CLAUDE.section.md'), path.join(flat, 'claude-md/section.md'))
+  fs.rmSync(path.join(flat, 'hub'), { recursive: true })
+  const flatPkg = JSON.parse(fs.readFileSync(path.join(flat, 'package.json'), 'utf8'))
+  flatPkg.repository = { type: 'git', url: flat }
+  fs.writeFileSync(path.join(flat, 'package.json'), JSON.stringify(flatPkg, null, 2))
+  git('add -A', flat)
+  git('commit -m flat', flat)
+  const work7 = path.join(tmp, 'work7')
+  fs.mkdirSync(work7)
+  runner.init(work7, flat)
+  runner.update(work7)
+  assert(fs.existsSync(path.join(work7, '.claude/ade/knowledge/services/index.md')), '舊結構的知識庫應複製')
+  assert(fs.existsSync(path.join(work7, '.claude/skills/ade-contribute/SKILL.md')), '舊結構的 skills 應注入')
+  assert(fs.readFileSync(path.join(work7, 'CLAUDE.md'), 'utf8').includes('<!-- ADE:BEGIN -->'), '舊結構的區段應注入')
 
   console.log('全部通過')
 } finally {

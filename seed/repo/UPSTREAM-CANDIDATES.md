@@ -4,7 +4,7 @@
 
 ADE repo 放 GitHub／GitLab 時用標題前綴 `[upstream-candidate]` 的 issue 記，本檔留空；**本地模式**（沒有 issue tracker）改 append 在此，一則一節。內文只描述機制，不含服務名稱與程式碼；回饋完成的節刪掉。
 
-本檔不會被複製進工作目錄（runner 只複製 `knowledge/`、`skills/`、`claude-md/`）。
+本檔不會被複製進工作目錄（runner 只複製 `hub/` 底下的內容）。
 
 <!--
 ## YYYY-MM-DD <一句話標題>

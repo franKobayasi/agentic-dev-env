@@ -8,8 +8,8 @@
 
 本工具生成並維護一種 repo（**ADE repo**）來把這兩件事抽出來共用：
 
-- **知識**（`knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`skills/`）— 十六支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
+- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -37,7 +37,7 @@ pnpm dlx create-agentic-dev-env my-ade
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
-3. 在 `my-ade/` 開 Claude Code，說「新增服務」（`ade-add-service`）開始填 `knowledge/`
+3. 在 `my-ade/` 開 Claude Code，說「新增服務」（`ade-add-service`）開始填 `hub/knowledge/`
 
 ### 步驟 2：團隊成員安裝
 
@@ -126,7 +126,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ### 5. 判準制開發流程
 
-`ade-dev` 六關：規格 → 規劃（Phase 地圖）→ 逐 Phase 實作（輪到才展開、TDD 紅→綠、交前兩軸審查）→ 測試審視 → 沉澱 → Ship。每關只定義產出與過關判準，不規定做法；狀態全落檔、可換 session 接手。Spec Ready G1–G8 全 PASS 的任務可 **auto-pilot** 無人把關跑完，`ade-dev-auto` 批次串接。規則住在 ADE repo 的 `knowledge/process/ade-dev-workflow/`，證據盤點在本 repo [`docs/research/ade-dev/`](docs/research/ade-dev/)（不隨 ADE repo 複製）。
+`ade-dev` 六關：規格 → 規劃（Phase 地圖）→ 逐 Phase 實作（輪到才展開、TDD 紅→綠、交前兩軸審查）→ 測試審視 → 沉澱 → Ship。每關只定義產出與過關判準，不規定做法；狀態全落檔、可換 session 接手。Spec Ready G1–G8 全 PASS 的任務可 **auto-pilot** 無人把關跑完，`ade-dev-auto` 批次串接。規則住在 ADE repo 的 `hub/knowledge/process/ade-dev-workflow/`，證據盤點在本 repo [`docs/research/ade-dev/`](docs/research/ade-dev/)（不隨 ADE repo 複製）。
 
 ### 6. Context 是最稀缺的資源
 
@@ -169,7 +169,7 @@ ADE repo 帶十七支 skill，逐支詳解在生成的 ADE repo README；這裡�
 ```
 bin/create.js        # 腳手架：由 seed/ 生成 ADE repo（一次性快照）
 lib/runner.js        # 執行期：init / update 的全部邏輯（ADE repo 的 cli.js 一行委派）
-seed/                # ADE repo 的種子：knowledge/、skills/、dot-claude/、claude-md/、CONTEXT.md、README
+seed/                # ADE repo 的種子：hub/（注入工作目錄的內容）、repo/（ADE repo 本身，create 時攤平到根目錄）
 docs/
 ├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
 ├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 seed 前必讀

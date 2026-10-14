@@ -1,11 +1,13 @@
 ---
 name: ade-config
 description: 查看或修改工作目錄的 ADE 安裝設定（.ade.json）——本地或遠端模式、來源 ADE repo 的 git url 或本地路徑、workspaces 作業區位置；在 ADE repo 內則是 package.json 的 repository.url。使用者說「ADE 設定」「ade config」「看目前設定」「改成本地模式」「來源改成…」「workspaces 指到…」「作業區換位置」時使用。
+metadata:
+  ade-scope: both
 ---
 
 # ADE 設定
 
-1. **判斷所在位置**：當前目錄有 `.ade.json` → 工作目錄（hub）；repo 根有 `knowledge/` 與帶 `ade` 欄位的 `package.json` → ADE repo 內；都不是 → 請使用者到 hub 根或 ADE repo 根再執行
+1. **判斷所在位置**：當前目錄有 `.ade.json` → 工作目錄（hub）；repo 根有 `hub/knowledge/` 與帶 `ade` 欄位的 `package.json` → ADE repo 內；都不是 → 請使用者到 hub 根或 ADE repo 根再執行
 
 ## 工作目錄：`.ade.json`
 
