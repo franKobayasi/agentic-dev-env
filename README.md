@@ -95,17 +95,13 @@ pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，�
      └──────────  PR（ade-contribute 引導） ◀───────────  發現過期 / 要新增
 ```
 
-副本永遠會被 update 整個覆蓋，所以直接改 `.claude/ade/` 等於白改。這是保證而非限制：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。
+副本永遠會被 update 整個覆蓋，所以直接改 `.claude/ade/` 等於白改。這是保證而非限制：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。原則見[知識的流向](docs/core-concepts/knowledge-flow.md)。
 
-### 2. 只收三類知識
+### 2. 收錄範圍由團隊決定
 
-| 收 | 為什麼 |
-| --- | --- |
-| **跨服務知識** | 單一服務無法自述的：服務定位、服務間依賴、跨服務流程與團隊慣例 |
-| **取得服務的最小資訊** | agent 進 repo 之前必需的：repo URL、預設分支、技術棧概要 |
-| **產品規格與需求** | `specs/` 與 `prd/`，spec 的讀者是 PO |
+能以文字描述的知識都可以收錄，例如流程、服務規格、概念與事件；收錄哪些內容、分成哪些分類，由各團隊的 ADE repo 決定。唯一的限制是同一份知識只有一個權威來源：服務內部的規範、架構與安裝啟動測試步驟已經記錄在服務自己的 `CLAUDE.md`、`AGENTS.md` 或程式碼中，ADE 不複製一份會過期的副本。
 
-**不收**服務內部的規範、架構、安裝啟動測試步驟——那些歸服務自己的 `CLAUDE.md` / `AGENTS.md` / code，ADE 不複製一份會過期的副本。
+seed 預設提供三個分類：跨服務知識與團隊慣例（`process/`）、取得服務的最小資訊（`services/`）、產品規格與需求（`specs/`、`prd/`），團隊可以自行調整。原則見[收錄範圍](docs/core-concepts/knowledge/scope.md)。
 
 ### 3. 產品規格 ≠ 實作規格
 
@@ -130,11 +126,15 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ### 6. Context 是最稀缺的資源
 
-貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（`services/index.md` 一兩行定位，細節在各自 yaml）。
+貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（`services/index.md` 一兩行定位，細節在各自 yaml）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
 
 ### 7. 機制回饋上游，內容不外流
 
-各 ADE repo 在使用中演化出的 skill 寫法、模板、流程改良，由 `ade-feedback-upstream` 以 issue 回本專案，所有 ADE repo 受益；`knowledge/` 下的公司知識絕不外流。
+各 ADE repo 在使用中演化出的 skill 寫法、模板、流程改良，由 `ade-feedback-upstream` 以 issue 回本專案，所有 ADE repo 受益；`knowledge/` 下的公司知識絕不外流。原則見[知識的流向](docs/core-concepts/knowledge-flow.md)。
+
+### 8. 知識記錄事實，skill 封裝執行
+
+知識記錄事實本身，例如規則、判準與流程的定義；skill 引用知識，並依知識撰寫腳本，讓 agent 能夠執行。skill 不重述知識，知識庫也不放可執行的腳本，同一件事只記一次，人與 agent 讀到的是同一份事實。判斷一項內容該寫在哪裡，問的是：人不透過 agent 做這件事時，是否需要知道它。原則見[知識與 skill](docs/core-concepts/knowledge-and-skill.md)。
 
 ---
 
@@ -171,6 +171,8 @@ bin/create.js        # 腳手架：由 seed/ 生成 ADE repo（一次性快照�
 lib/runner.js        # 執行期：init / update 的全部邏輯（ADE repo 的 cli.js 一行委派）
 seed/                # ADE repo 的種子：hub/（注入工作目錄的內容）、repo/（ADE repo 本身，create 時攤平到根目錄）
 docs/
+├── core-concepts/           # 核心概念：生成器最上層的原則，seed、runner 與 skill 的設計依據
+├── adr/                     # 決策紀錄：考慮過的方案與選擇的理由
 ├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
 ├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 seed 前必讀
 └── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用

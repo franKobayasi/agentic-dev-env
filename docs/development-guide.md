@@ -4,6 +4,7 @@
 
 下列主題由其他文件說明：
 
+- 生成器的原則，以及 seed、runner 與 skill 的設計依據，見[核心概念](./core-concepts/README.md)；修改 seed 前應先對照。
 - 任務與開發進度以 beads（`bd`，issue tracker 工具）管理，安裝、同步與注意事項見 [issue tracker 的使用方式](./task-tracking.md)。
 - runner、ADE repo 與工作目錄之間的契約，以及 breaking change 的判準，見[依賴關係與相容性契約](./dependency-contract.md)。
 - 發版指令見 [README 的開發與發版說明](../README.md#開發與發版)。

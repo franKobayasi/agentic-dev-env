@@ -4,8 +4,9 @@
 
 - **撰寫或修改任何文件前，必須先讀[寫作指南](docs/writing-style.md)**：本 repo 的主要產出是文件，內容與寫法一律依該指南
 - ADE repos 鎖**精確版本**依賴本套件（create 時蓋章）——建立後即與上游迭代解耦，升級是各 ADE repo 顯式改版號的決定。runner 的修改仍必須向後相容舊的 ADE repo 目錄結構與舊工作目錄狀態（升級者會帶著舊結構進來）；結構性 breaking change 一律 major bump 並附遷移說明
-- 各 ADE repo 會透過 `ade-feedback-upstream` skill 以 issue 回饋機制改良；review 時檢查不含任何公司知識內容
-- **Context 管理是本專案與所有衍生 ADE 的底層設計原則**（canonical 定義在 `seed/hub/knowledge/README.md`）：任何文件或流程設計先問「這段內容值得在什麼時機、以什麼成本進入 context？」——常駐層最小化、細節分檔按需載入、導航短細節深
+- 各 ADE repo 會透過 `ade-feedback-upstream` skill 以 issue 回饋機制改良；review 時檢查不含任何公司知識內容，原則見[知識的流向](docs/core-concepts/knowledge-flow.md)的機制迴圈
+- **Context 管理是本專案與所有衍生 ADE 的根原則**：任何文件或流程設計先問「這段內容值得在什麼時機、以什麼成本進入 context？」，原則見 [Context 管理](docs/core-concepts/context-management.md)
+- **設計或修改 seed、runner 與 skill 前，應先對照[核心概念](docs/core-concepts/README.md)**：生成器最上層的原則，包括知識的流向、知識與 skill 的分工、知識的形式原則
 
 ## Layout 契約（runner ↔ ADE repo ↔ 消費端）
 
