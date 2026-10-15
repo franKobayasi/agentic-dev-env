@@ -9,6 +9,7 @@ agent 以下列步驟搜尋知識：
 1. 讀知識庫根目錄的 `CONTEXT.md`，以 `_Avoid_` 把要找的用詞換成正式名詞。
 2. 以正式名詞 grep 知識的內文。
 3. 以正式名詞的英文名 glob 檔名。
+4. 命中多份檔案時，先讀各檔案 frontmatter 的 `description`，選出需要的檔案再讀全文。
 
 搜尋找不到目標時，改從知識庫根目錄的 `README.md` 沿入口檔逐層往下找。根目錄 `README.md` 說明查找方式的規定見[入口檔與索引檔](./navigation.md)。
 
