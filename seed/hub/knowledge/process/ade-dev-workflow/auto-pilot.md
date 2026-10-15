@@ -1,3 +1,8 @@
+---
+id: 724d2e
+description: Spec Ready 判定 G1–G8、auto-pilot 的執行規則與任務層煞車。
+---
+
 # Spec Ready 判定與 auto-pilot 模式
 
 兩種執行模式：**手動（預設）**——規格關、規劃關由人簽核；**auto-pilot**——Spec Ready 全 PASS 的任務可無人中途把關跑完六關：簽核點降為回報點（frontmatter 寫 `status: approved`＋`approved_by: spec-ready`），所有關的判準與兩軸審查照跑。單顆任務由人明說啟用；批次串接由 `ade-dev-auto` 負責。
@@ -6,7 +11,7 @@
 
 **任務啟動前評估**（資訊在 `spec.md` 就齊備）：
 
-- **G1** 需求來自已確認的 PRD，且產品規格有對應的 🚧 區塊
+- **G1** 需求來自已確認的 PRD，且產品規格有指向該 PRD 的尚未實作標記
 - **G2** `spec.md` 每個行為描述可判定（可直接寫成測試）並指名 ≥ 1 個具體檔案路徑或介面名；無未決 open question（後者只是前提不是充分條件——它可以靠不提問刷出來）
 - **G3** 有可執行的驗證指令，動工前基準是綠的，單次執行 < 10 分鐘
 - **G4** 驗收測試在 `spec.md` 已定名（展開時只是細化成 Given/When/Then，不是現場發明）

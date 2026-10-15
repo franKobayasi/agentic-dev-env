@@ -4,7 +4,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const runner = require('../lib/runner')
-const { tmpdir, createAde, workdir } = require('./helpers')
+const { git, tmpdir, createAde, workdir } = require('./helpers')
 
 const fm = (id, desc = '說明') => `---\nid: ${id}\ndescription: ${desc}\n---\n`
 
@@ -33,6 +33,10 @@ function repo(overrides = {}) {
 }
 
 const errorsOf = (overrides) => runner.check(repo(overrides))
+
+test('seed 的知識庫通過檢查', () => {
+  assert.deepStrictEqual(runner.check(createAde(tmpdir())), [])
+})
 
 test('合法的知識庫通過檢查', () => {
   // 根目錄檔案、INDEX.md、_ 開頭的範本不需要 id；附件不需要 id；程式碼內的 kb: 不檢查
@@ -86,7 +90,9 @@ test('update 遇到檢查未通過只警告，照常更新', () => {
   const ade = createAde(tmp)
   const work = workdir(tmp, 'work')
   runner.init(work, ade)
-  assert(runner.check(ade).length > 0, '前提：seed 的知識庫尚未補上 id，檢查不會通過')
+  fs.writeFileSync(path.join(ade, 'hub/knowledge/process/no-id.md'), '# 缺 id 的知識\n')
+  git('add -A', ade)
+  git('commit -m no-id', ade)
   const warn = console.warn
   const warnings = []
   console.warn = (m) => warnings.push(m)

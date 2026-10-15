@@ -1,10 +1,15 @@
+---
+id: 8707ca
+description: 開發流程六關各自的產出與過關判準。
+---
+
 # 六關：產出與過關判準
 
 ## 第 1 關：規格
 
 產出：`spec.md`（實作規格）。過關判準：
 
-- 有 PRD 時以 PRD＋產品規格為據（工作目錄的 `.claude/ade/knowledge/` 副本僅供導航，過期以 ADE repo 為準）；無 PRD 時以需求描述為據
+- 有 PRD 時以 PRD＋產品規格為據（ADE 中的 `.claude/ade/knowledge/` 副本僅供導覽，過期時以 ADE repo 為準）；無 PRD 時以需求描述為據
 - 已比對相關既有規格與服務：關聯、衝突、系統層級不一致已列出，並解決或經人裁決
 - 每個行為描述具體到可直接寫成測試
 - 所有不明確處已向人提問並得到答案
@@ -39,7 +44,7 @@
 - 每條 AC 有自動化測試，且該測試在實作完成前**失敗過**（紅→綠，順序本身就是證據）
 - 既有代碼的順手優化僅限本 Phase 觸及的檔案；更大的重構記進 `notes.md`，不做
 - 交付前**兩軸審查**：派兩個乾淨 context 的 subagent 平行檢查、分開報告，不合併排名——(a) 規格符合度：對照 `spec.md`＋`phase-N.md`，找缺漏、越界、做錯；(b) 代碼品質：對照本 repo 的慣例與文件化標準。**派工規則**（手動與 auto 同用，依據 [research-orchestrator-subagent.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-orchestrator-subagent.md)）：
-  - 派工規則與審查者契約見 [review.md](./review.md)
+  - 派工規則與審查者契約見 [兩軸審查的契約](kb:process/5d2867)
 - 合併後主幹隨時可部署（merge-safe；實際部署節奏與本流程無關）
 
 ## 第 4 關：測試審視

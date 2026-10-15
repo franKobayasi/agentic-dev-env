@@ -7,13 +7,6 @@ const { execFileSync } = require('child_process')
 const runner = require('../lib/runner')
 const { tmpdir, createAde, workdir } = require('./helpers')
 
-test('build-knowledge 的知識與 skill 通過 check', () => {
-  const ade = createAde(tmpdir())
-  // ponytail: 其餘 seed 尚未改寫（ade-jeb.21），只看與 build-knowledge 相關的錯誤；改寫完成後改成整份通過
-  const errors = runner.check(ade).filter((e) => /build-knowledge|kb:process\/7caa6d|CLAUDE/.test(e))
-  assert.deepStrictEqual(errors, [])
-})
-
 test('ade-build-knowledge 兩邊可用：ADE repo 內有 symlink，init 注入 ADE', () => {
   const tmp = tmpdir()
   const ade = createAde(tmp)

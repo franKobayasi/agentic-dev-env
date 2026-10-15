@@ -1,6 +1,9 @@
-# 流程知識
+---
+id: 2f0360
+description: 團隊的工作方式，包括開發流程、慣例，以及流程落地到常駐區段、skill 與知識的規則。
+---
 
-團隊怎麼工作：開發流程、分支與 PR 慣例、測試策略、PRD 怎麼寫、release 怎麼跑。
+# 流程
 
 ## 流程的落地層（放置決策規則）
 
@@ -17,16 +20,19 @@
 - **禁止孤兒文件**：本目錄的每份文件必須被某支 skill 或 `hub/CLAUDE.section.md` 常駐行引用——沒有指標指到的文件永遠不會在對的時機進入 context，是死知識
 - **執行入口**：每個「有觸發時機、有完成狀態」的流程都要有 skill 作為執行入口；貫穿性約束（如 commit 風格）例外——常駐一行 + 本目錄細節檔即可
 - **大流程拆階段**：步驟多或跨角色的流程，拆成多支**自足**的階段 skill（各自寫明前置條件與產出），另設一支薄的總覽 skill——只放階段地圖與「如何判斷目前進度」，是導航不是執行
-- **狀態外部化**：階段交接的狀態必須落在檔案（如 PRD 狀態欄、spec 的 🚧 標記）；任何階段 skill 開場先讀檔判斷進度，不依賴上一階段的 context 記憶——下一階段可能是新 session、甚至不同的人觸發
+- **狀態外部化**：階段交接的狀態必須落在檔案（如 PRD 的 `status`、產品規格的尚未實作標記）；任何階段 skill 開場先讀檔判斷進度，不依賴上一階段的 context 記憶——下一階段可能是新 session、甚至不同的人觸發
 - **Subagent 隔離**：執行痕跡重的階段（大量讀檔、跑指令、探索）交給 subagent 執行、只回傳結論，避免污染主 context
 
 ## 檔案慣例
 
-- 一個主題一個 md 檔，kebab-case 檔名（例：`git-commit.md`、`branching.md`、`release.md`）
 - 框架預載的預設檔會在檔頭標示；與團隊實況不符時直接修改，勿讓錯誤的預設值留在庫裡
+- 檔名與其他建檔規則見[建立知識的規則](kb:process/7caa6d)
 
-## 現有主題
+## 導覽
 
-- [git-commit.md](./git-commit.md) — commit 訊息採 Conventional Commits
+各主題分開記錄，依需要閱讀：
+
+- [commit 訊息慣例](kb:process/beb6dc)：在服務 repo commit 時閱讀
+- [開發流程的規則](kb:process/5ee9e6)：執行 `ade-dev` 或 `ade-dev-auto` 時閱讀；各規則的證據盤點在上游框架的 `docs/research/ade-dev/`
+- [撰寫 PRD](kb:process/3680c7)：撰寫或審閱 PRD 時閱讀
 - [建立知識的規則](kb:process/7caa6d)：在知識庫建立或修改知識時閱讀
-- [ade-dev-workflow/](./ade-dev-workflow/README.md) — `ade-dev`／`ade-dev-auto` 的唯一事實來源：狀態、六關、審查契約、auto-pilot、批次、CHANGELOG；各規則的證據盤點在上游框架的 `docs/research/ade-dev/`

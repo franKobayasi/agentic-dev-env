@@ -1,12 +1,11 @@
+---
+id: 8ac32d
+description: 開發任務的檔案、狀態規則、接手判讀與執行模式判讀。
+---
+
 # 狀態與檔案
 
-每一關只定義「產出＋過關判準」。判準是可檢查的狀態，不是動作；**如何達成由 agent 自行決定**。狀態全部活在檔案裡，任何 session 讀檔即可接手（每個 Phase 交付後建議 `/clear` 換新 session 接續，控管 context）。
-
-## 詞彙
-
-- **關**＝流程階段邊界；**Phase**＝可獨立交付的開發單位，輪到才展開；**Task**＝Phase 展開後的 checklist 項，無獨立契約
-- **產品規格**＝ADE `knowledge/specs/` 的長期資產，只有人能拍板；**實作規格**＝只描述本次開發範圍，簽核後凍結
-- **煞車**＝任務層的執行期停止條件（本 skill 定義）；**熔斷**＝批次層的停止條件（`ade-dev-auto` 定義），兩詞不混用
+每一關只定義「產出＋過關判準」。判準是可檢查的狀態，不是動作；**如何達成由 agent 自行決定**。狀態全部活在檔案裡，任何 session 讀檔即可接手（每個 Phase 交付後建議 `/clear` 換新 session 接續，控管 context）。名詞的定義見知識庫根目錄的 `CONTEXT.md`。
 
 ## 檔案
 
@@ -21,7 +20,7 @@
 狀態規則（單一真相，每個事實只記一處，不另設 status.json／progress.md——第二份真相必漂移，依據見 [research-devflow-state.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-devflow-state.md)、[research-auto-state.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-auto-state.md)）：
 
 - `spec.md`、`plan.md` 檔頭 YAML frontmatter `status: draft`，**過關時**改為 `status: approved`（逐字一致，工具靠精確匹配）
-- `spec.md` 建檔時寫 `ade_commit: <工作目錄 .ade.json 的 commit>`——任務跑在哪個版本的流程下；中途 `ade-update` 換版在 `notes.md` 記一則 `[修訂]`。這是日後回顧「某次流程優化是否有效」的分組依據
+- `spec.md` 建檔時寫 `ade_commit: <ADE 中 .ade.json 的 commit>`——任務跑在哪個版本的流程下；中途 `ade-update` 換版在 `notes.md` 記一則 `[修訂]`。這是日後回顧「某次流程優化是否有效」的分組依據
 - 同一次寫入 `approved_by`：人簽核寫 `human`，auto-pilot 由 Spec Ready 替代簽核寫 `spec-ready`。**此欄位一經寫入不得修改**——它記的是當時誰簽的，不是現在的模式；缺席視同 `human`。人事後補審 auto 簽的文件，在 `notes.md` append 一則，不回頭改本欄位
 - Phase 進度只記在 `plan.md` 的 checkbox（`- [ ]`／`- [x]`，小寫 x）；`phase-N.md` 不重複記自己的完成狀態
 - `plan.md` 底部固定三個收尾項：`- [ ] 測試審視`、`- [ ] 沉澱`、`- [ ] Ship`，對應第 4、5、6 關過關時勾掉

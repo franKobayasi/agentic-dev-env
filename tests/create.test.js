@@ -31,4 +31,5 @@ test('create 產出的 ADE repo 結構', () => {
   assert(fs.existsSync(path.join(ade, 'hub/knowledge/CONTEXT.md')), '詞彙表應位於知識庫根目錄')
   assert(!fs.existsSync(path.join(ade, 'CONTEXT.md')), 'ADE repo 根目錄不應另有詞彙表')
   assert(fs.existsSync(path.join(ade, 'UPSTREAM-CANDIDATES.md')), 'UPSTREAM-CANDIDATES.md 應存在')
+  assert(fs.existsSync(path.join(ade, 'docs/ade-dev-workflow-changelog.md')), '開發流程的規則異動紀錄應留在 ADE repo')
 })

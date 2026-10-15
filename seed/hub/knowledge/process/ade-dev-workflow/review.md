@@ -1,3 +1,8 @@
+---
+id: 5d2867
+description: 兩軸審查的派工規則與審查者契約，手動與 auto-pilot 模式共用。
+---
+
 # 兩軸審查：派工規則與審查者契約
 
 適用手動與 auto 模式；審查者 prompt 只含本檔的契約段。依據 [research-orchestrator-subagent.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-orchestrator-subagent.md)。

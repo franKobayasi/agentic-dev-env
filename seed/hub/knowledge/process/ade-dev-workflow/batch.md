@@ -1,6 +1,11 @@
+---
+id: d1e46f
+description: ade-dev-auto 批次串接的流程、批次層判準 B1–B4 與熔斷。
+---
+
 # 批次串接：ade-dev-auto
 
-本檔**不定義任何任務內的判準、執行規則、煞車或狀態判讀規則**——Spec Ready 判定、auto-pilot 執行、任務層煞車見 [auto-pilot.md](./auto-pilot.md)，接手判讀見 [state.md](./state.md)。這裡只管批次：選取、就緒把關、依序執行、批次層熔斷。
+本檔**不定義任何任務內的判準、執行規則、煞車或狀態判讀規則**——Spec Ready 判定、auto-pilot 執行、任務層煞車見 [Spec Ready 與 auto-pilot 的規則](kb:process/724d2e)，接手判讀見 [開發任務的狀態與檔案](kb:process/8ac32d)。這裡只管批次：選取、就緒把關、依序執行、批次層熔斷。
 
 ## 流程
 
