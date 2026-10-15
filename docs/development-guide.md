@@ -4,7 +4,7 @@
 
 下列主題由其他文件說明：
 
-- 任務與開發進度以 beads（`bd`，issue tracker 工具）管理，安裝、同步與注意事項見 [issue tracker 的使用方式](./agents/issue-tracker.md)。
+- 任務與開發進度以 beads（`bd`，issue tracker 工具）管理，安裝、同步與注意事項見 [issue tracker 的使用方式](./task-tracking.md)。
 - runner、ADE repo 與工作目錄之間的契約，以及 breaking change 的判準，見[依賴關係與相容性契約](./dependency-contract.md)。
 - 發版指令見 [README 的開發與發版說明](../README.md#開發與發版)。
 

@@ -17,7 +17,7 @@
 
 ### Issue tracker
 
-Issues and epics are tracked with beads (`bd`). See `docs/agents/issue-tracker.md`.
+Issues and epics are tracked with beads (`bd`). See `docs/task-tracking.md`.
 
 ### Domain docs
 
