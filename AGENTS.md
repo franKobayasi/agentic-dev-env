@@ -16,7 +16,7 @@
 
 ### Issue tracker
 
-Issues live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+Issues and epics are tracked with beads (`bd`). See `docs/agents/issue-tracker.md`.
 
 ### Domain docs
 

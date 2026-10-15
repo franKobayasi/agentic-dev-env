@@ -1,30 +1,54 @@
-# Issue tracker: Local Markdown
+# Issue tracker: beads (bd)
 
-Issues and specs for this repo live as markdown files in `.scratch/`.
+Issues, epics and their dependencies for this repo are tracked with [beads](https://beads.gascity.com/) (`bd`), issue prefix `ade`. Issue data lives in a local Dolt database under `.beads/` and syncs only through the git remote's `refs/dolt/data` ref. Nothing bd creates is committed: `.gitignore` excludes `.beads*`, and `bd bootstrap` finds `refs/dolt/data` on `origin` by itself.
 
-## Conventions
+## Setup on a new machine
 
-- One feature per directory: `.scratch/<feature-slug>/`
-- The spec is `.scratch/<feature-slug>/spec.md`
-- Implementation issues are one file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` — never a single combined tickets file
-- Triage state is recorded as a `Status:` line near the top of each issue file
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
+```sh
+brew install beads                      # also installs dolt
+bd config set metrics.disabled true     # usage metrics are sent to an external endpoint by default
+git clone git@github.com:franKobayasi/agentic-dev-env.git
+cd agentic-dev-env
+bd bootstrap                            # clones the issue database from refs/dolt/data
+bd list
+```
+
+Do not run `bd init` in an existing clone: it creates a new, empty database instead of restoring the shared one.
+
+## Sync
+
+Issue changes do not travel with `git push`.
+
+- `bd dolt pull` before starting work
+- `bd dolt push` after changing issues, and before switching machines
+- Pushing needs the same write access to `origin` as `git push`
+
+**Note**: `origin` is a public repo, so issue titles, descriptions and comments are public. Do not record company names, internal service names or any other company knowledge.
+
+## Cautions
+
+- `bd init` creates a git commit by itself. After running a `bd` command for the first time, check `git log` for commits it made
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+`bd create "<title>" -d "<description>"`; attach to an epic with `--parent <epic-id>`.
 
 ## When a skill says "fetch the relevant ticket"
 
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
+`bd show <id>`. The user will normally pass the issue ID directly.
+
+## Status and comments
+
+- Status: `bd update <id> --status <open|in_progress|closed>`, or `bd close <id> --reason "<reason>"`
+- Comments: `bd comments add <id> "<text>"`
 
 ## Wayfinding operations
 
-Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
+Used by `/wayfinder`.
 
-- **Map**: `.scratch/<effort>/map.md` — the Notes / Decisions-so-far / Fog body.
-- **Child ticket**: `.scratch/<effort>/issues/NN-<slug>.md`, numbered from `01`, with the question in the body. A `Type:` line records the ticket type (`research`/`prototype`/`grilling`/`task`); a `Status:` line records `claimed`/`resolved`.
-- **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `resolved`.
-- **Frontier**: scan `.scratch/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
-- **Claim**: set `Status: claimed` and save before any work.
-- **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
+- **Map**: an epic, `bd create "<effort>" -t epic`. Its description holds Notes / Decisions-so-far / Fog
+- **Child ticket**: `bd create "<question>" --parent <epic-id> -l <research|prototype|grilling|task>`; the label records the ticket type
+- **Blocking**: `bd dep add <blocked-id> <blocker-id>`
+- **Frontier**: `bd ready --parent <epic-id>` lists open, unblocked children
+- **Claim**: `bd update <id> --claim` before any work
+- **Resolve**: record the answer with `bd comments add <id> "<answer>"`, then `bd close <id> --reason "<gist>"`, then append a pointer to the map with `bd update <epic-id> --append-notes "<id>: <gist>"`
