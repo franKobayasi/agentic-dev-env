@@ -1,87 +1,104 @@
 # 開發指引
 
-修改本 repo 的入口，目前涵蓋 `seed/`。runner 與 ADE repo、工作目錄之間的契約與 breaking change 判準見 [dependency-contract.md](./dependency-contract.md)；發版指令見 [README〈開發與發版〉](../README.md#開發與發版)。
+本文件是修改本 repo 的入口，目前涵蓋 `seed/`，內容包括 seed 的定位、seed 各部分的去向、`create` 處理 seed 的步驟，以及修改 seed 後必須同步與驗證的項目。閱讀前需要知道三個名詞：ADE（Agentic Dev Environment）repo 是團隊以 `create` 建立的知識庫 repo；工作目錄是團隊成員開發時使用的目錄，由 ADE repo 注入知識與 skill；runner 是本套件中執行 init 與 update 的程式。
+
+下列主題由其他文件說明：
+
+- 任務與開發進度以 beads（`bd`，issue tracker 工具）管理，安裝、同步與注意事項見 [issue tracker 的使用方式](./agents/issue-tracker.md)。
+- runner、ADE repo 與工作目錄之間的契約，以及 breaking change 的判準，見[依賴關係與相容性契約](./dependency-contract.md)。
+- 發版指令見 [README 的開發與發版說明](../README.md#開發與發版)。
 
 ## seed 的定位
 
-`seed/` 是 ADE repo 的初始內容。`create` 複製一次後，ADE repo 即自行演化，之後對 seed 的修改不會回到既存的 ADE repo；既存 repo 需要時，依 [CHANGELOG](../CHANGELOG.md) 手動搬入對應檔案。
+`seed/` 是 ADE repo 的初始內容。`create` 只複製一次，之後 ADE repo 自行演化，對 seed 的修改不會傳到既存的 ADE repo。既存的 ADE repo 需要新內容時，依 [`CHANGELOG.md`](../CHANGELOG.md) 手動搬入對應檔案。
 
-由此衍生四條撰寫約束：
+這個定位衍生出四條撰寫約束：
 
-- **以 ADE repo 的視角撰寫**：seed 內的路徑以 create 產出的 ADE repo 根為準，不出現 `seed/` 或本 repo 的相對路徑。因此 `seed/repo/` 內指向 `hub/` 的相對連結，在 seed 內看是斷的、在 ADE repo 內才成立。提及本 repo 時稱「上游 create-agentic-dev-env」；引用本 repo 的檔案（如 `docs/research/`）使用 GitHub URL
-- **知識庫內的位置寫 `knowledge/…`**：代表知識庫根，ADE repo 內是 `hub/knowledge/`，工作目錄內是 `.claude/ade/knowledge/`（這條約定寫在 `seed/repo/CLAUDE.md`）。講 repo 結構本身時（判斷所在位置、建檔位置、symlink）寫從 repo 根起算的完整路徑
-- **不含任何公司知識**：`hub/knowledge/` 只放結構、範本與通用流程，實際內容由各團隊在自己的 ADE repo 填寫
-- **改動只影響新建的 repo**：因此可以調整 seed 的結構，但 runner 讀取的部分受契約 A 約束，見下表
+- **以 ADE repo 的視角撰寫。** seed 內的路徑必須以 create 產出的 ADE repo 根目錄為準，不得出現 `seed/` 或本 repo 的相對路徑。因此 `seed/repo/` 內指向 `hub/` 的相對連結，在 seed 內是斷的，在 ADE repo 內才成立。提及本 repo 時應稱為「上游 create-agentic-dev-env」；引用本 repo 的檔案（例如 `docs/research/`）時必須使用 GitHub URL。
+- **知識庫內的位置寫成 `knowledge/…`。** `knowledge/…` 代表知識庫根目錄，在 ADE repo 內是 `hub/knowledge/`，在工作目錄內是 `.claude/ade/knowledge/`，這條約定寫在 `seed/repo/CLAUDE.md`。描述 repo 結構本身時，例如判斷所在位置、指定建檔位置或建立 symlink，應寫從 repo 根目錄起算的完整路徑。
+- **不含任何公司知識。** `hub/knowledge/` 不得放入公司知識，只放結構、範本與通用流程，實際內容由各團隊在自己的 ADE repo 填寫。
+- **改動只影響新建的 repo。** 因此可以調整 seed 的結構，但 runner 讀取的部分受契約 A（runner 依賴的 ADE repo 結構）約束，見下一節的表格。
 
 ## seed 的分層
 
-seed 只有兩個子目錄，各自是 ADE repo 的一部分原料：
+seed 只有兩個子目錄，分別是 ADE repo 兩個部分的原料：
 
 | seed 內 | 在 ADE repo 成為 | 用途 |
 |---|---|---|
-| `hub/` | `hub/`（原樣） | init／update 注入工作目錄的內容 |
+| `hub/` | `hub/`（原樣） | init 與 update 注入工作目錄的內容 |
 | `repo/` | repo 根目錄（攤平） | ADE repo 本身：設定檔、根目錄文件、ADE repo 內可用的 skill |
 
-在 ADE repo 內因此只有一條規則：`hub/` 是要發給工作目錄的，其餘都屬於 repo 本身。
+因此在 ADE repo 內只有一條規則：`hub/` 的內容會發送到工作目錄，其餘內容都屬於 repo 本身。
 
-`hub/` 的內容與去向：
+下表列出 `hub/` 各部分在消費端工作目錄中的去向：
 
 | `hub/` 內 | 消費端工作目錄內 | runner 是否讀取 |
 |---|---|---|
 | `knowledge/` | `.claude/ade/knowledge/`，update 時整份刪除後重建 | 是（契約 A，必要） |
-| `skills/ade-*/` | `.claude/skills/ade-*/`，update 時依前綴刪除後重建 | 是（契約 A，目錄名必須 `ade-` 前綴） |
-| `CLAUDE.section.md` | 注入 `CLAUDE.md` 的 `<!-- ADE:BEGIN -->`／`<!-- ADE:END -->` 區段 | 是（契約 A，必要） |
+| `skills/ade-*/` | `.claude/skills/ade-*/`，update 時依前綴刪除後重建 | 是（契約 A，目錄名稱必須以 `ade-` 開頭） |
+| `CLAUDE.section.md` | 注入 `CLAUDE.md` 的 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 區段 | 是（契約 A，必要） |
 
-常駐區段不命名為 `CLAUDE.md`：Claude Code 讀取子目錄檔案時會自動載入該目錄的 `CLAUDE.md`，維護者在 ADE repo 內編輯 `hub/` 時會誤載工作目錄的指引。
+**注意**：常駐區段不得命名為 `CLAUDE.md`。Claude Code 讀取子目錄的檔案時，會自動載入該目錄的 `CLAUDE.md`；維護者在 ADE repo 內編輯 `hub/` 時，會因此誤載入給工作目錄使用的指引。
 
-`repo/` 的內容與去向：
+下表列出 `repo/` 各部分在 ADE repo 中的去向：
 
 | `repo/` 內 | 在 ADE repo 成為 | 說明 |
 |---|---|---|
 | `skills/` | `.claude/skills/` | ADE repo 專用的 skill，以實體目錄存放 |
 | `gitignore` | `.gitignore` | |
-| `package.json`、`cli.js` | 同名 | runner 讀 `package.json` 的 `repository.url`；`cli.js` 只委派 runner，不得攜帶邏輯 |
-| `CLAUDE.md`、`README.md`、`CONTEXT.md`、`UPSTREAM-CANDIDATES.md` | 同名 | 前兩者須在 repo 根才會被 Claude Code 與程式碼平台讀到 |
+| `package.json`、`cli.js` | 同名 | runner 讀取 `package.json` 的 `repository.url`；`cli.js` 只委派給 runner，不得包含邏輯 |
+| `CLAUDE.md`、`README.md`、`CONTEXT.md`、`UPSTREAM-CANDIDATES.md` | 同名 | 前兩者必須位於 repo 根目錄，Claude Code 與程式碼託管平台才會讀取 |
 
-skill 的使用對象由位置與 frontmatter 決定：
+skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種使用對象的放置方式：
 
 | 使用對象 | seed 內放置位置 | ADE repo 的 `.claude/skills/` |
 |---|---|---|
 | 只在工作目錄 | `hub/skills/` | 不出現 |
-| 兩邊都用 | `hub/skills/`，frontmatter 的 `metadata` 加 `ade-scope: both` | create 建立 symlink 指向 `hub/skills/` |
+| 兩邊都用 | `hub/skills/`，並在 frontmatter 的 `metadata` 加上 `ade-scope: both` | create 建立指向 `hub/skills/` 的 symlink |
 | 只在 ADE repo | `repo/skills/` | 實體目錄 |
 
-## create 對 seed 的處理
+## create 如何處理 seed
 
-依 `bin/create.js` 的執行順序：
+[`bin/create.js`](../bin/create.js) 依下列順序處理 seed：
 
-1. `seed/repo/` 攤平複製為 `<name>/`，`seed/hub/` 複製為 `<name>/hub/`
-2. `gitignore` 改名為 `.gitignore`，`skills/` 移到 `.claude/skills/`。npm publish 會剝除點開頭的檔案與目錄，所以 seed 內一律以無點名稱存放
-3. 為 `hub/skills/` 中宣告 `ade-scope: both` 的 skill，在 `.claude/skills/` 建立 symlink
-4. 掃描所有文字檔，將 `__ADE_NAME__` 替換為 repo 名稱
-5. 在 `package.json` 寫入 `ade.upstream`（本 repo 的 `repository.url`），並將 `create-agentic-dev-env` 依賴鎖為當下的精確版本
-6. `git init`
+1. 將 `seed/repo/` 攤平複製為 `<name>/`，並將 `seed/hub/` 複製為 `<name>/hub/`。
+2. 將 `gitignore` 改名為 `.gitignore`，並將 `skills/` 移到 `.claude/skills/`。npm publish 會移除以點開頭的檔案與目錄，因此 seed 內一律以不含點的名稱存放。
+3. 為 `hub/skills/` 中宣告 `ade-scope: both` 的 skill，在 `.claude/skills/` 建立 symlink。
+4. 掃描所有文字檔，將 `__ADE_NAME__` 替換為 repo 名稱。
+5. 在 `package.json` 寫入 `ade.upstream`（本 repo 的 `repository.url`），並將 `create-agentic-dev-env` 依賴鎖定為當下的精確版本。
+6. 執行 `git init`。
 
-`package.json` 的 `repository.url` 保留 `FILL_ME` 佔位，由團隊填寫；runner 讀到 `FILL_ME` 時拒絕 init。
+完成後，`<name>/` 即是一個 ADE repo。`package.json` 的 `repository.url` 保留 `FILL_ME` 佔位，由團隊填寫；runner 讀到 `FILL_ME` 時會拒絕執行 init。
 
-## 修改 seed 時要同步的地方
+## 修改 seed 時要同步的項目
+
+修改 seed 時，必須依改動類型一併修改下表右欄的項目：
 
 | 改動 | 一併修改 |
 |---|---|
-| 新增、刪除或改名 skill | `seed/repo/README.md` 的 skill 說明；本 repo `README.md` 的 Skills 表與支數 |
-| 改變 skill 的使用對象 | 依上方「skill 的使用對象」表調整位置或 `ade-scope`；create 會據此建立 symlink，不需另改清單 |
-| skill 附帶腳本或範本檔 | 視需要加入 `test.js` 的附檔斷言，確認附檔隨目錄注入 |
-| 新增點開頭的檔案或目錄 | 在 `seed/repo/` 內以無點名稱存放，並在 `bin/create.js` 補上歸位 |
-| 內容需要 ADE repo 名稱 | 寫 `__ADE_NAME__`，create 會替換 |
-| 搬動或改名 `hub/knowledge/`、`hub/CLAUDE.section.md`，或改變 skill 目錄規則 | 屬契約 A，先讀 [dependency-contract.md](./dependency-contract.md) |
-| 搬動 `seed/` 內的檔案 | 指向它的相對連結（在 create 產出的 ADE repo 內檢查，見下節） |
-| 任何 seed 改動 | `CHANGELOG.md` 條目 |
+| 新增、刪除或改名 skill | `seed/repo/README.md` 的 skill 說明，以及本 repo [`README.md`](../README.md) 的 Skills 表與支數 |
+| 改變 skill 的使用對象 | 依上一節的 skill 使用對象表調整位置或 `ade-scope`；create 會據此建立 symlink，不需另外修改清單 |
+| skill 附帶腳本或範本檔 | 可視需要在 [`test.js`](../test.js) 加入附檔斷言，確認附檔隨目錄注入 |
+| 新增以點開頭的檔案或目錄 | 在 `seed/repo/` 內以不含點的名稱存放，並在 [`bin/create.js`](../bin/create.js) 補上歸位步驟 |
+| 內容需要 ADE repo 名稱 | 寫成 `__ADE_NAME__`，create 會替換 |
+| 搬動或改名 `hub/knowledge/`、`hub/CLAUDE.section.md`，或改變 skill 目錄規則 | 屬於契約 A，必須先閱讀[依賴關係與相容性契約](./dependency-contract.md) |
+| 搬動 `seed/` 內的檔案 | 指向該檔案的相對連結，在 create 產出的 ADE repo 內檢查（見下一節） |
+| 任何 seed 改動 | [`CHANGELOG.md`](../CHANGELOG.md) 的條目 |
 
 ## 驗證
 
+修改完成後，執行下列兩個指令：
+
 ```sh
-node test.js              # create → init → update 端到端，含 seed 各部分的去向
-npm pack --dry-run        # 確認 seed/ 有被打包（package.json 的 files）
+node test.js
+npm pack --dry-run
 ```
 
-相對連結要在 create 產出的 ADE repo 內檢查，而不是在 seed 內：`node bin/create.js <暫存目錄>/demo` 後，對產出的 repo 檢查 markdown 相對連結。
+`node test.js` 以端到端方式依序執行 create、init 與 update，並檢查 seed 各部分的去向。`npm pack --dry-run` 列出套件會打包的檔案，用來確認 `seed/` 已包含在內；打包範圍由 `package.json` 的 `files` 控制。`node test.js` 全部通過，且打包清單包含 `seed/` 時，代表 seed 的去向與打包範圍正確。
+
+相對連結必須在 create 產出的 ADE repo 內檢查，而不是在 seed 內，因為 seed 內的連結以 ADE repo 為準。檢查步驟如下：
+
+1. 切換到暫存目錄，執行 `node <本 repo 路徑>/bin/create.js demo`，產生名為 `demo` 的 ADE repo。`create.js` 只接受 repo 名稱，不接受路徑，因此必須先切換目錄。
+2. 在 `demo/` 內檢查 Markdown 檔案的相對連結。
+
+所有連結都能解析時，代表 seed 內的路徑寫法正確。
