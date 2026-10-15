@@ -1,6 +1,6 @@
 # 詞彙表
 
-本檔定義本 repo 文件共用的名詞，一個名詞一條，只寫名詞所指的對象，不寫行為說明。文件中直接使用這些名詞，不另行定義。ADE repo 開發流程的詞彙另在 `seed/repo/CONTEXT.md`，隨 seed 複製到每個 ADE repo，與本檔互不重疊。
+本檔定義本 repo 文件共用的名詞，一個名詞一條，只寫名詞所指的對象，不寫行為說明。文件中直接使用這些名詞，不另行定義。ADE 的詞彙另在 `seed/hub/knowledge/CONTEXT.md`，隨 seed 複製到每個 ADE repo 並注入 ADE，與本檔互不重疊。
 
 ## 名詞
 

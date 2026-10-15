@@ -22,7 +22,7 @@ test('舊的扁平結構可 init 與 update', () => {
   const work = workdir(tmp, 'work')
   runner.init(work, flat)
   runner.update(work)
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')), '舊結構的知識庫應複製')
+  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/README.md')), '舊結構的知識庫應複製')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), '舊結構的 skills 應注入')
   assert(fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8').includes('<!-- ADE:BEGIN -->'), '舊結構的區段應注入')
 })

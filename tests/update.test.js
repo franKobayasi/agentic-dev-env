@@ -17,16 +17,16 @@ function installed() {
 
 test('update 覆蓋 managed 內容、同步刪除上游移除的 skill', () => {
   const { ade, work, cfgPath } = installed()
-  fs.appendFileSync(path.join(ade, 'hub/knowledge/services/index.md'), '\n上游新知識\n')
+  fs.appendFileSync(path.join(ade, 'hub/knowledge/services/README.md'), '\n上游新知識\n')
   fs.rmSync(path.join(ade, 'hub/skills/ade-add-service'), { recursive: true })
   fs.rmSync(path.join(ade, '.claude/skills/ade-add-service'))
   git('add -A', ade)
   git('commit -m update', ade)
-  fs.writeFileSync(path.join(work, '.claude/ade/knowledge/services/index.md'), '本地竄改')
+  fs.writeFileSync(path.join(work, '.claude/ade/knowledge/services/README.md'), '本地竄改')
 
   runner.update(work)
 
-  const idx = fs.readFileSync(path.join(work, '.claude/ade/knowledge/services/index.md'), 'utf8')
+  const idx = fs.readFileSync(path.join(work, '.claude/ade/knowledge/services/README.md'), 'utf8')
   assert(idx.includes('上游新知識') && !idx.includes('本地竄改'), 'update 應覆蓋 managed 內容')
   assert(!fs.existsSync(path.join(work, '.claude/skills/ade-add-service')), '上游刪除的 skill 應同步移除')
   const md = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')
@@ -56,7 +56,7 @@ test('來源是沒有 commit 的 repo 時，update 失敗且不破壞既有安�
   fs.writeFileSync(cfgPath, JSON.stringify({ ...readJson(cfgPath), source: emptyAde }))
   assert.throws(() => runner.update(work), /commit/, '來源為空 repo 的 update 應報錯')
   assert(
-    fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')) &&
+    fs.existsSync(path.join(work, '.claude/ade/knowledge/services/README.md')) &&
       fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')),
     'update 失敗時既有 managed 內容必須原封不動'
   )

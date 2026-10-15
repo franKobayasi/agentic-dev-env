@@ -28,6 +28,7 @@ test('create 產出的 ADE repo 結構', () => {
     '依賴應鎖精確版本（create 時蓋章，建立後與上游解耦）'
   )
   assert(!fs.readFileSync(path.join(ade, 'package.json'), 'utf8').includes('__ADE_NAME__'), '名稱應被替換')
-  assert(fs.existsSync(path.join(ade, 'CONTEXT.md')), 'CONTEXT.md 詞彙表應存在')
+  assert(fs.existsSync(path.join(ade, 'hub/knowledge/CONTEXT.md')), '詞彙表應位於知識庫根目錄')
+  assert(!fs.existsSync(path.join(ade, 'CONTEXT.md')), 'ADE repo 根目錄不應另有詞彙表')
   assert(fs.existsSync(path.join(ade, 'UPSTREAM-CANDIDATES.md')), 'UPSTREAM-CANDIDATES.md 應存在')
 })

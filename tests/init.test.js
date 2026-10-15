@@ -24,10 +24,10 @@ test('init 注入知識庫、skill 與常駐區段', () => {
   const work = workdir(tmp, 'work')
   runner.init(work, ade)
 
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')), '知識庫應複製')
+  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/README.md')), '知識庫應複製')
   assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.yaml')), '服務 YAML 模板應存在')
   assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.md')), '舊 md 服務模板應移除')
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), '分層規則 canonical 應複製')
+  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), '知識庫的入口檔應複製')
   for (const f of ['README', 'state', 'gates', 'review', 'auto-pilot', 'batch', 'CHANGELOG']) {
     assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow', f + '.md')), `ade-dev 規則檔應複製：${f}.md`)
   }
