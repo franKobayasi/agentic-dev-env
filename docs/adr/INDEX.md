@@ -6,6 +6,8 @@
 
 | ADR | 標題 | 狀態 | 結論 | 影響與備註 |
 |---|---|---|---|---|
+| [0007](./0007-knowledge-records-facts-skill-wraps-execution.md) | 知識記錄事實，skill 引用知識並封裝執行 | `accepted` | 知識記錄事實，skill 引用知識並封裝執行；人不透過 agent 做事時也需要知道的內容放在知識，只有 agent 執行時需要的放在 skill | skill 不得重述知識；腳本屬於 skill，知識庫不放可執行的腳本；取代 docs/research/ade-dev/research-skill-boundaries.md §1.2 的結論 |
+| [0006](./0006-markdown-as-primary-file-of-knowledge-unit.md) | 知識單位以 Markdown 檔為主要檔案，其他格式作為附件 | `accepted` | 知識庫不限制檔案格式，每個知識單位以一份 `.md` 為主要檔案，id 只寫在 `.md` 的 frontmatter；其他格式是資料夾單位內的附件 | 附件不帶 id，無法以符號個別引用，需要時以名稱指稱；取代 ADR-0004 中 YAML 檔在頂層寫 id 的規則 |
 | [0005](./0005-unify-ade-vocabulary-in-knowledge-root-context.md) | ADE 的詞彙表統一為知識庫根目錄的 CONTEXT.md | `accepted` | ADE 的詞彙表統一為一份，位於知識庫根目錄的 `CONTEXT.md` | seed 的 `repo/CONTEXT.md` 與 `specs/GLOSSARY.md` 收整進 `hub/knowledge/CONTEXT.md`；根目錄的檔案不屬於任何分類，不以符號引用 |
 | [0004](./0004-address-knowledge-by-immutable-random-id.md) | 知識庫內的引用以不可變的隨機 id 定址 | `accepted` | 知識檔案建立時在 frontmatter 產生不可變的隨機 id，引用寫成 `[文字敘述](kb:<分類>/<id>)` | id 為 6 位小寫十六進位、在分類內唯一；檔名不再參與定址；不可更改只靠引用檢查保證；取代 ADR-0003 |
 | [0003](./0003-reference-knowledge-by-symbol-address.md) | 知識庫內的引用改用符號位址 | superseded by ADR-0004 | 知識庫內的引用改用符號位址 `kb:<分類>/<名稱>`，在分類內遞迴解析，不用路徑連結 | 名稱在分類內唯一；改名時同一次變更改完所有引用，封存的文件也機械改寫；尚未實作標記改用符號並移除 emoji |
