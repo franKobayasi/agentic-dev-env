@@ -5,15 +5,11 @@ description: 在服務 repo 產生符合慣例的 git commit——專案自有�
 
 # ade-commit：commit 訊息慣例解析
 
-決定「這個 repo 的 commit 該長什麼樣」，依序找，找到第一個就停：
+決定這個服務 repo 的 commit 該長什麼樣：依序尋找，找到第一個就停。
 
-1. **專案自述**：服務 repo 的 `CLAUDE.md`／`AGENTS.md`（有哪個讀哪個）、`CONTRIBUTING.md` 中的 commit 規範
-2. **專案設定檔**：commitlint 設定（`.commitlintrc*`、`commitlint.config.*`）、`.gitmessage` 範本
-3. **既有風格**：`git log --oneline -20` 的實際風格明顯一致時，沿用它
-4. **ADE 預設**：`.claude/ade/knowledge/process/git-commit.md`（Conventional Commits）
+1. **專案自述**：服務 repo 的 `CLAUDE.md`、`AGENTS.md` 或 `CONTRIBUTING.md` 中的 commit 規範。
+2. **專案設定檔**：commitlint 設定（`.commitlintrc*`、`commitlint.config.*`）或 `.gitmessage` 範本。
+3. **既有風格**：`git log --oneline -20` 的風格明顯一致時，沿用它。
+4. **ADE 預設**：[commit 訊息慣例](kb:process/beb6dc)。
 
-規則：
-
-- 一個 commit 一件事；混雜多個意圖時拆開
-- body 說「為什麼改」，不重述 diff
-- 同一 repo 同一 session 內解析一次即可，不必每次 commit 重找
+不論採用哪一個來源的格式，都遵守[commit 訊息慣例](kb:process/beb6dc)的通用原則。同一個 repo 在同一個 session 內只需解析一次，不必每次 commit 重新尋找。
