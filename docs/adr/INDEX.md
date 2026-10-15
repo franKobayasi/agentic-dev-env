@@ -6,6 +6,7 @@
 
 | ADR | 標題 | 狀態 | 結論 | 影響與備註 |
 |---|---|---|---|---|
+| [0012](./0012-index-config-in-folder-readme-frontmatter.md) | INDEX.md 的設定寫在資料夾入口檔的 frontmatter | `accepted` | 資料夾是否產生 INDEX.md、列哪些欄位，寫在該資料夾 README.md 的 frontmatter `index`；欄位只從 .md 的 frontmatter 取值；INDEX.md commit 進 ADE，由 check 比對 | index 是框架定義的第三個欄位，選用，沿用 ADR-0009 的判準；seed 不預設任何 INDEX；並行的 PR 可能在 INDEX.md 衝突，重新產生即可解決 |
 | [0011](./0011-rename-ade-repo-to-ade-and-ade-to-forge.md) | ADE 指 repository，注入知識的目錄改稱 Forge | `accepted` | ADE 改指團隊維護知識體系的 repository（原 ADE repo，也可寫作 ADE repo）；注入知識的目錄改稱 Forge（原 ADE）；框架的正式名詞改為 Generator（原 生成器） | 契約識別字（.claude/ade/、.ade.json、ADE:BEGIN／END 標記、ade- 前綴）不變；ADR-0001 至 0010 與已推送的 issue 使用舊名詞，以本 ADR 的對照表解讀 |
 | [0010](./0010-knowledge-system-state-in-injected-readmes.md) | 知識體系的現況寫在注入的入口檔，理由寫在 ADE repo 的 ADR | `accepted` | 知識體系的現況寫在注入 ADE 的入口檔：根目錄 README.md 導覽分類，各分類 README.md 寫定位、文件類型與範本；體系設計的理由寫在 ADE repo 的 ADR，不注入 | 不另寫一份知識體系設計文件；修正 ade-jeb.1「repo/ 層決定分類與定位」的說法，repo/ 層只保留理由 |
 | [0009](./0009-frontmatter-fields-defined-by-reading-mechanism.md) | frontmatter 的欄位由讀取它的機制決定 | `accepted` | 框架只定義生成器的機制必須讀取的 frontmatter 欄位，即必填的 `id` 與 `description`；其他欄位由 ADE repo 依文件類型自行加入 | 分類、標題與 `status` 不由框架定義；會被程式或 skill 讀取的屬性應寫在 frontmatter；資料夾 README.md 開頭的一句話改由 `description` 擔任 |
