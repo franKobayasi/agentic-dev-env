@@ -6,4 +6,5 @@
 
 | ADR | 標題 | 狀態 | 結論 | 影響與備註 |
 |---|---|---|---|---|
+| [0002](./0002-separate-readme-and-generated-index.md) | 入口檔與索引檔分成 README.md 與程式產生的 INDEX.md | `accepted` | 資料夾的介紹寫在手寫的 README.md，索引寫在由程式產生的 INDEX.md；INDEX.md 不得手寫 | README.md 每個資料夾必備；INDEX.md 選用，用於集合型資料夾；runner 的檢查比對 INDEX.md 與各筆資料 |
 | [0001](./0001-no-depth-or-item-limits-in-knowledge-base.md) | 知識庫的層數與每層項目數不設上限 | `accepted` | 知識庫的層數與每層項目數不設上限；檢索效率不足時改善檢索方式，不限制結構 | runner 的檢查不得因層數或項目數報錯；改善檢索方式的觸發訊號是 ADE repo 回報導覽困難 |
