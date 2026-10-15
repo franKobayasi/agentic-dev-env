@@ -9,7 +9,7 @@
 本工具生成並維護一種 repo（**ADE repo**）來把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十七支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -33,7 +33,7 @@
 pnpm dlx create-agentic-dev-env my-ade
 ```
 
-生成的 `my-ade/` 帶完整結構、十七支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
+生成的 `my-ade/` 帶完整結構、十八支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
@@ -140,7 +140,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ## Skills
 
-ADE repo 帶十七支 skill，逐支詳解在生成的 ADE repo README；這裡只列用途。「兩邊」＝工作目錄與 ADE repo 內都可用。
+ADE repo 帶十八支 skill，逐支詳解在生成的 ADE repo README；這裡只列用途。「兩邊」＝工作目錄與 ADE repo 內都可用。
 
 | Skill | 一句話 | 可用處 |
 | --- | --- | --- |
@@ -160,6 +160,7 @@ ADE repo 帶十七支 skill，逐支詳解在生成的 ADE repo README；這裡�
 | `ade-spec-audit` | spec 定期健檢，抓計畫外變更造成的規格漂移 | 工作目錄 |
 | `ade-add-skill` | 新增 skill 的 meta-skill：問使用對象、定位置、命名、README 同步 | 兩邊 |
 | `ade-add-process` | 建立流程慣例的 meta-skill：三層載體選擇＋context 紀律 | 兩邊 |
+| `ade-build-knowledge` | 建立或修改知識：查重、決定位置、產生 id、撰寫並通過 check，規則在知識庫的 `process/build-knowledge.md` | 兩邊 |
 | `ade-feedback-upstream` | 機制改良以 issue 回饋本專案；絕不帶公司內容 | ADE repo 內 |
 
 ---

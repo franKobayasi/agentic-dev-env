@@ -9,7 +9,7 @@
 ADE 把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十七支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：工作目錄裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -259,6 +259,7 @@ flowchart LR
 | **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
 | **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：消費端工作目錄用 → `hub/skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `hub/skills/` 並在 frontmatter 標 `ade-scope: both`，再於 `.claude/skills/` 建 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
 | **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `hub/CLAUDE.section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
+| **`ade-build-knowledge`** | 在知識庫建立或修改一份知識（「新增知識」「寫進知識庫」）。先依詞彙表與 `description` 查重，判斷內容該不該收、放在哪個分類，以 `new-id.sh` 產生分類內未使用的 id，寫好 frontmatter、內文與上層入口檔的導覽，最後執行 `node cli.js check` 驗證。規則全在 `knowledge/process/build-knowledge.md`，skill 只寫步驟。PRD、服務描述檔與流程慣例改用各自的 skill。 | ✅ |
 
 ### 在本 ADE repo 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
 
@@ -279,7 +280,7 @@ hub/                     # init／update 注入每個工作目錄的內容
 │   ├── process/         # 跨服務流程與團隊級慣例（含 ade-dev-workflow/ 開發流程規則）
 │   ├── specs/           # 產品規格，持續迭代的真相來源；GLOSSARY.md 是產品域詞彙
 │   └── prd/             # 一次開發一檔的需求文件，歷史文件不迭代
-└── skills/              # 工作目錄的 .claude/skills/（十六支，見上方 Skills）
+└── skills/              # 工作目錄的 .claude/skills/（十七支，見上方 Skills）
 .claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
 CONTEXT.md               # ADE 開發流程的統一詞彙表
 UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）

@@ -22,3 +22,5 @@
 ### 知識維護
 
 `.claude/ade/` 與 `.claude/skills/ade-*/` 為 managed 區域、視同唯讀；註冊服務、新增 skill／流程、建 PRD、更新 spec 等維護動作由 ade-* skills 引導，一律經 `ade-contribute` 改 `workspaces/` 下的 ADE 工作副本並開 PR。
+
+知識中的引用 `[文字](kb:<分類>/<id>)` 是符號位址：在 `.claude/ade/knowledge/<分類>/` 下搜尋 frontmatter 為 `id: <id>` 的檔案即可找到目標。
