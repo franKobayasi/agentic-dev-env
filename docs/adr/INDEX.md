@@ -6,6 +6,7 @@
 
 | ADR | 標題 | 狀態 | 結論 | 影響與備註 |
 |---|---|---|---|---|
+| [0009](./0009-frontmatter-fields-defined-by-reading-mechanism.md) | frontmatter 的欄位由讀取它的機制決定 | `accepted` | 框架只定義生成器的機制必須讀取的 frontmatter 欄位，即必填的 `id` 與 `description`；其他欄位由 ADE repo 依文件類型自行加入 | 分類、標題與 `status` 不由框架定義；會被程式或 skill 讀取的屬性應寫在 frontmatter；資料夾 README.md 開頭的一句話改由 `description` 擔任 |
 | [0008](./0008-record-relation-on-dependent-side.md) | 知識之間的關聯由依賴方記錄 | `accepted` | 知識之間的關聯只記一側：由依賴方記錄，指向被依賴方；對等關係由後建立的一側記錄；反向查找以搜尋完成 | 新增知識時只需修改它自己；雙向記錄無法機械判斷，由 skill 與 seed 落實；由程式產生反向索引不在本決策的範圍內，日後可以加上 |
 | [0007](./0007-knowledge-records-facts-skill-wraps-execution.md) | 知識記錄事實，skill 引用知識並封裝執行 | `accepted` | 知識記錄事實，skill 引用知識並封裝執行；人不透過 agent 做事時也需要知道的內容放在知識，只有 agent 執行時需要的放在 skill | skill 不得重述知識；腳本屬於 skill，知識庫不放可執行的腳本；取代 docs/research/ade-dev/research-skill-boundaries.md §1.2 的結論 |
 | [0006](./0006-markdown-as-primary-file-of-knowledge-unit.md) | 知識單位以 Markdown 檔為主要檔案，其他格式作為附件 | `accepted` | 知識庫不限制檔案格式，每個知識單位以一份 `.md` 為主要檔案，id 只寫在 `.md` 的 frontmatter；其他格式是資料夾單位內的附件 | 附件不帶 id，無法以符號個別引用，需要時以名稱指稱；取代 ADR-0004 中 YAML 檔在頂層寫 id 的規則 |
