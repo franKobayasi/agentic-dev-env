@@ -27,4 +27,5 @@
 各主題分開記錄，依需要閱讀：
 
 - [Context 管理](./context-management.md)：設計任何會進入 agent context 的內容時閱讀，包括常駐區段、skill 與知識庫
+- [知識與 skill](./knowledge-and-skill.md)：判斷一項內容該寫在知識還是 skill，或設計 skill 時閱讀
 - [知識的形式原則](./knowledge/README.md)：設計知識庫的結構、檢查規則，或建立知識的流程時閱讀
