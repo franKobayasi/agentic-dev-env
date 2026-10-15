@@ -1,8 +1,12 @@
-# PRD: <標題>
+---
+id: <以 .claude/skills/ade-build-knowledge/new-id.sh 產生>
+description: <一句話說明這次需求要做什麼>
+date: YYYY-MM-DD
+proposer: <提出者>
+status: 草稿
+---
 
-- 日期: YYYY-MM-DD
-- 提出者:
-- 狀態: 草稿 <!-- 草稿 → 已確認 → 已實作；實作前取消改「已廢止」，規則見 README -->
+# PRD：<標題>
 
 ## 背景與目標
 
@@ -22,7 +26,7 @@
 
 ## 影響服務
 
-對照 `../services/index.md`，列出涉及的服務與各自要改什麼。
+列出涉及的服務名稱與各自要改什麼。
 
 ## 驗收條件
 
@@ -32,6 +36,6 @@
 
 尚未定案的點，定案後移入上方對應區塊。
 
-## Spec 異動摘要
+## 產品規格異動摘要
 
-<!-- ade-prd-to-spec 執行後填：動了哪些 spec 檔、各自的異動重點 -->
+<!-- ade-prd-to-spec 執行後填寫：動了哪些產品規格、各自的異動重點 -->

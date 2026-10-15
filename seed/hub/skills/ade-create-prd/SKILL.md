@@ -7,62 +7,14 @@ metadata:
 
 # 建立 PRD
 
-PRD 的定位、生命週期與檔名規則見 `knowledge/prd/README.md`，欄位結構以 `knowledge/prd/_template.md` 為準。本檔只寫「怎麼跑」。
+PRD 的規則與生命週期見[PRD 的入口檔](kb:prd/c66c02)，要回答的問題、各區塊的內容與盲點見[撰寫 PRD](kb:process/3680c7)，欄位以 `knowledge/prd/_template.md` 為準。本 skill 只寫執行步驟，不重述規則。
 
-0. **判斷所在位置**：repo 根有 `hub/knowledge/prd/` → 你在 ADE repo 內，直接編輯本 repo 檔案；只有 `.claude/ade/knowledge/` → 你在工作目錄，依 `ade-contribute` skill 的流程取得 ADE 工作副本並建立分支，以下所有 `knowledge/...` 路徑都指工作副本內的檔案（絕不直接改 `.claude/ade/` 副本）
-
-## 1. Discovery——問到想法成形
-
-**已經有答案的題目直接跳過，不要重問**；使用者一開口就把七題講完就整段略過，直接進第 2 步。
-
-用 `AskUserQuestion` 分批問缺的題，**一批 2–3 題，等回答再追問**，不要一次丟完。七題都有實質答案（或明確說「這題不在範圍」）才能往下。
-
-1. 想做什麼？（一句話）
-2. 為誰做？（Persona 寫成敘述，不是人口統計）
-3. 解決什麼痛點？（**只寫痛點，不寫解方**）
-4. 為何是現在？（deadline／法規／客戶／競爭）
-5. 怎麼算成功？（可量測：baseline + target + 量測方式）
-6. 範圍：做什麼、**明確不做什麼**
-7. 影響哪些服務、相依哪些既有 PRD／spec？
-
-紅線：答案含糊就追問，不要幫使用者猜；沒答案的留著，第 3 步進「開放問題」；Discovery 階段不談實作與 schema。
-
-## 2. 對照既有知識
-
-讀 `knowledge/services/index.md`、相關 `knowledge/specs/`，以及 `knowledge/prd/` 下狀態為「草稿」或「已確認」的 PRD。用團隊既有詞彙、對照現有規格找出衝突；與進行中 PRD 重疊時當場請 PO 決定合併或劃清界線。
-
-## 3. 建檔
-
-複製 `knowledge/prd/_template.md` 為 `knowledge/prd/YYYY-MM-DD-<slug>.md`（slug 用 kebab-case，日期用今天），狀態設「草稿」，逐區塊填寫：
-
-| 範本區塊 | 來源 |
-|---|---|
-| 背景與目標 | Q3 痛點 + Q4 時機 + Q5 成功標準 |
-| 非目標 | Q6 明確不做的部分（**不可空白**） |
-| 需求描述 | Q1/Q2 拆成 GWT 決策表，一列一個情境，具體到能開發；不寫故事散文，每列的例外處置（Fallback）不可空白 |
-| 影響服務 | Q7 對照 services/index.md，列出各服務要改什麼 |
-| 驗收條件 | 每條可測試，形容詞（好用／快）換成可驗證敘述 |
-| 開放問題 | Discovery 中沒答案、待 PO 拍板的 |
-
-「Spec 異動摘要」留空，那是 `ade-prd-to-spec` 的欄位。
-
-## 4. 盲點拷問
-
-逐項問到 PO 每題都有明確答案或明確說「不在範圍」，結果回填文件（邊界與錯誤的答案寫成決策表的新列或該列的 Fallback，範圍外的寫進「非目標」，未定的寫進「開放問題」）：
-
-- **邊界與錯誤**：輸入不合法、資源不存在、操作中斷、併發衝突時各是什麼行為？
-- **跨服務影響**：對照 services 總覽，有沒有漏列受影響的服務？服務間的呼叫順序與失敗處理？
-- **權限與安全**：誰能用這功能？資料存取邊界？
-- **相容性**：既有資料要遷移嗎？舊版本客戶端／既有 API 使用者會壞嗎？
-- **驗收條件**：每一條都可測試嗎？「好用」「快」這類形容詞要換成可驗證的敘述
-- **非目標**：最容易被誤以為包含在內的相鄰功能是什麼？明確排除
-
-## 5. 驗證與收尾
-
-```bash
-bash .claude/skills/ade-create-prd/validate-prd.sh <PRD 檔的實際路徑>
-```
-
-有缺漏就補完再跑。通過後**不要自動翻狀態**——狀態留在「草稿」，由 PO 確認後才改「已確認」。收尾：ADE repo 內 → 照一般 git 慣例 commit；工作目錄 → 依 `ade-contribute` 流程開 PR。最後提醒下一步跑 `ade-prd-to-spec` 更新規格。
-
-結束前向使用者輸出**風險與未決清單**：本次你無法自行驗證、或仍沒把握的假設（例如只憑 `services/index.md` 推定的服務相依、沒讀實作就寫下的現況行為）。待 PO 拍板的事已在「開放問題」，不重列；沒有就明確說「本 PRD 無已知的未確定風險」。
+0. **判斷所在位置**：repo 根目錄有 `hub/knowledge/` 時，你在 ADE repo 內，直接編輯本 repo 的檔案。只有 `.claude/ade/knowledge/` 時，你在 ADE 中，依 `ade-contribute` 的流程取得工作副本並建立分支；以下的 `knowledge/…` 都指工作副本內的檔案，不得修改 `.claude/ade/` 的副本。
+1. **讀規則**：讀上述兩份知識。
+2. **Discovery**：依「要回答的問題」，用 `AskUserQuestion` 分批詢問還沒有答案的問題，一批 2–3 題，等回答後再追問。使用者已經回答的問題直接跳過，一次答完時整段略過。
+3. **對照既有知識**：讀涉及的服務描述檔、相關的產品規格，以及 `knowledge/prd/` 中 `status` 為「草稿」或「已確認」的 PRD，找出與現有規格的衝突。與進行中的 PRD 重疊時，當場請 PO 決定合併或劃清界線。
+4. **建檔**：複製 `knowledge/prd/_template.md` 為 `knowledge/prd/YYYY-MM-DD-<slug>.md`，以 `.claude/skills/ade-build-knowledge/new-id.sh knowledge/prd` 產生 id，`status` 設為「草稿」，依「各區塊的內容」填寫。「產品規格異動摘要」留空。
+5. **檢查盲點**：依「盲點」逐項詢問 PO，直到每一項都有答案或明確不在範圍內，並依規則回填。
+6. **驗證**：執行 `bash .claude/skills/ade-create-prd/validate-prd.sh <PRD 檔的路徑>` 與 ADE repo 根目錄的 `node cli.js check`，有缺漏就補完再執行。通過後不自動改狀態，`status` 留在「草稿」，由 PO 確認後才改為「已確認」。
+7. **收尾**：在 ADE repo 內依一般 git 慣例 commit；在 ADE 中依 `ade-contribute` 的流程開 PR。提醒下一步執行 `ade-prd-to-spec`。
+8. **回報風險**：向使用者列出本次無法自行驗證、或沒有把握的假設，例如只憑服務描述檔推定的服務相依、沒讀實作就寫下的現況行為。待 PO 決定的事已在「開放問題」，不重複列出；沒有風險時明確說明「本 PRD 無已知的未確定風險」。

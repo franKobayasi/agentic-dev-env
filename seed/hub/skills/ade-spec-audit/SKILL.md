@@ -1,18 +1,16 @@
 ---
 name: ade-spec-audit
-description: 巡檢 spec 與各服務實作的一致性，找出計畫外變更（hotfix、直接改 code）造成的規格漂移。使用者說「巡檢 spec」「檢查規格漂移」「spec audit」「規格還對嗎」時使用。
+description: 巡檢產品規格與各服務實作是否一致，找出 hotfix、直接改程式碼等計畫外變更造成的失真。使用者說「巡檢 spec」「檢查規格漂移」「spec audit」「規格還對嗎」時使用。
 ---
 
-# Spec 巡檢
+# 產品規格巡檢
 
-spec 平時只靠 PRD 流程更新；hotfix 與計畫外變更會讓 spec 悄悄漂移。本 skill 補上這條偵測路徑。
+產品規格平時只透過 PRD 的流程更新；hotfix 與計畫外的變更會讓產品規格悄悄失真。本 skill 補上偵測的路徑。
 
-## 流程
-
-1. **先確保副本最新**：執行 update（或確認 `.ade.json` 的 commit 與遠端 HEAD 一致）——拿過期的 spec 副本去比對會誤報漂移
-2. 列出 `.claude/ade/knowledge/specs/` 下的 spec；範圍大時請使用者指定優先巡檢的部分（建議：最近有 release 的服務相關）
-3. 對每份 spec 找出涉及的服務（文內連結與 `services/index.md`），缺的 repo 依服務檔 clone 進 `workspaces/`
-4. 逐項對照實作與 spec 敘述，記錄不一致：行為已變、功能已移除、實作有但 spec 未記載
-   - `🚧 尚未實作` 區塊屬「已定案未開發」，不算漂移，跳過；但標記指向的 PRD 已是「已廢止」時，該區塊是廢止時漏撤回的殘留，列入漂移
-5. 向使用者報告漂移清單，確認哪些該修 spec（也可能是實作錯了該修 code）
-6. 確認後依 `ade-contribute` skill 流程開 PR 修正 spec
+1. **確認副本最新**：先執行 update，或確認 `.ade.json` 的 `commit` 與遠端的 HEAD 一致。拿過期的副本比對會誤報。
+2. 列出 `.claude/ade/knowledge/specs/` 中的產品規格；範圍大時，請使用者指定優先巡檢的部分，建議從最近有 release 的服務開始。
+3. 對每份產品規格，找出文中列出的服務，讀它們在 `.claude/ade/knowledge/services/` 的描述檔；缺少的服務 repo 依描述檔 clone 到 `workspaces/`。
+4. 逐項對照實作與產品規格，記錄不一致之處：行為已改變、功能已移除、實作有但產品規格沒有記載。
+   - 有尚未實作標記的區塊屬於已定案、尚未開發的行為，不算失真，跳過。但標記指向的 PRD 的 `status` 已是「已廢止」時，該區塊是廢止時漏撤回的殘留，列入不一致。
+5. 向使用者報告不一致的清單，確認哪些要修改產品規格，哪些其實是實作錯了要修改程式碼。
+6. 確認後依 `ade-contribute` 的流程開 PR 修正產品規格。

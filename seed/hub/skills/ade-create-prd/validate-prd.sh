@@ -5,7 +5,7 @@ f="${1:?用法: validate-prd.sh <prd.md>}"
 [ -f "$f" ] || { echo "✗ 檔案不存在:$f"; exit 1; }
 bad=0
 
-# 檔名是 spec 標記與其他文件引用 PRD 的鍵
+# 檔名慣例：建立日期加 slug
 basename "$f" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*\.md$' \
   || { echo "✗ 檔名不是 YYYY-MM-DD-<kebab-case slug>.md:$(basename "$f")"; bad=1; }
 
@@ -37,14 +37,23 @@ if [ -n "$req" ]; then
   fi
 fi
 
-grep -qE '^- 狀態: (草稿|已確認|已實作|已廢止)' "$f" || { echo "✗ 狀態欄位缺或不是合法值(草稿/已確認/已實作/已廢止)"; bad=1; }
-if grep -qE '^- 狀態: 已廢止' "$f"; then
-  grep -qE '^- 廢止原因: *\S' "$f" || { echo "✗ 已廢止但未填廢止原因"; bad=1; }
+# frontmatter 頂層欄位的值（只讀第一組 --- 之間）
+fm() { awk 'NR==1 && /^---$/ {f=1; next} f && /^---$/ {exit} f' "$f" | grep -E "^$1:" | head -1 | sed -E "s/^$1:[[:space:]]*//"; }
+
+fm id | grep -qE '^[0-9a-f]{6}$' || { echo "✗ frontmatter 的 id 缺或不是 6 位小寫十六進位"; bad=1; }
+[ -n "$(fm description)" ] || { echo "✗ frontmatter 的 description 未填"; bad=1; }
+status=$(fm status)
+case "$status" in
+  草稿|已確認|已實作|已廢止) ;;
+  *) echo "✗ frontmatter 的 status 缺或不是合法值(草稿/已確認/已實作/已廢止)"; bad=1 ;;
+esac
+if [ "$status" = 已廢止 ]; then
+  [ -n "$(fm deprecation_reason)" ] || { echo "✗ 已廢止但未填 deprecation_reason"; bad=1; }
 fi
-grep -qE '^- 提出者: *\S' "$f" || { echo "✗ 提出者未填"; bad=1; }
-grep -qE '^- 日期: [0-9]{4}-[0-9]{2}-[0-9]{2}' "$f" || { echo "✗ 日期未填或格式不對"; bad=1; }
+[ -n "$(fm proposer)" ] || { echo "✗ frontmatter 的 proposer 未填"; bad=1; }
+fm date | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' || { echo "✗ frontmatter 的 date 未填或格式不對"; bad=1; }
 grep -qE '^- \[ \] .*\S' "$f" || { echo "✗ 驗收條件沒有 checkbox 項目"; bad=1; }
-placeholders=$(grep -nE "<標題>|<前置狀態>|<觸發>|<預期行為>|<例外處置>|YYYY-MM-DD|TODO|TBD|FIXME" "$f" || true)
+placeholders=$(grep -nE "<標題>|<提出者>|<一句話|<以 |<前置狀態>|<觸發>|<預期行為>|<例外處置>|YYYY-MM-DD|TODO|TBD|FIXME" "$f" || true)
 [ -z "$placeholders" ] || { echo "✗ placeholder 未清:"; echo "$placeholders"; bad=1; }
 
 [ "$bad" = 0 ] && echo "✓ 通過,PRD 可送出" || echo "✗ 未通過,補完再送"
