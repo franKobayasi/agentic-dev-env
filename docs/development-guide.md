@@ -1,12 +1,22 @@
 # 開發指引
 
-本文件是修改本 repo 的入口，目前涵蓋 `seed/`，內容包括 seed 的定位、seed 各部分的去向、`create` 處理 seed 的步驟，以及修改 seed 後必須同步與驗證的項目。閱讀前需要知道三個名詞：ADE（Agentic Dev Environment）repo 是團隊以 `create` 建立的知識庫 repo；工作目錄是團隊成員開發時使用的目錄，由 ADE repo 注入知識與 skill；runner 是本套件中執行 init 與 update 的程式。
+本文件是修改本 repo 的入口，目前涵蓋 `seed/`，內容包括首次設定、seed 的定位、seed 各部分的去向、`create` 處理 seed 的步驟，以及修改 seed 後必須同步與驗證的項目。閱讀前需要知道三個名詞：ADE（Agentic Dev Environment）repo 是團隊以 `create` 建立的知識庫 repo；工作目錄是團隊成員開發時使用的目錄，由 ADE repo 注入知識與 skill；runner 是本套件中執行 init 與 update 的程式。
 
 下列主題由其他文件說明：
 
 - 任務與開發進度以 beads（`bd`，issue tracker 工具）管理，安裝、同步與注意事項見 [issue tracker 的使用方式](./task-tracking.md)。
 - runner、ADE repo 與工作目錄之間的契約，以及 breaking change 的判準，見[依賴關係與相容性契約](./dependency-contract.md)。
 - 發版指令見 [README 的開發與發版說明](../README.md#開發與發版)。
+
+## 首次設定
+
+clone 本 repo 後，執行下列指令啟用 repo 內的 git hook：
+
+```sh
+git config core.hooksPath .githooks
+```
+
+執行過 `npm install` 時，`package.json` 的 `prepare` 腳本已自動完成這項設定。hook 在 commit 時檢查 `docs/adr/` 的 ADR，並重新產生 ADR 的索引表。未啟用 hook 時，CI 仍會執行相同的檢查，但錯誤要到推送後才會發現。執行 `git config core.hooksPath` 輸出 `.githooks` 時，代表設定完成。
 
 ## seed 的定位
 

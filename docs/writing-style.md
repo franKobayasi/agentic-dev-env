@@ -1,6 +1,6 @@
 # 寫作指南
 
-本指南規範本 repo 所有文件的內容與寫法，適用於 `docs/`、根目錄文件（`README.md`、`AGENTS.md`、`CHANGELOG.md`），以及 `seed/` 內的全部文件，包括知識庫、skill、常駐區段與 ADE repo 的根目錄文件。commit message 與程式碼註解不在本指南的範圍內。
+本指南規範本 repo 所有文件的內容與寫法，適用於 `docs/`、根目錄文件（`README.md`、`AGENTS.md`、`CHANGELOG.md`），`.claude/` 內的 skill，以及 `seed/` 內的全部文件，包括知識庫、skill、常駐區段與 ADE repo 的根目錄文件。commit message 與程式碼註解不在本指南的範圍內。
 
 本 repo 的文件同時服務兩種讀者：維護者與 agent。撰寫時以第一次接觸本 repo 的維護者能夠讀懂為標準；這個標準同樣讓 agent 不必自行推測被省略的前提。
 

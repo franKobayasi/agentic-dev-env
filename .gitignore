@@ -1,3 +1,4 @@
 node_modules/
 .scratch/
 .beads*
+.claude/settings.local.json

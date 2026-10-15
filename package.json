@@ -29,7 +29,8 @@
     "seed"
   ],
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "license": "MIT"
 }

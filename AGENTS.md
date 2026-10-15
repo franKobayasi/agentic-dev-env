@@ -21,4 +21,4 @@ Issues and epics are tracked with beads (`bd`). See `docs/task-tracking.md`.
 
 ### Domain docs
 
-Single-context: one `CONTEXT.md` at the repo root plus `docs/ADR/`.
+Single-context: one `CONTEXT.md` at the repo root plus `docs/adr/` (MADR, written with the `adr-madr` skill).
