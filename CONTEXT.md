@@ -34,6 +34,9 @@ _Avoid_：以 hub 指稱 ADE
 ADE repo 的 `hub/CLAUDE.section.md`，注入 ADE 後成為 `CLAUDE.md` 中 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 之間的區段。
 _Avoid_：CLAUDE.md 區段
 
+**工作副本**：
+ADE 中 ADE repo 的 clone，用於修改知識或 skill 並送回 ADE repo。
+
 **知識庫**：
 ADE repo 的 `hub/knowledge/`，注入 ADE 後位於 `.claude/ade/knowledge/`；文件中以 `knowledge/…` 表示知識庫根目錄下的位置。
 
