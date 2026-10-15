@@ -8,7 +8,7 @@
 
 **Generator**：
 create-agentic-dev-env 這個 npm 套件，是 ADE 的框架：以 seed 建立 ADE，並提供 runner。
-_Avoid_：生成器、本套件、框架
+_Avoid_：生成器、本套件
 
 **ADE（Agentic Dev Environment）**：
 由 Generator 建立、團隊共同維護並持續迭代知識體系的 repository，是知識與 skill 的唯一事實來源。也可寫作 ADE repo。

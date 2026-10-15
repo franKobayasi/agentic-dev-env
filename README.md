@@ -35,7 +35,7 @@ pnpm dlx create-agentic-dev-env my-ade
 
 生成的 `my-ade/` 帶完整結構、十九支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
-1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
+1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
 3. 在 `my-ade/` 開 Claude Code，說「新增服務」（`ade-add-service`）開始填 `hub/knowledge/`
 
@@ -51,7 +51,7 @@ pnpm dlx "git+ssh://git@github.com/ORG/my-ade.git" init --workspaces ~/projects 
 init 在當前目錄建立：
 
 ```
-work-dir/
+my-forge/
 ├── CLAUDE.md             # 原有內容不動，插入 <!-- ADE:BEGIN/END --> managed 區段
 ├── .ade.json             # source、commit（新鮮度檢查用）、workspaces 位置
 ├── .claude/
@@ -90,7 +90,7 @@ pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，�
 ### 1. 知識單向流出，修改單向流回
 
 ```
-  ADE  ──── init / update ────▶  Forge 的唯讀副本  ────▶  agent 讀取使用
+  ADE  ──── init / update ────▶  Forge 的唯讀副本  ───────────▶  agent 讀取使用
      ▲                                                              │
      └──────────  PR（ade-contribute 引導） ◀───────────  發現過期 / 要新增
 ```
@@ -176,7 +176,7 @@ docs/
 ├── core-concepts/           # 核心概念：Generator 最上層的原則，seed、runner 與 skill 的設計依據
 ├── adr/                     # 決策紀錄：考慮過的方案與選擇的理由
 ├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
-├── dependency-contract.md   # framework ↔ ADE ↔ Forge 的契約，改 runner 或 seed 前必讀
+├── dependency-contract.md   # Generator ↔ ADE ↔ Forge 的契約，改 runner 或 seed 前必讀
 └── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用
 tests/               # 端到端自測：create、init、update 分檔，是契約的可執行版本
 ```

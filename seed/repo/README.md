@@ -25,7 +25,7 @@ ADE 把這兩件事抽出來共用：
 
 ## 初始設定（建 repo 後做一次）
 
-1. 填 `package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
+1. 填 `package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見[本地模式](#本地模式ade-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
 3. 執行 `pnpm install`：安裝鎖定版本的 runner，並啟用 commit 前執行 `node cli.js check` 的 pre-commit hook；CI 中執行 `pnpm install && node cli.js check`
 4. 開始填 `hub/knowledge/`：在本 repo 開 Claude Code 說「新增服務」（`ade-add-service`），或依 `hub/knowledge/services/_template.yaml` 手動建立描述檔
@@ -40,7 +40,7 @@ ADE 把這兩件事抽出來共用：
 
 | | 是什麼 | 誰在動它 |
 | --- | --- | --- |
-| **ADE**（就是本 repo） | 團隊知識與 skills 的**唯一真相來源**，全隊共用一份。 | 一律走 PR（agent 端由 `ade-contribute` 引導）；[本地模式](#本地模式ade-repo-不放-githubgitlab)沒有 PR，在本 repo 內直接 commit、或由人 merge 回流分支 |
+| **ADE**（就是本 repo） | 團隊知識與 skills 的**唯一真相來源**，全隊共用一份。 | 一律走 PR（agent 端由 `ade-contribute` 引導）；[本地模式](#本地模式ade-不放-githubgitlab)沒有 PR，在本 repo 內直接 commit、或由人 merge 回流分支 |
 | **Forge** | 你自己電腦上的一個資料夾，是**開 Claude Code 的起點**。裡面有一份 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo。 | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
 
 ### 步驟 1：設定 SSH（只做一次）
@@ -61,10 +61,10 @@ ssh -T git@github.com                         # 再次驗證
 
 ### 步驟 2：挑一個目錄，執行 init
 
-自己找一個空目錄當 Forge（例如 `~/ade-hub`，名字隨意，**一台機器一個就夠**），`cd` 進去執行：
+自己找一個空目錄當 Forge（例如 `~/my-forge`，名字隨意，**一台機器一個就夠**），`cd` 進去執行：
 
 ```sh
-mkdir -p ~/ade-hub && cd ~/ade-hub
+mkdir -p ~/my-forge && cd ~/my-forge
 pnpm dlx "git+ssh://git@github.com/ORG/__ADE_NAME__.git" init
 ```
 
@@ -81,7 +81,7 @@ init 在**當前目錄**建立以下內容，既有檔案不會被覆蓋：
 裝完長這樣：
 
 ```
-~/ade-hub/                    ← Forge：Claude Code 一律從這裡開
+~/my-forge/                   ← Forge：Claude Code 一律從這裡開
 ├── CLAUDE.md                 ← 你自己的指引 ＋ ADE managed 區段
 ├── .ade.json                 ← Forge 設定：來源、版本、workspaces 位置
 ├── .claude/
@@ -113,7 +113,7 @@ pnpm dlx "git+ssh://git@github.com/ORG/__ADE_NAME__.git" init --workspaces ~/pro
 同一行指令把 `init` 換成 `update`，就會拉到最新的知識與 skills：
 
 ```sh
-cd ~/ade-hub
+cd ~/my-forge
 pnpm dlx "git+ssh://git@github.com/ORG/__ADE_NAME__.git" update
 ```
 
@@ -153,7 +153,7 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
 ### 1. 知識單向流出，修改單向流回
 
 ```
-  ADE  ──── init / update ────▶  Forge 的唯讀副本  ──────▶  agent 讀取使用
+  ADE  ──── init / update ────▶  Forge 的唯讀副本  ─────────▶  agent 讀取使用
      ▲                                                              │
      └──────────  PR（ade-contribute 引導） ◀───────────  發現過期 / 要新增
 ```

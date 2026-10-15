@@ -1,6 +1,6 @@
 # 決策紀錄
 
-本目錄存放生成器的架構決策紀錄（ADR，Architecture Decision Record），格式採用 [MADR](https://adr.github.io/madr/)。每份 ADR 記錄一個決策當時的限制、考慮過的方案，以及選擇的理由。現況的描述不在 ADR 內，而在對應的文件與程式碼中。
+本目錄存放 Generator 的架構決策紀錄（ADR，Architecture Decision Record），格式採用 [MADR](https://adr.github.io/madr/)。每份 ADR 記錄一個決策當時的限制、考慮過的方案，以及選擇的理由。現況的描述不在 ADR 內，而在對應的文件與程式碼中。
 
 ## 建立 ADR
 

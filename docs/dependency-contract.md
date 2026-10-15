@@ -25,7 +25,7 @@ Forge（.ade.json / .claude/ade/ / .claude/skills/ade-*/ / CLAUDE.md 區段）
 | 路徑 | 傳播方式 | 時效 |
 |---|---|---|
 | seed → ADE | `create` 時複製 | **一次性快照**，之後永不自動更新 |
-| runner → ADE | Forge `pnpm dlx` 時安裝 ADE **鎖定的精確版本** | **凍結**；升級 = ADE 顯式改版號 |
+| runner → ADE | 在 Forge 執行 `pnpm dlx` 時安裝 ADE **鎖定的精確版本** | **凍結**；升級 = ADE 顯式改版號 |
 
 設計意圖：**ADE 建立後即與上游迭代解耦**。create 把當下版本寫死進 ADE 的
 dependencies（不帶 `^`），npm 舊版本永久可裝（publish 逾 72 小時不可 unpublish），
@@ -47,7 +47,7 @@ revert 即可」。
 - 扁平結構 — repo 根沒有 `hub/` 時，runner 改讀 `knowledge/`、`claude-md/section.md`、`skills/*/`，規則同上。
   1.6.0 之前 create 的 ADE 都是這個結構，升級 runner 時不需先遷移；`tests/legacy-layout.test.js` 保留此案例
 - `package.json` — `repository.url` 必填（0.2.8 起解析不到就 fail-fast，init 不落地、可重跑）；
-  git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE 不放 forge，`pnpm dlx file:<path>` 安裝）；
+  git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE 不放 GitHub／GitLab，`pnpm dlx file:<path>` 安裝）；
   `ade.upstream` 供 `ade-feedback-upstream` skill 使用
 - `cli.js` — 一行委派 `require('create-agentic-dev-env/runner').run(...)`，不得攜帶邏輯
 
