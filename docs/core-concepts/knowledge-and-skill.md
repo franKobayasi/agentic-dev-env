@@ -2,7 +2,7 @@
 
 本文件規範 ADE 提供內容的兩種形式：知識與 skill 各自的職責，以及一項內容應寫在哪一種形式。名詞的定義見[詞彙表](../../CONTEXT.md)，考慮過的其他做法見[知識與 skill 分工的決策紀錄](../adr/0007-knowledge-records-facts-skill-wraps-execution.md)。
 
-ADE 的目的是讓團隊內的人與 agent 對同一件事有一致的認知。流程、服務規格、概念、事件，只要能以文字描述，都是知識。生成器定義知識與 skill 的框架，ADE repo 在這個框架下建立自己的知識體系，再注入 ADE，讓人與 agent 使用並持續迭代。
+ADE 的目的是讓團隊內的人與 agent 對同一件事有一致的認知。流程、服務規格、概念、事件，只要能以文字描述，都是知識。Generator 定義知識與 skill 的框架，ADE 在這個框架下建立自己的知識體系，再注入 Forge，讓人與 agent 使用並持續迭代。
 
 ## 職責
 

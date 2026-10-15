@@ -14,7 +14,7 @@
 | 全大寫 | 有慣例角色的檔案 | `README.md`、`INDEX.md`、`CONTEXT.md` |
 | `_` 開頭 | 範本，不是知識 | `_template.md` |
 
-全大寫的檔名中，框架定義下列三個：入口檔 `README.md` 與索引檔 `INDEX.md`，兩者的分工見[入口檔與索引檔](./navigation.md)；詞彙表 `CONTEXT.md`，見[詞彙表](./vocabulary.md)。其他慣例檔名，例如 `CHANGELOG.md`，由 ADE repo 依自己的知識體系決定是否採用。
+全大寫的檔名中，框架定義下列三個：入口檔 `README.md` 與索引檔 `INDEX.md`，兩者的分工見[入口檔與索引檔](./navigation.md)；詞彙表 `CONTEXT.md`，見[詞彙表](./vocabulary.md)。其他慣例檔名，例如 `CHANGELOG.md`，由 ADE 依自己的知識體系決定是否採用。
 
 ## 使用正式名詞
 

@@ -2,7 +2,7 @@
 
 本文件記錄 Context 管理的原則：agent 的 context 如何被消耗，以及設計文件、skill 與流程時如何控制這項成本。context 指 agent 單次工作時讀入的全部內容。名詞的定義見[詞彙表](../../CONTEXT.md)。
 
-Context 管理是生成器與所有 ADE 的根原則。設計任何會進入 context 的內容之前，先回答一個問題：這段內容值得在什麼時機、以什麼成本進入 context。本文件的其餘各節都是這個問題的展開，[知識的形式原則](./knowledge/README.md)則是它在知識庫的應用。
+Context 管理是 Generator、所有 ADE 與 Forge 的根原則。設計任何會進入 context 的內容之前，先回答一個問題：這段內容值得在什麼時機、以什麼成本進入 context。本文件的其餘各節都是這個問題的展開，[知識的形式原則](./knowledge/README.md)則是它在知識庫的應用。
 
 ## Context 是稀缺資源
 
@@ -15,7 +15,7 @@ context 的容量有限，每一段讀入的內容都有兩種成本：
 
 ## 載入時機
 
-內容進入 context 的時機決定它的成本。下表以 ADE 的三種載體為例：
+內容進入 context 的時機決定它的成本。下表以 Forge 的三種載體為例：
 
 | 載體 | 進入 context 的時機 | 成本由誰付出 |
 |---|---|---|

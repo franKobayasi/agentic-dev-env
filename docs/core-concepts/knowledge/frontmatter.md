@@ -1,10 +1,10 @@
 # frontmatter 的欄位
 
-本文件規範知識檔案 frontmatter 的欄位：哪些由框架定義，哪些由 ADE repo 自行加入。需要 frontmatter 的檔案見[符號位址](./addressing.md)，考慮過的其他做法見[frontmatter 欄位的決策紀錄](../../adr/0009-frontmatter-fields-defined-by-reading-mechanism.md)。
+本文件規範知識檔案 frontmatter 的欄位：哪些由框架定義，哪些由 ADE 自行加入。需要 frontmatter 的檔案見[符號位址](./addressing.md)，考慮過的其他做法見[frontmatter 欄位的決策紀錄](../../adr/0009-frontmatter-fields-defined-by-reading-mechanism.md)。
 
 ## 判準
 
-框架只定義生成器的機制，即 runner 的檢查或生成器提供的 skill，必須讀取的欄位。每個欄位都是需要維護的內容，沒有讀取者的欄位只增加管理成本。其他欄位由 ADE repo 依文件類型自行加入。
+框架只定義 Generator 的機制，即 runner 的檢查或 Generator 提供的 skill，必須讀取的欄位。每個欄位都是需要維護的內容，沒有讀取者的欄位只增加管理成本。其他欄位由 ADE 依文件類型自行加入。
 
 ## 框架定義的欄位
 
@@ -25,11 +25,11 @@
 |---|---|
 | 分類 | 資料夾位置已經表達，寫在 frontmatter 是第二份副本 |
 | 標題 | 一級標題已經表達，寫在 frontmatter 是第二份副本 |
-| 狀態，例如 `status` | 生命週期由 ADE repo 定義，框架的機制不讀取它，見[收錄範圍](./scope.md) |
+| 狀態，例如 `status` | 生命週期由 ADE 定義，框架的機制不讀取它，見[收錄範圍](./scope.md) |
 
-## ADE repo 自行加入的欄位
+## ADE 自行加入的欄位
 
-ADE repo 依文件類型自行加入欄位，例如需求文件的日期、提出者與狀態。會被程式或 skill 讀取的屬性應寫在 frontmatter，內文不重述。屬性集中在 frontmatter，程式只需要一種讀取方式，`INDEX.md` 也才能從中取值。
+ADE 依文件類型自行加入欄位，例如需求文件的日期、提出者與狀態。會被程式或 skill 讀取的屬性應寫在 frontmatter，內文不重述。屬性集中在 frontmatter，程式只需要一種讀取方式，`INDEX.md` 也才能從中取值。
 
 ## 落實方式
 
