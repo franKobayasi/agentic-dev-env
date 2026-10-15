@@ -36,3 +36,7 @@ _Avoid_：CLAUDE.md 區段
 
 **知識庫**：
 ADE repo 的 `hub/knowledge/`，注入 ADE 後位於 `.claude/ade/knowledge/`；文件中以 `knowledge/…` 表示知識庫根目錄下的位置。
+
+**符號位址**：
+知識庫內引用知識單位的寫法 `kb:<分類>/<名稱>`，分類是知識庫根目錄下的第一層資料夾。
+_Avoid_：符號連結、kb 連結
