@@ -16,5 +16,5 @@ metadata:
 4. **決定位置**：依規則的「放置」讀根目錄與候選分類的 `README.md`。有多個合理的位置時，用 `AskUserQuestion` 列出選項並標明推薦，由使用者決定。
 5. **建檔**：分類有 `_` 開頭的範本時，從範本複製。執行本 skill 目錄的 `new-id.sh hub/knowledge/<分類>` 取得分類內未使用的 id，依規則寫 frontmatter 與內文。
 6. **同步**：更新上層入口檔的導覽；用到詞彙表沒有的專有名詞時，先加入詞彙表。
-7. **驗證**：在 ADE 根目錄執行 `node cli.js check`，修正本次修改的檔案中的錯誤。其他既有檔案的錯誤只向使用者回報，不順手修改。
+7. **驗證**：在 ADE 根目錄依序執行 `node cli.js index` 與 `node cli.js check`，修正本次修改的檔案中的錯誤。其他既有檔案的錯誤只向使用者回報，不順手修改。
 8. **收尾**：在 ADE 內依一般 git 慣例 commit；在 Forge 中依 `ade-contribute` 的流程開 PR。

@@ -18,7 +18,6 @@ function repo(overrides = {}) {
     'hub/knowledge/process/README.md': fm('0f0f0f') + '# 流程\n',
     'hub/knowledge/process/git-commit.md': fm('a1b2c3') + '# commit\n',
     'hub/knowledge/process/_template.md': '# 範本\n',
-    'hub/knowledge/process/INDEX.md': '| 檔案 |\n',
     'hub/knowledge/process/flow/README.md': fm('bbbbbb') + '見[commit 規範](kb:process/a1b2c3)\n\n```md\n[例子](kb:bad)\n```\n寫成 `[文字](kb:<分類>/<id>)`\n',
     'hub/knowledge/process/flow/diagram.png': 'png',
     'hub/skills/ade-x/SKILL.md': '依[commit 規範](kb:process/a1b2c3)撰寫\n',
@@ -39,7 +38,7 @@ test('seed 的知識庫通過檢查', () => {
 })
 
 test('合法的知識庫通過檢查', () => {
-  // 根目錄檔案、INDEX.md、_ 開頭的範本不需要 id；附件不需要 id；程式碼內的 kb: 不檢查
+  // 根目錄檔案、_ 開頭的範本不需要 id（INDEX.md 見 index.test.js）；附件不需要 id；程式碼內的 kb: 不檢查
   assert.deepStrictEqual(errorsOf(), [])
 })
 

@@ -27,7 +27,7 @@ ADE 把這兩件事抽出來共用：
 
 1. 填 `package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；**只在本地**填絕對路徑（見[本地模式](#本地模式ade-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
-3. 執行 `pnpm install`：安裝鎖定版本的 runner，並啟用 commit 前執行 `node cli.js check` 的 pre-commit hook；CI 中執行 `pnpm install && node cli.js check`
+3. 執行 `pnpm install`：安裝鎖定版本的 runner，並啟用 commit 前產生索引、執行 `node cli.js check` 的 pre-commit hook；CI 中執行 `pnpm install && node cli.js check`
 4. 開始填 `hub/knowledge/`：在本 repo 開 Claude Code 說「新增服務」（`ade-add-service`），或依 `hub/knowledge/services/_template.yaml` 手動建立描述檔
 
 ---
@@ -279,7 +279,7 @@ hub/                     # init／update 注入每個 Forge 的內容
 │   └── prd/             # 一次開發一份的需求文件，歷史文件不迭代
 └── skills/              # Forge 的 .claude/skills/（十八支，見上方 Skills）
 .claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
-.githooks/pre-commit     # commit 前產生 ADR 索引、執行知識庫檢查（pnpm install 時啟用）
+.githooks/pre-commit     # commit 前產生 ADR 與知識庫的索引、執行知識庫檢查（pnpm install 時啟用）
 docs/                    # 只給維護者讀、不注入 Forge 的文件：adr/ 決策紀錄、開發流程的規則異動紀錄
 UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
 ```
@@ -287,5 +287,5 @@ UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 
 ## 維護原則
 
 - **副本唯讀**：Forge 中的內容 update 會覆蓋，所有修改都回到本 repo 走 PR——agent 端由 `ade-contribute` 引導完成
-- **知識要通過檢查**：建立或修改知識依 `ade-build-knowledge`；commit 前由 pre-commit hook 執行 `node cli.js check`，CI 中執行 `pnpm install && node cli.js check`
+- **知識要通過檢查**：建立或修改知識依 `ade-build-knowledge`；commit 前由 pre-commit hook 產生 `INDEX.md` 並執行 `node cli.js check`，CI 中執行 `pnpm install && node cli.js check`
 - **機制回饋、內容不外流**：使用中演化出的**機制**改良（skill 寫法、模板、流程）用 `ade-feedback-upstream` 回饋給 [create-agentic-dev-env](https://github.com/franKobayasi/agentic-dev-env) 上游；`knowledge/` 下的公司知識絕不外流

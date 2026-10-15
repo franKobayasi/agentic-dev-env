@@ -53,13 +53,14 @@ revert 即可」。
 
 ## 知識庫的語法（`check` 讀取）
 
-`check` 子命令在 ADE 根目錄執行，檢查下列語法，有錯誤時以非 0 結束；update 對取得的 ADE 執行同一檢查，只印出摘要警告，不中斷更新。下列語法不影響 init 與 update 的成敗，因此新增檢查項目不是 breaking change；改變既有語法會讓 ADE 的引用失效，屬於 breaking change。
+`check` 子命令在 ADE 根目錄執行，檢查下列語法，有錯誤時以非 0 結束；`index` 子命令依同一份設定重新產生 `INDEX.md`，逐行印出有變動的檔案，供 pre-commit hook 加入 commit；update 對取得的 ADE 執行同一檢查，只印出摘要警告，不中斷更新。下列語法不影響 init 與 update 的成敗，因此新增檢查項目不是 breaking change；改變既有語法會讓 ADE 的引用失效，屬於 breaking change。
 
 - 掃描範圍：知識庫、skill 目錄與常駐區段，依契約 A 的兩種結構之一
 - 知識庫的每個資料夾都必須有 `README.md`
 - 知識庫內的 `.md` 必須在 frontmatter 寫 `id` 與 `description`；知識庫根目錄的檔案、`INDEX.md` 與 `_` 開頭的檔案除外
 - `id` 為 6 位小寫十六進位，在分類內唯一；分類是知識庫根目錄下的第一層資料夾
 - 符號位址寫成 markdown 連結 `[文字](kb:<分類>/<id>)`，必須在分類內恰好解析到一份檔案；程式碼區塊與 code span 內的不檢查
+- 資料夾 `README.md` 的 frontmatter 可寫 `index: [欄位, …]`，只接受這種單行寫法；設了 `index` 的資料夾必須有與 `index` 子命令產生結果一致的 `INDEX.md`，沒有設定的資料夾不得有 `INDEX.md`。改變 `INDEX.md` 的產生格式時，既有的 `INDEX.md` 重新產生即可，不屬於 breaking change
 
 這些語法背後的原則見[知識的形式原則](./core-concepts/knowledge/README.md)。
 

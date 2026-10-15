@@ -41,3 +41,4 @@ PRD 的狀態依下表推進：
 
 - 新增 PRD：使用 `ade-create-prd`，或複製 `_template.md` 後依[撰寫 PRD](kb:process/3680c7)填寫。
 - 找特定 PRD：以檔名的日期與 slug 搜尋，或搜尋 frontmatter 的 `description` 與 `status`。
+- PRD 多到以搜尋查找不便時：依[建立知識的規則](kb:process/7caa6d)的「索引」在本檔加上 `index`。

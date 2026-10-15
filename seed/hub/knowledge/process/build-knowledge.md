@@ -80,9 +80,23 @@ description: 結帳流程中訂單、付款與庫存的狀態轉換規則。
 | 資料夾的性質 | 導覽的寫法 |
 |---|---|
 | 主題型：各項內容不同 | 逐項列出，每一項寫明在什麼處境下閱讀，不寫內容摘要 |
-| 集合型：一筆一檔、結構相同 | 寫檔名規則與新增方式，不逐筆列出 |
+| 集合型：一筆一檔、結構相同 | 寫檔名規則與新增方式，不逐筆列出；需要依屬性查找時，另設 `INDEX.md`，見「索引」 |
 
 新增、搬移或刪除單位時，必須同步修改上層入口檔的導覽。
+
+## 索引
+
+集合型資料夾的筆數多到以搜尋查找不便時，應在該資料夾 `README.md` 的 frontmatter 加上 `index`，列出索引要顯示的欄位，例如：
+
+```md
+---
+id: c66c02
+description: 一次開發需求一份的需求文件。
+index: [date, status, description]
+---
+```
+
+設定 `index` 的資料夾必須有由 `node cli.js index` 產生的 `INDEX.md`，沒有設定的資料夾不得有 `INDEX.md`。`INDEX.md` 的每一列是資料夾內的一份 `.md`，或一個帶入口檔的子資料夾；欄位從該筆 `.md` 的 frontmatter 取值，因此要列出的屬性必須寫在 frontmatter。資料夾的內容改變後，必須重新產生 `INDEX.md`；ADE 的 pre-commit hook 會在 commit 前自動執行。
 
 ## 引用
 
@@ -110,7 +124,8 @@ description: 結帳流程中訂單、付款與庫存的狀態轉換規則。
 修改完成後，在 ADE 的根目錄執行下列指令。第一次執行前先以 `pnpm install` 安裝依賴：
 
 ```sh
+node cli.js index
 node cli.js check
 ```
 
-指令輸出 `ADE check passed` 時，代表入口檔、frontmatter 與引用的語法正確。check 無法判斷放置位置、`description` 的品質與關聯是否只記一側，這些由 review 確認。
+第一個指令重新產生設定了 `index` 的 `INDEX.md`，並列出有變動的檔案；第二個指令輸出 `ADE check passed` 時，代表入口檔、frontmatter、引用與 `INDEX.md` 的語法正確。check 無法判斷放置位置、`description` 的品質與關聯是否只記一側，這些由 review 確認。

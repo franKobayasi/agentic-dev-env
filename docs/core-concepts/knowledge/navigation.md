@@ -40,7 +40,9 @@
 
 `INDEX.md` 只做索引：每一筆資料一列，列出查找時需要的屬性，不做說明。
 
-`INDEX.md` 必須由程式從各筆資料的固定欄位產生，不得手寫，例如從 frontmatter 或 YAML 的欄位取值。同一份資訊同時寫在個別檔案與手寫的索引中，任何一邊修改時都必須同步另一邊；由程式產生，一致性由程式保證。考慮過的其他做法見[入口檔與索引檔分工的決策紀錄](../../adr/0002-separate-readme-and-generated-index.md)。
+`INDEX.md` 必須由程式從各筆資料 frontmatter 的欄位產生，不得手寫。同一份資訊同時寫在個別檔案與手寫的索引中，任何一邊修改時都必須同步另一邊；由程式產生，一致性由程式保證。考慮過的其他做法見[入口檔與索引檔分工的決策紀錄](../../adr/0002-separate-readme-and-generated-index.md)。
+
+資料夾是否有 `INDEX.md`、列出哪些欄位，寫在該資料夾 `README.md` frontmatter 的 `index`，例如 `index: [date, status, description]`；沒有 `index` 的資料夾不得有 `INDEX.md`。`INDEX.md` 與資料一起進入版控，資料改變時重新產生。考慮過的其他設定位置見[索引設定位置的決策紀錄](../../adr/0012-index-config-in-folder-readme-frontmatter.md)。
 
 ## 落實方式
 
@@ -49,6 +51,7 @@
 | 原則 | 落實的機制 |
 |---|---|
 | 每個資料夾都有 `README.md` | runner 的檢查 |
-| `INDEX.md` 與各筆資料一致 | runner 的檢查：重新產生後與現有內容比較，不一致即報錯 |
+| `INDEX.md` 與各筆資料一致 | runner：`index` 子命令產生，檢查重新產生後與現有內容比較，不一致即報錯；seed：ADE 的 pre-commit hook 在 commit 前產生 |
+| 沒有 `index` 的資料夾沒有 `INDEX.md` | runner 的檢查 |
 | 入口檔的內容順序與導覽寫法 | skill：建立或修改知識的 skill 依本文件撰寫入口檔；seed：初始的入口檔作為範例 |
 | 根目錄 `README.md` 說明查找方式 | seed |

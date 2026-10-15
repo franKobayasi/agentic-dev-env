@@ -8,12 +8,13 @@
 
 ## 框架定義的欄位
 
-下表列出框架定義的欄位，兩者在需要 id 的檔案中都必須填寫：
+下表列出框架定義的欄位。`id` 與 `description` 在需要 id 的檔案中都必須填寫；`index` 選用，只寫在資料夾的 `README.md`：
 
 | 欄位 | 內容 | 讀取者 |
 |---|---|---|
 | `id` | 6 位小寫十六進位的隨機值，規則見[符號位址](./addressing.md) | runner：解析符號位址 |
 | `description` | 一句話說明這份知識是什麼，寫內容，不寫何時閱讀 | 查找知識的 skill：搜尋命中多份檔案時先讀它篩選；`INDEX.md` 可以從它取值 |
+| `index` | 這個資料夾的 `INDEX.md` 要列出的欄位，寫成 `[欄位, …]`，見[入口檔與索引檔](./navigation.md) | runner：產生並檢查 `INDEX.md` |
 
 `description` 必須填寫，因為選填時搜尋無法依賴它，agent 仍須逐份讀全文才能判斷。資料夾 `README.md` 說明這一層收錄什麼的一句話就是它的 `description`，內文不重述。
 
@@ -38,4 +39,5 @@ ADE 依文件類型自行加入欄位，例如需求文件的日期、提出者�
 | 原則 | 落實的機制 |
 |---|---|
 | 需要 id 的檔案都有 `id` 與 `description` | runner 的檢查 |
+| `index` 的寫法 | runner 的檢查 |
 | `description` 的寫法、屬性寫在 frontmatter | skill：建立知識的 skill 依本文件撰寫 frontmatter；seed：初始知識作為範例 |
