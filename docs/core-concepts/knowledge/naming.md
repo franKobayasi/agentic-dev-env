@@ -11,10 +11,14 @@
 | 形式 | 用途 | 例子 |
 |---|---|---|
 | 小寫 kebab-case | 一般知識檔案 | `git-commit.md` |
-| 全大寫 | 有慣例角色的檔案 | `README.md`、`INDEX.md` |
+| 全大寫 | 有慣例角色的檔案 | `README.md`、`INDEX.md`、`CONTEXT.md` |
 | `_` 開頭 | 範本，不是知識 | `_template.md` |
 
-全大寫的檔名中，框架只定義入口檔 `README.md` 與索引檔 `INDEX.md`，兩者的分工見[入口檔與索引檔](./navigation.md)。其他慣例檔名，例如 `GLOSSARY.md`、`CHANGELOG.md`，由 ADE repo 依自己的知識體系決定是否採用。
+全大寫的檔名中，框架定義下列三個：入口檔 `README.md` 與索引檔 `INDEX.md`，兩者的分工見[入口檔與索引檔](./navigation.md)；詞彙表 `CONTEXT.md`，見[詞彙表](./vocabulary.md)。其他慣例檔名，例如 `CHANGELOG.md`，由 ADE repo 依自己的知識體系決定是否採用。
+
+## 使用正式名詞
+
+檔名應使用詞彙表中正式名詞的英文名，寫成小寫 kebab-case。例如詞條「結帳（Checkout）」對應的檔案命名為 `checkout.md`。依檔名搜尋時，讀者可以從詞彙表直接推出檔名。不是每份檔案都對應一個詞條，因此這條規則的強度是「應」。
 
 ## 落實方式
 
@@ -22,4 +26,4 @@
 
 | 原則 | 落實的機制 |
 |---|---|
-| 依用途使用檔名形式 | skill：建立知識的 skill 依本文件命名；seed：初始內容作為範例 |
+| 依用途使用檔名形式、使用正式名詞的英文名 | skill：建立知識的 skill 依本文件命名；seed：初始內容作為範例 |

@@ -59,3 +59,5 @@
 - [入口檔與索引檔](./navigation.md)：撰寫資料夾的 `README.md`，或判斷是否需要 `INDEX.md` 時閱讀
 - [符號位址](./addressing.md)：建立知識檔案，或引用其他知識時閱讀
 - [檔名](./naming.md)：替知識檔案命名時閱讀
+- [詞彙表](./vocabulary.md)：撰寫知識時決定用詞，或新增專有名詞時閱讀
+- [搜尋](./search.md)：設計 agent 查找知識的方式時閱讀

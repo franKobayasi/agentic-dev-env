@@ -37,6 +37,10 @@ _Avoid_：CLAUDE.md 區段
 **知識庫**：
 ADE repo 的 `hub/knowledge/`，注入 ADE 後位於 `.claude/ade/knowledge/`；文件中以 `knowledge/…` 表示知識庫根目錄下的位置。
 
+**詞彙表**：
+定義一個領域內專有名詞的文件，檔名為 `CONTEXT.md`；生成器的詞彙表是本檔，ADE 的詞彙表位於知識庫根目錄。
+_Avoid_：術語表、glossary
+
 **分類**：
 知識庫根目錄下的第一層資料夾。
 
