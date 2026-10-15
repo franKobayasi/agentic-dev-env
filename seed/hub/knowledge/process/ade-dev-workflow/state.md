@@ -20,7 +20,7 @@ description: 開發任務的檔案、狀態規則、接手判讀與執行模式�
 狀態規則（單一真相，每個事實只記一處，不另設 status.json／progress.md——第二份真相必漂移，依據見 [research-devflow-state.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-devflow-state.md)、[research-auto-state.md](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev/research-auto-state.md)）：
 
 - `spec.md`、`plan.md` 檔頭 YAML frontmatter `status: draft`，**過關時**改為 `status: approved`（逐字一致，工具靠精確匹配）
-- `spec.md` 建檔時寫 `ade_commit: <ADE 中 .ade.json 的 commit>`——任務跑在哪個版本的流程下；中途 `ade-update` 換版在 `notes.md` 記一則 `[修訂]`。這是日後回顧「某次流程優化是否有效」的分組依據
+- `spec.md` 建檔時寫 `ade_commit: <Forge 中 .ade.json 的 commit>`——任務跑在哪個版本的流程下；中途 `ade-update` 換版在 `notes.md` 記一則 `[修訂]`。這是日後回顧「某次流程優化是否有效」的分組依據
 - 同一次寫入 `approved_by`：人簽核寫 `human`，auto-pilot 由 Spec Ready 替代簽核寫 `spec-ready`。**此欄位一經寫入不得修改**——它記的是當時誰簽的，不是現在的模式；缺席視同 `human`。人事後補審 auto 簽的文件，在 `notes.md` append 一則，不回頭改本欄位
 - Phase 進度只記在 `plan.md` 的 checkbox（`- [ ]`／`- [x]`，小寫 x）；`phase-N.md` 不重複記自己的完成狀態
 - `plan.md` 底部固定三個收尾項：`- [ ] 測試審視`、`- [ ] 沉澱`、`- [ ] Ship`，對應第 4、5、6 關過關時勾掉

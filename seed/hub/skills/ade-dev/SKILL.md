@@ -1,6 +1,6 @@
 ---
 name: ade-dev
-description: 判準制標準開發流程——針對 PRD 或自然語言需求，走「規格→規劃→逐 Phase 實作→測試審視→沉澱→Ship」六關開發；內建 Spec Ready 判定與 auto-pilot 模式（就緒即可無人中途把關跑完）。使用者說「開始開發」「照流程開發這個需求／PRD」「ade-dev」「繼續開發」「接手下一個 Phase」「這個任務 auto 跑」時使用。在 ADE 中使用。
+description: 判準制標準開發流程——針對 PRD 或自然語言需求，走「規格→規劃→逐 Phase 實作→測試審視→沉澱→Ship」六關開發；內建 Spec Ready 判定與 auto-pilot 模式（就緒即可無人中途把關跑完）。使用者說「開始開發」「照流程開發這個需求／PRD」「ade-dev」「繼續開發」「接手下一個 Phase」「這個任務 auto 跑」時使用。在 Forge 中使用。
 ---
 
 # ade-dev

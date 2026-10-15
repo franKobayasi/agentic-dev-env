@@ -1,7 +1,7 @@
-<!-- 此區段由 ADE (__ADE_NAME__) 管理，update 時整段覆蓋。勿直接編輯；要修改請至 ADE repo 改，或使用 ade-contribute skill。 -->
-## ADE 工作區指引
+<!-- 此區段由 ADE (__ADE_NAME__) 管理，update 時整段覆蓋。勿直接編輯；要修改請至 ADE 改，或使用 ade-contribute skill。 -->
+## Forge 工作區指引
 
-本目錄是 ADE，知識庫位於 `.claude/ade/knowledge/`。
+本目錄是 Forge，知識庫位於 `.claude/ade/knowledge/`。
 
 ### Session 開始時
 

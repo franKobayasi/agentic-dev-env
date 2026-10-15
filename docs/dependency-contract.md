@@ -1,59 +1,59 @@
-# 依賴關係與相容性契約（framework ↔ ADE repos ↔ 消費端）
+# 依賴關係與相容性契約（Generator ↔ ADE ↔ Forge）
 
-本文件說明 `create-agentic-dev-env` 與它生成的每個 ADE repo、以及 ADE repo 的消費端
-工作目錄之間的依賴關係——**修改 runner 或 seed 前必讀**，這裡定義了什麼樣的改動
-會讓已建立的 ADE repo 全部異常。
+本文件說明 `create-agentic-dev-env` 與它生成的每個 ADE、以及每個 ADE 注入的
+Forge 之間的依賴關係——**修改 runner 或 seed 前必讀**，這裡定義了什麼樣的改動
+會讓已建立的 ADE 全部異常。
 
 ## 三方角色
 
 ```
 create-agentic-dev-env（本 repo，發佈到 npm）
-├── bin/create.js + seed/       …… 腳手架：生成 ADE repo（一次性）
+├── bin/create.js + seed/       …… 腳手架：生成 ADE（一次性）
 └── lib/runner.js               …… 執行期：init / update 的全部邏輯
         ▲
         │ dependencies: "create-agentic-dev-env": "<精確版號>"（create 時蓋章；cli.js 一行委派 runner）
         │
-ADE repo（create 當下 seed 的快照）
+ADE（create 當下 seed 的快照）
         ▲
         │ pnpm dlx "git+ssh://…/<ade-repo>.git" init | update
         │
-消費端工作目錄（.ade.json / .claude/ade/ / .claude/skills/ade-*/ / CLAUDE.md 區段）
+Forge（.ade.json / .claude/ade/ / .claude/skills/ade-*/ / CLAUDE.md 區段）
 ```
 
 ## 兩條傳播路徑，都是顯式的
 
 | 路徑 | 傳播方式 | 時效 |
 |---|---|---|
-| seed → ADE repo | `create` 時複製 | **一次性快照**，之後永不自動更新 |
-| runner → ADE repo | 消費端 `pnpm dlx` 時安裝 ADE repo **鎖定的精確版本** | **凍結**；升級 = ADE repo 顯式改版號 |
+| seed → ADE | `create` 時複製 | **一次性快照**，之後永不自動更新 |
+| runner → ADE | Forge `pnpm dlx` 時安裝 ADE **鎖定的精確版本** | **凍結**；升級 = ADE 顯式改版號 |
 
-設計意圖：**ADE repo 建立後即與上游迭代解耦**。create 把當下版本寫死進 ADE repo 的
+設計意圖：**ADE 建立後即與上游迭代解耦**。create 把當下版本寫死進 ADE 的
 dependencies（不帶 `^`），npm 舊版本永久可裝（publish 逾 72 小時不可 unpublish），
-上游怎麼發版都不影響既存 repo。要吃新 runner，就在 ADE repo 改那一行版號、走 git
-review——升級點只有一個、可 revert，消費端在下一次 `dlx … update` 跟上。
+上游怎麼發版都不影響既存 repo。要吃新 runner，就在 ADE 改那一行版號、走 git
+review——升級點只有一個、可 revert，Forge 在下一次 `dlx … update` 跟上。
 
-仍要注意的相容性壓力：ADE repo 各自決定升級時機，新 runner 仍會遇上「**舊版 seed
-結構的 ADE repo × 舊版 runner 留下的工作目錄狀態**」——契約 A / B 的向後相容仍然必要，
+仍要注意的相容性壓力：ADE 各自決定升級時機，新 runner 仍會遇上「**舊版 seed
+結構的 ADE × 舊版 runner 留下的 Forge 狀態**」——契約 A / B 的向後相容仍然必要，
 只是破壞的影響範圍從「全部既存 repo 即刻異常」縮小為「升級版號的那個 repo 發現問題、
 revert 即可」。
 
-## 契約 A：runner 依賴的 ADE repo 結構
+## 契約 A：runner 依賴的 ADE 結構
 
 （新增「必要」項目 = breaking change）
 
-- `hub/knowledge/` — 必要；整份複製到工作目錄 `.claude/ade/knowledge/`
+- `hub/knowledge/` — 必要；整份複製到 Forge `.claude/ade/knowledge/`
 - `hub/CLAUDE.section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
 - `hub/skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
 - 扁平結構 — repo 根沒有 `hub/` 時，runner 改讀 `knowledge/`、`claude-md/section.md`、`skills/*/`，規則同上。
-  1.6.0 之前 create 的 ADE repo 都是這個結構，升級 runner 時不需先遷移；`tests/legacy-layout.test.js` 保留此案例
+  1.6.0 之前 create 的 ADE 都是這個結構，升級 runner 時不需先遷移；`tests/legacy-layout.test.js` 保留此案例
 - `package.json` — `repository.url` 必填（0.2.8 起解析不到就 fail-fast，init 不落地、可重跑）；
-  git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE repo 不放 forge，`pnpm dlx file:<path>` 安裝）；
+  git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE 不放 forge，`pnpm dlx file:<path>` 安裝）；
   `ade.upstream` 供 `ade-feedback-upstream` skill 使用
 - `cli.js` — 一行委派 `require('create-agentic-dev-env/runner').run(...)`，不得攜帶邏輯
 
 ## 知識庫的語法（`check` 讀取）
 
-`check` 子命令在 ADE repo 根目錄執行，檢查下列語法，有錯誤時以非 0 結束；update 對取得的 ADE repo 執行同一檢查，只印出摘要警告，不中斷更新。下列語法不影響 init 與 update 的成敗，因此新增檢查項目不是 breaking change；改變既有語法會讓 ADE repo 的引用失效，屬於 breaking change。
+`check` 子命令在 ADE 根目錄執行，檢查下列語法，有錯誤時以非 0 結束；update 對取得的 ADE 執行同一檢查，只印出摘要警告，不中斷更新。下列語法不影響 init 與 update 的成敗，因此新增檢查項目不是 breaking change；改變既有語法會讓 ADE 的引用失效，屬於 breaking change。
 
 - 掃描範圍：知識庫、skill 目錄與常駐區段，依契約 A 的兩種結構之一
 - 知識庫的每個資料夾都必須有 `README.md`
@@ -63,13 +63,13 @@ revert 即可」。
 
 這些語法背後的原則見[知識的形式原則](./core-concepts/knowledge/README.md)。
 
-## 契約 B：runner 依賴／管理的消費端工作目錄狀態
+## 契約 B：runner 依賴／管理的 Forge 狀態
 
 （改欄位語意、改標記格式、縮小容忍範圍 = breaking change）
 
 - `.ade.json` — `{ source, commit, workspaces }`；`source` 是 git url 或本地路徑（`git clone`／
   `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）。**已設定的 `source` 優先**：
-  ADE repo 的 `repository.url` 只在 init 時當初值，之後 update 不覆寫（1.4.0 起；`ade-config` 靠此讓工作目錄
+  ADE 的 `repository.url` 只在 init 時當初值，之後 update 不覆寫（1.4.0 起；`ade-config` 靠此讓 Forge
   自行切換來源或本地／遠端模式）；消費者有三個：runner update、CLAUDE.md
   區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
   （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`；兩者都取不到（repo 尚無 commit）init 在寫檔前失敗。
@@ -84,7 +84,7 @@ revert 即可」。
 ## Breaking change 的判準與程序
 
 算 breaking（舉例）：契約 A 新增必要檔案或欄位、變更 managed 標記／前綴字串、
-變更 `.ade.json` 既有欄位語意、提高 Node 版本門檻超過消費端普遍環境。
+變更 `.ade.json` 既有欄位語意、提高 Node 版本門檻超過 Forge 普遍使用的環境。
 
 程序：
 
@@ -98,8 +98,8 @@ revert 即可」。
 
 ## 案例：0.2.8 的 fail-fast
 
-某 ADE repo 未填 `repository.url` 時，舊 runner 的 init 只印警告、照樣寫出
+某 ADE 未填 `repository.url` 時，舊 runner 的 init 只印警告、照樣寫出
 `source: null` 的 `.ade.json`——之後 update 因缺 source 被擋，init 又因「已 init 過」
-被擋，消費端死鎖，只能手改 `.ade.json`。觸因在 ADE repo（資料沒填），放大器在 runner
+被擋，Forge 死鎖，只能手改 `.ade.json`。觸因在 ADE（資料沒填），放大器在 runner
 （失敗不乾淨、不可重試）。0.2.8 起改為在寫任何檔案之前 throw，目錄保持乾淨、init 可重跑。
-這也是本文件的由來：**資料歸 ADE repo，行為歸 runner**，行為問題永遠要回上游修。
+這也是本文件的由來：**資料歸 ADE，行為歸 runner**，行為問題永遠要回上游修。

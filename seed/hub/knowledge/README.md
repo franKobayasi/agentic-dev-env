@@ -1,6 +1,6 @@
 # 知識庫
 
-本目錄是 ADE 的知識庫：團隊共用的知識，由 ADE repo 維護並注入每個 ADE。知識只能在 ADE repo 建立與修改，規則見[建立知識的規則](kb:process/7caa6d)。
+本目錄是 ADE 的知識庫：團隊共用的知識，由 ADE 維護並注入每個 Forge。知識只能在 ADE 建立與修改，規則見[建立知識的規則](kb:process/7caa6d)。
 
 ## 查找方式
 

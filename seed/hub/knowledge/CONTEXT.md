@@ -10,18 +10,18 @@
 _Avoid_：實際發生過混淆的同義詞
 ```
 
-## ADE
-
-**ADE repo**：
-團隊共同維護的知識庫 repo，是知識與 skill 的唯一事實來源；修改都在這裡進行。
-_Avoid_：中央 ADE repo、單獨以 ADE 指稱
+## ADE 與 Forge
 
 **ADE（Agentic Dev Environment）**：
-團隊成員開發時使用的目錄，由 ADE repo 注入知識庫與 skill；各服務的 repo 位於其中的 `workspaces/`。
-_Avoid_：工作目錄、消費端、工作站、hub
+團隊共同維護並持續迭代知識體系的 repository，是知識與 skill 的唯一事實來源；修改都在這裡進行。也可寫作 ADE repo。
+_Avoid_：中央 ADE repo
+
+**Forge**：
+團隊成員實際運用 ADE 的知識，由人與 AI 協作產出程式碼、軟體或執行結果的目錄；由 ADE 注入知識庫與 skill，各服務的 repo 位於其中的 `workspaces/`。
+_Avoid_：工作目錄、消費端、工作站、hub、以 ADE 指稱這個目錄
 
 **工作副本（Working Copy）**：
-ADE 中 ADE repo 的 clone，用於修改知識或 skill 並送回 ADE repo。
+Forge 中 ADE 的 clone，用於修改知識或 skill 並送回 ADE。
 
 ## 知識庫
 
@@ -50,7 +50,7 @@ _Avoid_：符號連結、kb 連結
 _Avoid_：規格（不加限定詞）
 
 **實作規格（Implementation Spec）**：
-開發流程規格關的產出，只描述該次開發範圍的規格，存在 ADE 中。簽核後凍結，停留在該次開發當下，不隨開發過程更新；同步產品規格時以實作結果為準，不以它為準。
+開發流程規格關的產出，只描述該次開發範圍的規格，存在 Forge 中。簽核後凍結，停留在該次開發當下，不隨開發過程更新；同步產品規格時以實作結果為準，不以它為準。
 _Avoid_：spec（易與產品規格混淆）、技術規格
 
 **關（Gate）**：

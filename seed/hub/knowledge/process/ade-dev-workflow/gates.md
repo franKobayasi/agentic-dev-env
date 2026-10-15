@@ -9,7 +9,7 @@ description: 開發流程六關各自的產出與過關判準。
 
 產出：`spec.md`（實作規格）。過關判準：
 
-- 有 PRD 時以 PRD＋產品規格為據（ADE 中的 `.claude/ade/knowledge/` 副本僅供導覽，過期時以 ADE repo 為準）；無 PRD 時以需求描述為據
+- 有 PRD 時以 PRD＋產品規格為據（Forge 中的 `.claude/ade/knowledge/` 副本僅供導覽，過期時以 ADE 為準）；無 PRD 時以需求描述為據
 - 已比對相關既有規格與服務：關聯、衝突、系統層級不一致已列出，並解決或經人裁決
 - 每個行為描述具體到可直接寫成測試
 - 所有不明確處已向人提問並得到答案
@@ -68,7 +68,7 @@ description: 開發流程六關各自的產出與過關判準。
 
 - 產品規格與實作一致：有 PRD 走 `ade-align-spec`；無 PRD 但動了產品行為 → 起草產品規格更新、**人確認後**依 `ade-contribute` 流程送出
 - `notes.md` 收整成清單給人審視：關鍵發現、決策、流程摩擦與改良建議
-- 清單中屬**機制層**的改良（skill 寫法、模板結構、流程設計，非本服務專屬），依 `ade-contribute` 在 ADE repo 開一則標題前綴 `[upstream-candidate]` 的 issue（本地模式沒有 issue：append 到 ADE repo 根的 `UPSTREAM-CANDIDATES.md`）——內文只描述機制、不含服務名稱與程式碼；是否回饋上游由 ADE repo 維護者判斷，**不在本流程內執行**
+- 清單中屬**機制層**的改良（skill 寫法、模板結構、流程設計，非本服務專屬），依 `ade-contribute` 在 ADE 開一則標題前綴 `[upstream-candidate]` 的 issue（本地模式沒有 issue：append 到 ADE 根的 `UPSTREAM-CANDIDATES.md`）——內文只描述機制、不含服務名稱與程式碼；是否回饋上游由 ADE 維護者判斷，**不在本流程內執行**
 
 ## 第 6 關：Ship
 

@@ -1,6 +1,6 @@
 ---
 name: ade-dev-auto
-description: 串接多個 ade-dev 任務的批次執行器——列出 ADE 中未完成的開發任務、多選、逐顆確認 Spec Ready，全數就緒後依序以 ade-dev auto-pilot 模式跑完。使用者說「批次開發」「把這些任務自動跑完」「ade-dev-auto」時使用。在 ADE 中使用；單顆任務（含單顆 auto 跑）直接用 ade-dev。
+description: 串接多個 ade-dev 任務的批次執行器——列出 Forge 中未完成的開發任務、多選、逐顆確認 Spec Ready，全數就緒後依序以 ade-dev auto-pilot 模式跑完。使用者說「批次開發」「把這些任務自動跑完」「ade-dev-auto」時使用。在 Forge 中使用；單顆任務（含單顆 auto 跑）直接用 ade-dev。
 ---
 
 # ade-dev-auto

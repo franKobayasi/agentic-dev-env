@@ -40,5 +40,5 @@ description: 從服務 repo 的分支發出 Merge Request / Pull Request——�
 - 依分支實際 diff 填範本；範本欄位答不出來就問人，**不留 placeholder 發出**
 - 來自 `.ade-dev/` 任務的交付：描述須涵蓋交付定義、AC 驗證證據（測試輸出摘要）、與規格的已知差異
 - 發出前 commits 應符合 `ade-commit` 解析出的慣例
-- target 為 repo 預設分支（ADE 服務描述檔有指定 branch 時以它為準）
+- target 為 repo 預設分支（ADE 的服務描述檔有指定 branch 時以它為準）
 - `gh pr create` / `glab mr create` 發出，回報 MR URL；**不自動 merge**——merge 是人的結果把關

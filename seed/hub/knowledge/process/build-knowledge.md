@@ -7,7 +7,7 @@ description: 在知識庫建立或修改知識時遵守的規則，涵蓋收錄�
 
 本文件規定在知識庫建立或修改知識時遵守的規則。這些規則適用於所有分類；各分類特有的規則，例如文件類型、生命週期與範本，寫在該分類的 `README.md`。
 
-知識只能在 ADE repo 建立與修改。ADE 中的知識庫是唯讀副本，update 時會被整個覆蓋；在 ADE 中需要修改知識時，先依 `ade-contribute` 取得 ADE repo 的工作副本，修改工作副本後送回 ADE repo。
+知識只能在 ADE 建立與修改。Forge 中的知識庫是唯讀副本，update 時會被整個覆蓋；在 Forge 中需要修改知識時，先依 `ade-contribute` 取得 ADE 的工作副本，修改工作副本後送回 ADE。
 
 ## 收錄
 
@@ -107,7 +107,7 @@ description: 結帳流程中訂單、付款與庫存的狀態轉換規則。
 
 ## 驗證
 
-修改完成後，在 ADE repo 的根目錄執行下列指令。第一次執行前先以 `pnpm install` 安裝依賴：
+修改完成後，在 ADE 的根目錄執行下列指令。第一次執行前先以 `pnpm install` 安裝依賴：
 
 ```sh
 node cli.js check

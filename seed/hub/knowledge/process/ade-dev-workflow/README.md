@@ -5,7 +5,7 @@ description: ade-dev 與 ade-dev-auto 的全部規則，依角色與時機分檔
 
 # ade-dev workflow：唯一事實來源
 
-`ade-dev`／`ade-dev-auto` 兩支 skill 的全部規則住在本目錄；skill 本身只是觸發與指標，**不複述任何判準的值**（檢查法：任改一個閾值後 grep 全 repo，命中必須恰好 1 處）。每次規則變動記入 ADE repo 的 `docs/ade-dev-workflow-changelog.md`，任務的 `spec.md` 以 `ade_commit` 對應到當時版本；這份紀錄只給維護者回顧，不注入 ADE。
+`ade-dev`／`ade-dev-auto` 兩支 skill 的全部規則住在本目錄；skill 本身只是觸發與指標，**不複述任何判準的值**（檢查法：任改一個閾值後 grep 全 repo，命中必須恰好 1 處）。每次規則變動記入 ADE 的 `docs/ade-dev-workflow-changelog.md`，任務的 `spec.md` 以 `ade_commit` 對應到當時版本；這份紀錄只給維護者回顧，不注入 Forge。
 
 ## 誰在什麼時候讀哪份
 
@@ -20,8 +20,8 @@ description: ade-dev 與 ade-dev-auto 的全部規則，依角色與時機分檔
 | 兩軸審查的審查者（prompt 只含這個） | [兩軸審查的契約](kb:process/5d2867) 契約段＋diff＋`spec.md`＋`phase-N.md` |
 | auto 模式的 orchestrator | [開發任務的狀態與檔案](kb:process/8ac32d)＋[Spec Ready 與 auto-pilot 的規則](kb:process/724d2e) |
 | `ade-dev-auto` 批次 | [開發任務的狀態與檔案](kb:process/8ac32d)＋[批次串接的規則](kb:process/d1e46f) |
-| 維護者回顧某次優化是否有效 | ADE repo 的 `docs/ade-dev-workflow-changelog.md`＋上游 `docs/research/ade-dev/` |
+| 維護者回顧某次優化是否有效 | ADE 的 `docs/ade-dev-workflow-changelog.md`＋上游 `docs/research/ade-dev/` |
 
 ## 證據
 
-各項規則的證據盤點（研究參考，非規則）住在上游框架的 [docs/research/ade-dev/](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev)，不隨 ADE repo 複製；規則檔以 URL 引用，每份檔頭有採用標注指回規則所在。含 `research-skill-boundaries.md`（skill 間引用與內容歸屬原則，`ade-ship` 亦引用）
+各項規則的證據盤點（研究參考，非規則）住在上游框架的 [docs/research/ade-dev/](https://github.com/franKobayasi/agentic-dev-env/blob/main/docs/research/ade-dev)，不隨 ADE 複製；規則檔以 URL 引用，每份檔頭有採用標注指回規則所在。含 `research-skill-boundaries.md`（skill 間引用與內容歸屬原則，`ade-ship` 亦引用）
