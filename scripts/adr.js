@@ -4,9 +4,7 @@ const path = require('path')
 const { execSync } = require('child_process')
 
 const DIR = path.join(__dirname, '..', 'docs', 'adr')
-const README = path.join(DIR, 'README.md')
-const BEGIN = '<!-- BEGIN_ADR_INDEX -->'
-const END = '<!-- END_ADR_INDEX -->'
+const INDEX = path.join(DIR, 'INDEX.md')
 const NAME = /^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/
 const STATUS = /^(proposed|accepted|rejected|deprecated|superseded by ADR-\d{4})$/
 
@@ -17,11 +15,11 @@ function main(cmd) {
   }
   const adrs = load()
   const errors = validate(adrs)
-  const readme = fs.readFileSync(README, 'utf8')
-  const updated = inject(readme, render(adrs), errors)
-  if (cmd === 'sync' && !errors.length && updated !== readme) fs.writeFileSync(README, updated)
-  if (cmd === 'check' && !errors.length && updated !== readme) {
-    errors.push('docs/adr/README.md 的索引不是最新的：執行 node scripts/adr.js sync')
+  const current = fs.existsSync(INDEX) ? fs.readFileSync(INDEX, 'utf8') : ''
+  const updated = render(adrs)
+  if (cmd === 'sync' && !errors.length && updated !== current) fs.writeFileSync(INDEX, updated)
+  if (cmd === 'check' && !errors.length && updated !== current) {
+    errors.push('docs/adr/INDEX.md 不是最新的：執行 node scripts/adr.js sync')
   }
   if (errors.length) {
     for (const e of errors) console.error(`ADR: ${e}`)
@@ -31,7 +29,7 @@ function main(cmd) {
 
 function load() {
   return fs.readdirSync(DIR)
-    .filter(f => f.endsWith('.md') && f !== 'README.md' && f !== '_template.md')
+    .filter(f => f.endsWith('.md') && !['README.md', 'INDEX.md', '_template.md'].includes(f))
     .sort()
     .map(file => {
       const text = fs.readFileSync(path.join(DIR, file), 'utf8')
@@ -81,17 +79,18 @@ function render(adrs) {
     const status = /^(proposed|accepted|rejected|deprecated)$/.test(a.fm.status) ? `\`${a.fm.status}\`` : cell(a.fm.status)
     return `| [${a.id}](./${a.file}) | ${cell(a.title)} | ${status} | ${cell(a.fm.outcome)} | ${cell(a.fm.notes)} |`
   })
-  return ['| ADR | 標題 | 狀態 | 結論 | 影響與備註 |', '|---|---|---|---|---|', ...rows].join('\n')
-}
-
-function inject(readme, table, errors) {
-  const b = readme.indexOf(BEGIN)
-  const e = readme.indexOf(END)
-  if (b === -1 || e < b) {
-    errors.push(`docs/adr/README.md 缺少 ${BEGIN} 與 ${END} 錨點`)
-    return readme
-  }
-  return `${readme.slice(0, b + BEGIN.length)}\n${table}\n${readme.slice(e)}`
+  return [
+    '# ADR 索引',
+    '',
+    '本檔由 `node scripts/adr.js sync` 產生，不得手動編輯。ADR 的用途、建立方式與狀態的意義見[決策紀錄的說明](./README.md)。',
+    '',
+    '下表依編號由新到舊列出全部 ADR：',
+    '',
+    '| ADR | 標題 | 狀態 | 結論 | 影響與備註 |',
+    '|---|---|---|---|---|',
+    ...rows,
+    '',
+  ].join('\n')
 }
 
 main(process.argv[2])

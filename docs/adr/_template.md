@@ -4,8 +4,8 @@ date: {YYYY-MM-DD when the decision was last updated}
 decision-makers: {list everyone involved in the decision}
 consulted: {list everyone whose opinions are sought; two-way communication}
 informed: {list everyone who is kept up-to-date on progress; one-way communication}
-outcome: "{one-line summary of the decision outcome, shown in docs/adr/README.md}"
-notes: "{one-line summary of consequences or context, shown in docs/adr/README.md}"
+outcome: "{one-line summary of the decision outcome, shown in docs/adr/INDEX.md}"
+notes: "{one-line summary of consequences or context, shown in docs/adr/INDEX.md}"
 ---
 
 # {short title, representative of solved problem and found solution}

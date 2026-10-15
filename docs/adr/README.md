@@ -6,7 +6,7 @@
 
 ADR 由 `adr-madr` skill 引導建立，規則見 [`.claude/skills/adr-madr/SKILL.md`](../../.claude/skills/adr-madr/SKILL.md)。檔名格式為 `NNNN-kebab-case-slug.md`，`NNNN` 是四位數流水號，從 `0001` 開始連續編號。
 
-下方的索引表由 pre-commit hook 執行 `node scripts/adr.js sync` 產生，不得手動編輯。
+全部 ADR 列在 [ADR 索引](./INDEX.md)。索引由 pre-commit hook 執行 `node scripts/adr.js sync` 產生，不得手動編輯。
 
 ## 狀態
 
@@ -20,12 +20,3 @@ ADR 的 `status` 欄位使用下表的值：
 | `deprecated` | 曾經有效，已不再採用，且沒有單一的後繼 ADR |
 | `superseded by ADR-NNNN` | 已被 `NNNN` 這份 ADR 取代 |
 
-## 索引
-
-下表依編號由新到舊列出全部 ADR：
-
-<!-- BEGIN_ADR_INDEX -->
-| ADR | 標題 | 狀態 | 結論 | 影響與備註 |
-|---|---|---|---|---|
-| [0001](./0001-no-depth-or-item-limits-in-knowledge-base.md) | 知識庫的層數與每層項目數不設上限 | `accepted` | 知識庫的層數與每層項目數不設上限；檢索效率不足時改善檢索方式，不限制結構 | runner 的檢查不得因層數或項目數報錯；改善檢索方式的觸發訊號是 ADE repo 回報導覽困難 |
-<!-- END_ADR_INDEX -->
