@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: "superseded by ADR-0004"
 date: 2026-10-15
 decision-makers: Frank Lin
 outcome: "知識庫內的引用改用符號位址 `kb:<分類>/<名稱>`，在分類內遞迴解析，不用路徑連結"
