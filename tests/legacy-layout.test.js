@@ -1,0 +1,28 @@
+// 舊的扁平結構（knowledge/、skills/、claude-md/section.md）仍可 init／update：既存 ADE repo 升級 runner 時不需先遷移
+const test = require('node:test')
+const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
+const runner = require('../lib/runner')
+const { git, tmpdir, createAde, setUrl, workdir } = require('./helpers')
+
+test('舊的扁平結構可 init 與 update', () => {
+  const tmp = tmpdir()
+  const ade = createAde(tmp)
+  const flat = path.join(tmp, 'flat-ade')
+  fs.cpSync(ade, flat, { recursive: true, verbatimSymlinks: true })
+  fs.renameSync(path.join(flat, 'hub/knowledge'), path.join(flat, 'knowledge'))
+  fs.renameSync(path.join(flat, 'hub/skills'), path.join(flat, 'skills'))
+  fs.mkdirSync(path.join(flat, 'claude-md'))
+  fs.renameSync(path.join(flat, 'hub/CLAUDE.section.md'), path.join(flat, 'claude-md/section.md'))
+  fs.rmSync(path.join(flat, 'hub'), { recursive: true })
+  git('add -A', flat)
+  setUrl(flat, flat)
+
+  const work = workdir(tmp, 'work')
+  runner.init(work, flat)
+  runner.update(work)
+  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/index.md')), '舊結構的知識庫應複製')
+  assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), '舊結構的 skills 應注入')
+  assert(fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8').includes('<!-- ADE:BEGIN -->'), '舊結構的區段應注入')
+})

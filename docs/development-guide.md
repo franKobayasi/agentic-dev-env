@@ -89,7 +89,7 @@ skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種�
 |---|---|
 | 新增、刪除或改名 skill | `seed/repo/README.md` 的 skill 說明，以及本 repo [`README.md`](../README.md) 的 Skills 表與支數 |
 | 改變 skill 的使用對象 | 依上一節的 skill 使用對象表調整位置或 `ade-scope`；create 會據此建立 symlink，不需另外修改清單 |
-| skill 附帶腳本或範本檔 | 可視需要在 [`test.js`](../test.js) 加入附檔斷言，確認附檔隨目錄注入 |
+| skill 附帶腳本或範本檔 | 可視需要在 [`tests/init.test.js`](../tests/init.test.js) 加入附檔斷言，確認附檔隨目錄注入 |
 | 新增以點開頭的檔案或目錄 | 在 `seed/repo/` 內以不含點的名稱存放，並在 [`bin/create.js`](../bin/create.js) 補上歸位步驟 |
 | 內容需要 ADE repo 名稱 | 寫成 `__ADE_NAME__`，create 會替換 |
 | 搬動或改名 `hub/knowledge/`、`hub/CLAUDE.section.md`，或改變 skill 目錄規則 | 屬於契約 A，必須先閱讀[依賴關係與相容性契約](./dependency-contract.md) |
@@ -101,11 +101,11 @@ skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種�
 修改完成後，執行下列兩個指令：
 
 ```sh
-node test.js
+npm test
 npm pack --dry-run
 ```
 
-`node test.js` 以端到端方式依序執行 create、init 與 update，並檢查 seed 各部分的去向。`npm pack --dry-run` 列出套件會打包的檔案，用來確認 `seed/` 已包含在內；打包範圍由 `package.json` 的 `files` 控制。`node test.js` 全部通過，且打包清單包含 `seed/` 時，代表 seed 的去向與打包範圍正確。
+`npm test` 執行 `tests/` 內的端到端測試，分檔涵蓋 create、init、update 與舊的扁平結構，並檢查 seed 各部分的去向。`npm pack --dry-run` 列出套件會打包的檔案，用來確認 `seed/` 已包含在內；打包範圍由 `package.json` 的 `files` 控制。`npm test` 全部通過，且打包清單包含 `seed/` 時，代表 seed 的去向與打包範圍正確。
 
 相對連結必須在 create 產出的 ADE repo 內檢查，而不是在 seed 內，因為 seed 內的連結以 ADE repo 為準。檢查步驟如下：
 

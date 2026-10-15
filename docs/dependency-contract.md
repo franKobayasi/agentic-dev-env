@@ -45,7 +45,7 @@ revert 即可」。
 - `hub/CLAUDE.section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
 - `hub/skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
 - 扁平結構 — repo 根沒有 `hub/` 時，runner 改讀 `knowledge/`、`claude-md/section.md`、`skills/*/`，規則同上。
-  1.6.0 之前 create 的 ADE repo 都是這個結構，升級 runner 時不需先遷移；`test.js` 保留此案例
+  1.6.0 之前 create 的 ADE repo 都是這個結構，升級 runner 時不需先遷移；`tests/legacy-layout.test.js` 保留此案例
 - `package.json` — `repository.url` 必填（0.2.8 起解析不到就 fail-fast，init 不落地、可重跑）；
   git url 或本地路徑皆可（1.3.0 起明文支援本地路徑：ADE repo 不放 forge，`pnpm dlx file:<path>` 安裝）；
   `ade.upstream` 供 `ade-feedback-upstream` skill 使用
@@ -79,7 +79,7 @@ revert 即可」。
 1. **優先向後相容**：讀舊寫新、缺省容忍（參考 `workspaces` 欄位與 `prev.source` fallback 的作法）
 2. 做不到才走 breaking：照樣 **major bump** 標示語意，並附遷移說明——鎖版本讓既存 repo
    天然不受影響，版號的作用是讓升級者一眼看出「這次升級需要動結構」
-3. seed 與 runner 同一 PR 內同步修改，`test.js` 是契約的可執行版本——改契約必改測試，
+3. seed 與 runner 同一 PR 內同步修改，`tests/` 是契約的可執行版本——改契約必改測試，
    並保留「舊結構仍可 update」的案例
 4. 發版：`npm version patch && git push --follow-tags`，再 `gh release create vX.Y.Z`
    （release 事件觸發 `.github/workflows/publish.yml` 跑測試並 publish）

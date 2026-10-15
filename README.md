@@ -176,7 +176,7 @@ docs/
 ├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
 ├── dependency-contract.md   # framework ↔ ADE repo ↔ 工作目錄的契約，改 runner 或 seed 前必讀
 └── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用
-test.js              # 端到端自測：create → init → update，是契約的可執行版本
+tests/               # 端到端自測：create、init、update 分檔，是契約的可執行版本
 ```
 
 ## 版本與相容性
@@ -186,7 +186,7 @@ ADE repo 建立時鎖本套件的**精確版本**（create 蓋章），之後上
 ## 開發與發版
 
 ```sh
-node test.js                                    # 端到端自測
+npm test                                        # 端到端自測
 npm version minor && git push --follow-tags     # 發版：release 事件觸發測試與 npm publish
 gh release create vX.Y.Z
 ```
