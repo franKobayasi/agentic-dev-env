@@ -3,9 +3,56 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
-## [1.6.0] - 2026-10-14
+## [1.6.0] - 2026-10-16
 
-`ade-create-prd` 收緊 PRD 的結構與生命週期。只動 template 的 PRD 範本、PRD README、`ade-create-prd`、`ade-spec-audit`；runner 與契約不變。既存 ADE repo 的舊格式 PRD 不受影響——validator 只在建新 PRD 時跑。
+本版改寫 seed 的知識庫為新的形式標準（id、符號位址、詞彙表與入口檔），runner 新增 `check` 與 `index` 子命令，名詞改為 Generator、ADE 與 Forge，並收緊 PRD 的結構與生命週期。runner 對契約 A、B 只有新增、沒有變更，既存 ADE 升級 runner 不需要遷移；想採用新的知識庫標準時，見本版最後一節「既存 ADE 採用新的知識庫標準」。
+
+### 名詞：ADE 指 repository，注入知識的目錄改稱 Forge
+
+**為什麼**：團隊說「同步到 ADE」時指的是 repository，舊名詞卻以「ADE repo」指 repository、以「ADE」指注入知識的目錄，每次溝通都要解釋。
+
+**怎麼做**：ADE 指團隊維護知識體系的 repository（仍可寫作 ADE repo），注入知識與 skill 的目錄改稱 Forge，本套件稱 Generator，見 `docs/adr/0011-rename-ade-repo-to-ade-and-ade-to-forge.md`。文件、seed 與 skill 的觸發語一併改寫，例如 `ade-update` 改由「更新 Forge」觸發。契約識別字不變：`.claude/ade/`、`.ade.json`、`ADE:BEGIN／END` 標記、`ade-` 前綴，既存的 ADE 與 Forge 不需遷移。本版以下各節沿用新名詞。
+
+### runner 新增 `check` 與 `index` 子命令
+
+**為什麼**：知識的 id、description 與引用若只靠 review，壞掉的引用要等 agent 找不到知識時才會發現；由程式產生的 `INDEX.md` 也需要比對一致性的機制。
+
+**怎麼做**：
+
+- `node cli.js check` 在 ADE 根目錄檢查知識庫的語法：每個資料夾有 `README.md`、知識有 `id` 與 `description`、id 在分類內唯一、符號位址恰好解析到一份檔案，以及 `INDEX.md` 與設定一致。語法寫在 `docs/dependency-contract.md` 的「知識庫的語法」
+- `node cli.js index` 依資料夾 `README.md` frontmatter 的 `index: [欄位, …]` 產生 `INDEX.md`，欄位從各筆 `.md` 的 frontmatter 取值；seed 不預設任何索引，見 `docs/adr/0012-index-config-in-folder-readme-frontmatter.md`
+- update 對取得的 ADE 執行同一檢查，有問題時只印摘要警告，不中斷更新
+
+### 修正：非 `ade-` 前綴的 skill 在清除 managed 區域前擋下
+
+**為什麼**：update 先清除 Forge 的 managed 區域才檢查 skill 的前綴，ADE 有非 `ade-` 前綴的 skill 時，update 失敗並留下被清空的 Forge。
+
+**怎麼做**：前綴檢查移到驗證 ADE 的步驟，在清除任何檔案之前執行。
+
+### seed 的知識庫改寫為新的形式標準
+
+**為什麼**：知識之間以相對路徑互相引用，搬動或改名就斷；詞彙表分散在兩處；skill 重述知識的內容，同一條規則有兩份副本。原則見 `docs/core-concepts/`。
+
+**怎麼做**：
+
+- 每份知識在 frontmatter 寫 6 位十六進位的 `id` 與一句話的 `description`；引用寫成符號位址 `[文字](kb:<分類>/<id>)`，搬動與改名不影響引用
+- 詞彙表收整為 `hub/knowledge/CONTEXT.md`；知識庫根目錄的 `README.md` 說明查找方式並導覽各分類
+- 服務改為帶 id 的 `services/README.md` 加上不帶 id 的 YAML 描述檔，`services/index.md` 移除
+- PRD 的日期、提出者、狀態與廢止原因移到 frontmatter（`date`、`proposer`、`status`、`deprecation_reason`）；尚未實作標記改為 `> 尚未實作（[PRD 標題](kb:prd/<id>)）`，取代 `🚧`
+- 新增 `process/build-knowledge.md`（建立知識的規則）、`process/prd-writing.md`（撰寫 PRD）與 `process/adr-writing.md`（撰寫 ADR）；skill 只寫步驟，規則以符號位址引用知識，例如 `ade-commit` 引用 commit 訊息慣例、`ade-create-prd` 的 Discovery 問題與盲點清單移到 `prd-writing.md`
+
+### 新增 `ade-build-knowledge` 與 `ade-create-adr`
+
+**為什麼**：建立知識要查重、決定位置、產生 id 並通過檢查，步驟固定；難以反悔的設計決策沒有固定的記錄方式。
+
+**怎麼做**：兩支 skill 都宣告 `ade-scope: both`，ADE 與 Forge 都能使用。`ade-build-knowledge` 依 `build-knowledge.md` 建立或修改知識，附 `new-id.sh`。`ade-create-adr` 以 MADR 格式撰寫 ADR：服務的決策寫進該服務 repo 的 `docs/adr/`，知識體系與流程的決策寫進 ADE 的 `docs/adr/`（不注入 Forge），附範本與產生索引的 `adr.js`。
+
+### ADE 的 pre-commit hook 與 `docs/`
+
+**為什麼**：知識庫的語法錯誤應在 commit 前發現，而不是在 Forge 中才發現。
+
+**怎麼做**：ADE 新增 `.githooks/pre-commit`，commit 前產生 ADR 與知識庫的索引並執行 `node cli.js check`；`pnpm install` 時由 `package.json` 的 `prepare` 啟用，尚未安裝依賴時略過知識庫檢查。ADE 根目錄新增 `docs/`，收不注入 Forge 的文件：決策紀錄 `docs/adr/`，以及從知識庫移出的開發流程規則異動紀錄 `docs/ade-dev-workflow-changelog.md`。
+
 
 ### 需求描述改為 GWT 決策表，Fallback 欄必填
 
@@ -15,13 +62,13 @@
 
 ### 新增「已廢止」狀態
 
-**為什麼**：PRD 在實作前被取消或被另一份整併時沒有合法狀態可標，只能停在「草稿」或「已確認」，與進行中的需求混在一起；已確認的 PRD 還會在 spec 留下沒人要做的 `🚧` 承諾。
+**為什麼**：PRD 在實作前被取消或被另一份整併時沒有合法狀態可標，只能停在「草稿」或「已確認」，與進行中的需求混在一起；已確認的 PRD 還會在 spec 留下沒人要做的尚未實作標記。
 
-**怎麼做**：`草稿`／`已確認` 可轉 `已廢止`，必填 `- 廢止原因:`；從已確認廢止時，同一個 PR 撤回它在 spec 帶入的 `🚧` 區塊。`ade-spec-audit` 把指向已廢止 PRD 的 `🚧` 列為漂移，接住漏撤的殘留。
+**怎麼做**：`草稿`／`已確認` 可轉 `已廢止`，必填 frontmatter 的 `deprecation_reason`；從已確認廢止時，同一個 PR 撤回它在 spec 帶入的尚未實作標記與內容。`ade-spec-audit` 把指向已廢止 PRD 的尚未實作標記列為漂移，接住漏撤的殘留。
 
 ### validator 檢查檔名；修正 macOS 上區塊檢查失效
 
-**為什麼**：spec 的 `🚧` 標記靠 PRD 檔名指回來，檔名格式錯了連結就對不上。另外原本用 `awk '$0==s'` 比對中文標題，macOS 內建的 BSD awk 比較多位元組字串恆為真，每個 `##` 標題都被當成命中——「區塊沒內容」在 macOS 上從未報錯過。
+**為什麼**：PRD 以檔名的日期與 slug 搜尋，格式不一致就搜不到。另外原本用 `awk '$0==s'` 比對中文標題，macOS 內建的 BSD awk 比較多位元組字串恆為真，每個 `##` 標題都被當成命中——「區塊沒內容」在 macOS 上從未報錯過。
 
 **怎麼做**：檔名須為 `YYYY-MM-DD-<kebab-case>.md`；標題改用 `grep -nxF` 定位，awk 只比對 ASCII 的 `^## `。
 
@@ -41,11 +88,11 @@
 
 ### ADE repo 依去向分層：`hub/` 與其餘
 
-**為什麼**：ADE repo 根目錄混放「發給工作目錄的內容」（`knowledge/`、`skills/`、`claude-md/section.md`）與「repo 本身」（設定檔、文件、ADE repo 專用 skill），維護者無法從結構看出哪些內容會進入工作目錄；兩邊都用的 skill 另在 `bin/create.js` 與 `test.js` 各維護一份 symlink 清單；常駐區段的名稱也看不出用途。
+**為什麼**：ADE repo 根目錄混放「發給Forge的內容」（`knowledge/`、`skills/`、`claude-md/section.md`）與「repo 本身」（設定檔、文件、ADE repo 專用 skill），維護者無法從結構看出哪些內容會進入Forge；兩邊都用的 skill 另在 `bin/create.js` 與 `test.js` 各維護一份 symlink 清單；常駐區段的名稱也看不出用途。
 
 **怎麼做**：
 
-- `hub/` 收 init／update 注入工作目錄的全部內容：`hub/knowledge/`、`hub/skills/`、`hub/CLAUDE.section.md`（原 `claude-md/section.md`；不取名 `CLAUDE.md`，避免 Claude Code 在 ADE repo 內編輯 `hub/` 時自動載入工作目錄的指引）
+- `hub/` 收 init／update 注入Forge的全部內容：`hub/knowledge/`、`hub/skills/`、`hub/CLAUDE.section.md`（原 `claude-md/section.md`；不取名 `CLAUDE.md`，避免 Claude Code 在 ADE repo 內編輯 `hub/` 時自動載入Forge的指引）
 - 其餘都屬於 repo 本身，留在根目錄；ADE repo 專用的 skill 照舊是 `.claude/skills/` 下的實體目錄
 - 兩邊都用的 skill 留在 `hub/skills/`，frontmatter 以 `metadata.ade-scope: both` 宣告，create 據此在 `.claude/skills/` 建立 symlink，寫死的清單移除
 - seed 只剩 `hub/` 與 `repo/` 兩個子目錄：`hub/` 原樣成為 ADE repo 的 `hub/`，`repo/` 攤平成 ADE repo 根目錄（`repo/skills/` 成為 `.claude/skills/`，取代原本的 `dot-claude/`）
@@ -53,7 +100,7 @@
 
 既存 ADE repo 不遷移也能繼續使用。想改用新結構時，依序：
 
-1. **先升級 runner**：`package.json` 的 `create-agentic-dev-env` 改為本版並 commit，在工作目錄 update 一次確認正常。順序不可對調——鎖定的舊版 runner 讀不懂 `hub/`，先改結構會讓所有工作目錄的 update 失敗（失敗發生在清除 managed 內容之前，既有安裝不受損）
+1. **先升級 runner**：`package.json` 的 `create-agentic-dev-env` 改為本版並 commit，在Forge update 一次確認正常。順序不可對調——鎖定的舊版 runner 讀不懂 `hub/`，先改結構會讓所有Forge的 update 失敗（失敗發生在清除 managed 內容之前，既有安裝不受損）
 2. **搬移結構**：在 ADE repo 根執行。兩邊都用的 skill 由原本 `.claude/skills/` 下的 symlink 判定；其中的實體目錄是 ADE repo 專用 skill，不需搬動
 
    ```sh
@@ -80,9 +127,24 @@
 
    歷史紀錄類檔案（如各 `CHANGELOG.md`）的命中不改。README 的 repo 結構圖要整段重寫（樹狀行 grep 抓不全）。指知識庫內位置的 `knowledge/…` 不必改，在 `CLAUDE.md` 的編輯慣例加一行約定即可，寫法見本版 `seed/repo/CLAUDE.md`
 4. **更新自有的檢查腳本**：寫死舊路徑的腳本一併改。注意以 glob 列檔的檢查——舊路徑在新結構下列不到任何檔案時，迴圈不執行、結果顯示通過
-5. **驗證**：commit 後在工作目錄 update 一次，確認知識庫、skills 與 `CLAUDE.md` 區段都在
+5. **驗證**：commit 後在Forge update 一次，確認知識庫、skills 與 `CLAUDE.md` 區段都在
 
-**證據**：`test.js` 涵蓋新結構的 create／init／update 與舊扁平結構的 init／update；將 runner 的結構判斷分別改為「只認新結構」與「只認舊結構」時，測試各自失敗。以一個已演化的既存 ADE repo（16 支 skill，含一支 seed 沒有的自有 skill）實測：不遷移時新舊 runner 產出的工作目錄逐位元組相同；依上述第 2 步遷移後，新 runner 產出的知識庫與常駐區段與遷移前相同，skill 差異僅為新增的 `ade-scope`；遷移後仍用舊版 runner 則 update 失敗，此即第 1 步順序的依據。
+**證據**：`test.js` 涵蓋新結構的 create／init／update 與舊扁平結構的 init／update；將 runner 的結構判斷分別改為「只認新結構」與「只認舊結構」時，測試各自失敗。以一個已演化的既存 ADE repo（16 支 skill，含一支 seed 沒有的自有 skill）實測：不遷移時新舊 runner 產出的Forge逐位元組相同；依上述第 2 步遷移後，新 runner 產出的知識庫與常駐區段與遷移前相同，skill 差異僅為新增的 `ade-scope`；遷移後仍用舊版 runner 則 update 失敗，此即第 1 步順序的依據。
+
+### 既存 ADE 採用新的知識庫標準
+
+seed 的修改不會傳到既存的 ADE。升級 runner 到本版不需要遷移：舊的知識庫照常 init 與 update，只是 update 會印出知識庫檢查的摘要警告，例如知識沒有 id。想採用新的知識庫標準時，依序：
+
+1. **先升級 runner**：`package.json` 的 `create-agentic-dev-env` 改為本版並 commit，在 Forge 執行一次 update 確認正常。
+2. **複製機制檔案**：從本版 seed 複製 `githooks/pre-commit`（放到 `.githooks/pre-commit`）、`package.json` 的 `scripts`（`check` 與 `prepare`）、`hub/skills/ade-build-knowledge/`、`hub/skills/ade-create-adr/`、`hub/knowledge/process/build-knowledge.md` 與 `adr-writing.md`、`repo/docs/adr/`。兩支 skill 宣告 `ade-scope: both`，在 `.claude/skills/` 建立指向 `hub/skills/` 的 symlink。check 回報 id 重複時，依錯誤訊息換新 id 並改寫指向它的引用。
+3. **補齊 id 與入口檔**：執行 `node cli.js check`，依錯誤為每份知識補上 `id` 與 `description`，為每個資料夾補上 `README.md`。
+4. **改寫引用**：知識之間的相對路徑連結改為符號位址 `[文字](kb:<分類>/<id>)`，check 會檢查每個引用能否解析。
+5. **改寫 PRD 與服務**：PRD 的日期、提出者、狀態與廢止原因移到 frontmatter；`🚧` 標記改為 `> 尚未實作（[PRD 標題](kb:prd/<id>)）`，以 `grep -rn '🚧' hub` 找出全部標記。`services/index.md` 改為帶 id 的 `services/README.md`。對應的 skill（`ade-create-prd`、`ade-prd-to-spec`、`ade-align-spec`、`ade-spec-audit`、`ade-list-service`）依本版 seed 的寫法調整，不要整份取代，既存的 skill 多半已自行演化。
+6. **收整詞彙表**：既有的詞彙表合併為 `hub/knowledge/CONTEXT.md`，詞條格式見本版 seed。
+
+`node cli.js check` 輸出 `ADE check passed` 時，代表遷移完成。
+
+**證據**：`tests/` 依關注點拆成 create、init、update、舊扁平結構、check、index、build-knowledge、create-adr 與 PRD，共 32 個測試；以本版 create 產生的 ADE 通過 `node cli.js check`，pre-commit hook 實測會產生 `INDEX.md` 並加入 commit。
 
 ## [1.5.0] - 2026-08-26
 
