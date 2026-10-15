@@ -1,4 +1,9 @@
 #!/bin/sh
+# docs/adr/ 有暫存的變動時，檢查 ADR 並重新產生 INDEX.md，再把它一併納入這次 commit；規則見 hub/knowledge/process/adr-writing.md
+if git diff --cached --name-only | grep -q '^docs/adr/'; then
+  node hub/skills/ade-create-adr/adr.js sync docs/adr || exit 1
+  git add docs/adr/INDEX.md
+fi
 # commit 前檢查知識庫的語法；規則見 hub/knowledge/process/build-knowledge.md
 if [ ! -d node_modules/create-agentic-dev-env ]; then
   echo "ADE check skipped: run pnpm install to enable the knowledge base check" >&2

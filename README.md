@@ -9,7 +9,7 @@
 本工具生成並維護一種 repo（**ADE**）來把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十七支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十八支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：Forge 裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -33,7 +33,7 @@
 pnpm dlx create-agentic-dev-env my-ade
 ```
 
-生成的 `my-ade/` 帶完整結構、十八支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
+生成的 `my-ade/` 帶完整結構、十九支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-repo-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
@@ -81,7 +81,7 @@ ADE 只是本機（或共用磁碟）上的一個 git repo 也能用：`reposito
 pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，直接給目錄會找不到相依
 ```
 
-迭代迴圈：**日常直接在 ADE 內開 Claude Code 改、commit 到 main**（八支 skill 可用，不需要分支或 PR）；從 Forge 回流時 `ade-contribute` push 分支回 repo、由人 `git merge`。改完回 Forge「更新 Forge」。要知道的三件事：先 commit（沒有 commit 會被擋下，不留殘局）、ADE 停在 main（update 取的是當下 checked-out 的 HEAD）、`[upstream-candidate]` 改記在根目錄 `UPSTREAM-CANDIDATES.md`。生成的 ADE README 有完整說明。
+迭代迴圈：**日常直接在 ADE 內開 Claude Code 改、commit 到 main**（十支 skill 可用，不需要分支或 PR）；從 Forge 回流時 `ade-contribute` push 分支回 repo、由人 `git merge`。改完回 Forge「更新 Forge」。要知道的三件事：先 commit（沒有 commit 會被擋下，不留殘局）、ADE 停在 main（update 取的是當下 checked-out 的 HEAD）、`[upstream-candidate]` 改記在根目錄 `UPSTREAM-CANDIDATES.md`。生成的 ADE README 有完整說明。
 
 ---
 
@@ -140,7 +140,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ## Skills
 
-ADE 帶十八支 skill，逐支詳解在生成的 ADE README；這裡只列用途。「兩邊」＝Forge 與 ADE 內都可用。
+ADE 帶十九支 skill，逐支詳解在生成的 ADE README；這裡只列用途。「兩邊」＝Forge 與 ADE 內都可用。
 
 | Skill | 一句話 | 可用處 |
 | --- | --- | --- |
@@ -161,6 +161,7 @@ ADE 帶十八支 skill，逐支詳解在生成的 ADE README；這裡只列用�
 | `ade-add-skill` | 新增 skill 的 meta-skill：問使用對象、定位置、命名、README 同步 | 兩邊 |
 | `ade-add-process` | 建立流程慣例的 meta-skill：三層載體選擇＋context 紀律 | 兩邊 |
 | `ade-build-knowledge` | 建立或修改知識：查重、決定位置、產生 id、撰寫並通過 check，規則在知識庫的 `process/build-knowledge.md` | 兩邊 |
+| `ade-create-adr` | 建立或修訂 ADR：服務的決策寫進服務 repo，知識體系與流程的決策寫回 ADE；附範本與索引腳本 | 兩邊 |
 | `ade-feedback-upstream` | 機制改良以 issue 回饋本專案；絕不帶公司內容 | ADE 內 |
 
 ---

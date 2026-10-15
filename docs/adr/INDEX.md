@@ -1,6 +1,6 @@
 # ADR 索引
 
-本檔由 `node scripts/adr.js sync` 產生，不得手動編輯。ADR 的用途、建立方式與狀態的意義見[決策紀錄的說明](./README.md)。
+本檔由 `adr.js sync` 產生，不得手動編輯。ADR 的用途、建立方式與狀態的意義見[決策紀錄的說明](./README.md)。
 
 下表依編號由新到舊列出全部 ADR：
 

@@ -19,4 +19,4 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm test
-      - run: node scripts/adr.js check
+      - run: node seed/hub/skills/ade-create-adr/adr.js check docs/adr

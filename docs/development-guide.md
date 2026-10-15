@@ -56,10 +56,10 @@ seed 只有兩個子目錄，分別是 ADE 兩個部分的原料：
 | `repo/` 內 | 在 ADE 成為 | 說明 |
 |---|---|---|
 | `skills/` | `.claude/skills/` | ADE 專用的 skill，以實體目錄存放 |
-| `githooks/` | `.githooks/` | commit 前執行知識庫檢查的 hook；`pnpm install` 時由 `package.json` 的 `prepare` 啟用 |
+| `githooks/` | `.githooks/` | commit 前產生 ADR 索引並執行知識庫檢查的 hook；`pnpm install` 時由 `package.json` 的 `prepare` 啟用 |
 | `gitignore` | `.gitignore` | |
 | `package.json`、`cli.js` | 同名 | runner 讀取 `package.json` 的 `repository.url`；`cli.js` 只委派給 runner，不得包含邏輯 |
-| `docs/` | 同名 | ADE 維護者閱讀、不注入 Forge 的文件，例如開發流程的規則異動紀錄 |
+| `docs/` | 同名 | ADE 維護者閱讀、不注入 Forge 的文件，例如決策紀錄 `adr/` 與開發流程的規則異動紀錄 |
 | `CLAUDE.md`、`README.md`、`UPSTREAM-CANDIDATES.md` | 同名 | 前兩者必須位於 repo 根目錄，Claude Code 與程式碼託管平台才會讀取 |
 
 skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種使用對象的放置方式：

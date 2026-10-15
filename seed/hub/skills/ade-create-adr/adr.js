@@ -3,14 +3,15 @@ const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
 
-const DIR = path.join(__dirname, '..', 'docs', 'adr')
+// 用法：node adr.js check | sync <ADR 目錄>；規則見知識庫 process/adr-writing.md
+const DIR = path.resolve(process.argv[3] || '')
 const INDEX = path.join(DIR, 'INDEX.md')
 const NAME = /^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/
 const STATUS = /^(proposed|accepted|rejected|deprecated|superseded by ADR-\d{4})$/
 
 function main(cmd) {
-  if (cmd !== 'check' && cmd !== 'sync') {
-    console.error('Usage: node scripts/adr.js check | sync')
+  if ((cmd !== 'check' && cmd !== 'sync') || !process.argv[3] || !fs.existsSync(DIR)) {
+    console.error('Usage: node adr.js check | sync <adr-dir>')
     process.exit(1)
   }
   const adrs = load()
@@ -19,7 +20,7 @@ function main(cmd) {
   const updated = render(adrs)
   if (cmd === 'sync' && !errors.length && updated !== current) fs.writeFileSync(INDEX, updated)
   if (cmd === 'check' && !errors.length && updated !== current) {
-    errors.push('docs/adr/INDEX.md 不是最新的：執行 node scripts/adr.js sync')
+    errors.push(`${path.join(process.argv[3], 'INDEX.md')} 不是最新的：執行 node adr.js sync ${process.argv[3]}`)
   }
   if (errors.length) {
     for (const e of errors) console.error(`ADR: ${e}`)
@@ -59,15 +60,15 @@ function validate(adrs) {
   return errors
 }
 
-// 與 main 的分岔點比較；找不到分岔點（例如淺層 clone）時略過這項檢查
+// 與主幹的分岔點比較；不在 git repo 內或找不到分岔點（例如淺層 clone）時略過這項檢查
 function removedOrRenamed() {
-  const sh = c => execSync(c, { cwd: path.join(__dirname, '..'), encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+  const sh = c => execSync(c, { cwd: DIR, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
   let base
-  for (const ref of ['origin/main', 'main']) {
+  for (const ref of ['origin/HEAD', 'origin/main', 'main']) {
     try { base = sh(`git merge-base HEAD ${ref}`); break } catch {}
   }
   if (!base) return []
-  return sh(`git diff --name-status ${base} -- docs/adr`).split('\n')
+  return sh(`git diff --name-status ${base} -- .`).split('\n')
     .filter(l => /^[DR]/.test(l))
     .map(l => path.basename(l.split('\t')[1]))
     .filter(f => NAME.test(f))
@@ -82,7 +83,7 @@ function render(adrs) {
   return [
     '# ADR 索引',
     '',
-    '本檔由 `node scripts/adr.js sync` 產生，不得手動編輯。ADR 的用途、建立方式與狀態的意義見[決策紀錄的說明](./README.md)。',
+    '本檔由 `adr.js sync` 產生，不得手動編輯。' + (fs.existsSync(path.join(DIR, 'README.md')) ? 'ADR 的用途、建立方式與狀態的意義見[決策紀錄的說明](./README.md)。' : ''),
     '',
     '下表依編號由新到舊列出全部 ADR：',
     '',

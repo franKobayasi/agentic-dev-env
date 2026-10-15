@@ -6,7 +6,7 @@
 
 ADR 由 `adr-madr` skill 引導建立，規則見 [`.claude/skills/adr-madr/SKILL.md`](../../.claude/skills/adr-madr/SKILL.md)。檔名格式為 `NNNN-kebab-case-slug.md`，`NNNN` 是四位數流水號，從 `0001` 開始連續編號。
 
-全部 ADR 列在 [ADR 索引](./INDEX.md)。索引由 pre-commit hook 執行 `node scripts/adr.js sync` 產生，不得手動編輯。
+全部 ADR 列在 [ADR 索引](./INDEX.md)。索引由 pre-commit hook 執行 [`seed/hub/skills/ade-create-adr/adr.js`](../../seed/hub/skills/ade-create-adr/adr.js) 產生，不得手動編輯。
 
 ## 狀態
 

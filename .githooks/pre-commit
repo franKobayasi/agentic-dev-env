@@ -1,6 +1,6 @@
 #!/bin/sh
 # docs/adr/ 有暫存的變動時，檢查 ADR 並重新產生 INDEX.md，再把它一併納入這次 commit
 if git diff --cached --name-only | grep -q '^docs/adr/'; then
-  node scripts/adr.js sync || exit 1
+  node seed/hub/skills/ade-create-adr/adr.js sync docs/adr || exit 1
   git add docs/adr/INDEX.md
 fi

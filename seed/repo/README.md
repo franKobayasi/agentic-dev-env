@@ -9,7 +9,7 @@
 ADE 把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十七支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十八支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：Forge 中的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -130,7 +130,7 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
 
 之後的迭代迴圈有兩條路，**日常以 A 為主**：
 
-- **A. 直接在本 repo 開 Claude Code** — `ade-add-service`／`ade-create-prd`／`ade-prd-to-spec`／`ade-add-skill`／`ade-add-process` 等八支 skill 都能用，改完 commit 到 main 即可，不需要分支或 PR
+- **A. 直接在本 repo 開 Claude Code** — `ade-add-service`／`ade-create-prd`／`ade-prd-to-spec`／`ade-add-skill`／`ade-add-process` 等十支 skill 都能用，改完 commit 到 main 即可，不需要分支或 PR
 - **B. 從 Forge 回流** — 開發服務時 agent 發現知識過期，`ade-contribute` 會 clone 到 `workspaces/__ADE_NAME__/`、開分支、push 回本 repo 並回報分支名；你回到本 repo `git merge` 即可（沒有 issue／PR）
 
 兩條路收尾都一樣：回 Forge 說「更新 Forge」。session 開始的新鮮度檢查（`git ls-remote <路徑> HEAD`）會自動提醒落後。
@@ -255,6 +255,7 @@ flowchart LR
 | **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：Forge 中用 → `hub/skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `hub/skills/` 並在 frontmatter 標 `ade-scope: both`，再於 `.claude/skills/` 建 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
 | **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `hub/CLAUDE.section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
 | **`ade-build-knowledge`** | 在知識庫建立或修改一份知識（「新增知識」「寫進知識庫」）。先依詞彙表與 `description` 查重，判斷內容該不該收、放在哪個分類，以 `new-id.sh` 產生分類內未使用的 id，寫好 frontmatter、內文與上層入口檔的導覽，最後執行 `node cli.js check` 驗證。規則全在 `knowledge/process/build-knowledge.md`，skill 只寫步驟。PRD、服務描述檔與流程慣例改用各自的 skill。 | ✅ |
+| **`ade-create-adr`** | 以 MADR 格式建立或修訂架構決策紀錄（「寫 ADR」「記錄這個決策」）。先依規則確認決定值得寫 ADR，再依主題決定寫到哪裡：服務的架構寫進該服務 repo 的 `docs/adr/`；知識體系、skill 與流程的設計寫進本 repo 的 `docs/adr/`，在 Forge 中走 `ade-contribute`。附 MADR 範本與產生索引的 `adr.js`。規則全在 `knowledge/process/adr-writing.md`。 | ✅ |
 
 ### 在本 ADE 內工作用的 skills（PO／維護者在本 repo 開 Claude Code 使用）
 
@@ -276,10 +277,10 @@ hub/                     # init／update 注入每個 Forge 的內容
 │   ├── process/         # 流程與團隊慣例，含建立知識的規則與 ade-dev-workflow/ 開發流程規則
 │   ├── specs/           # 產品規格，持續迭代的事實來源
 │   └── prd/             # 一次開發一份的需求文件，歷史文件不迭代
-└── skills/              # Forge 的 .claude/skills/（十七支，見上方 Skills）
+└── skills/              # Forge 的 .claude/skills/（十八支，見上方 Skills）
 .claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
-.githooks/pre-commit     # commit 前執行知識庫檢查（pnpm install 時啟用）
-docs/                    # 只給維護者讀、不注入 Forge 的文件，例如開發流程的規則異動紀錄
+.githooks/pre-commit     # commit 前產生 ADR 索引、執行知識庫檢查（pnpm install 時啟用）
+docs/                    # 只給維護者讀、不注入 Forge 的文件：adr/ 決策紀錄、開發流程的規則異動紀錄
 UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
 ```
 

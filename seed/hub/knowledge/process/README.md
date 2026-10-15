@@ -37,3 +37,4 @@ description: 團隊的工作方式，包括開發流程、慣例，以及流程�
 - [開發流程的規則](kb:process/5ee9e6)：執行 `ade-dev` 或 `ade-dev-auto` 時閱讀；各規則的證據盤點在上游框架的 `docs/research/ade-dev/`
 - [撰寫 PRD](kb:process/3680c7)：撰寫或審閱 PRD 時閱讀
 - [建立知識的規則](kb:process/7caa6d)：在知識庫建立或修改知識時閱讀
+- [撰寫 ADR](kb:process/03737a)：記錄難以反悔的設計決策時閱讀
