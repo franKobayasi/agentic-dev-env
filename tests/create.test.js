@@ -21,7 +21,7 @@ test('create 產出的 ADE repo 結構', () => {
   assert(fs.readFileSync(path.join(ade, 'CLAUDE.md'), 'utf8').includes('my-ade'), 'CLAUDE.md 名稱應被替換')
   assert(fs.lstatSync(path.join(repoSkills, 'ade-feedback-upstream')).isDirectory(), 'ADE repo 專用 skill 應為 .claude/skills 下的實體目錄')
   assert.strictEqual(fs.readlinkSync(path.join(repoSkills, 'ade-create-prd')), path.join('..', '..', 'hub', 'skills', 'ade-create-prd'), 'ade-scope: both 的 skill 應 symlink 進 .claude/skills')
-  assert(!fs.existsSync(path.join(repoSkills, 'ade-dev')), '未宣告 both 的 hub skill 不應出現在 ADE repo 的 .claude/skills')
+  assert(!fs.existsSync(path.join(repoSkills, 'ade-ship')), '未宣告 both 的 hub skill 不應出現在 ADE repo 的 .claude/skills')
   const pkg = readJson(path.join(ade, 'package.json'))
   assert('upstream' in pkg.ade, 'ade.upstream 應寫入')
   assert.strictEqual(pkg.scripts.check, 'node cli.js check', 'ADE repo 應提供 check 指令')
@@ -34,7 +34,6 @@ test('create 產出的 ADE repo 結構', () => {
   assert(fs.existsSync(path.join(ade, 'hub/knowledge/CONTEXT.md')), '詞彙表應位於知識庫根目錄')
   assert(!fs.existsSync(path.join(ade, 'CONTEXT.md')), 'ADE repo 根目錄不應另有詞彙表')
   assert(fs.existsSync(path.join(ade, 'UPSTREAM-CANDIDATES.md')), 'UPSTREAM-CANDIDATES.md 應存在')
-  assert(fs.existsSync(path.join(ade, 'docs/ade-dev-workflow-changelog.md')), '開發流程的規則異動紀錄應留在 ADE repo')
 })
 
 test('pre-commit hook 在尚未安裝依賴時略過檢查而不擋下 commit', () => {

@@ -9,7 +9,7 @@
 ADE 把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十八支 `ade-*` skill，把「我們怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「我們怎麼開需求、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：Forge 中的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -166,14 +166,9 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
 
 預設的分類是服務（`services/`）、流程（`process/`）、產品規格（`specs/`）與 PRD（`prd/`），各分類的定位寫在各自的 `README.md`，由 [`hub/knowledge/README.md`](hub/knowledge/README.md) 導覽。建立或修改知識的規則見 `hub/knowledge/process/build-knowledge.md`，由 `ade-build-knowledge` 引導。
 
-### 3. 產品規格 ≠ 實作規格
+### 3. 產品規格描述現況與已定案的行為
 
-兩個詞在 ADE 有嚴格分工，混用會出事（完整詞彙表見 [`hub/knowledge/CONTEXT.md`](hub/knowledge/CONTEXT.md)）：
-
-- **產品規格（Spec）**— `knowledge/specs/` 的長期資產，描述產品**當前**的整體功能，由 PO 持續迭代。
-- **實作規格**— 一次開發的產出，只描述該次範圍，存在 Forge 中，簽核後**凍結**。事後同步產品規格時**以實作結果為準**，不以它為準。
-
-產品規格同時承載「已上線的現況」與「已定案未開發」兩種資訊，靠尚未實作標記 `> 尚未實作（[PRD 標題](kb:prd/<id>)）` 區分——所以讀 spec 的人永遠知道哪些行為現在真的存在。
+**產品規格（Spec）**是 `knowledge/specs/` 的長期資產，描述產品**當前**的整體功能，由 PO 持續迭代（名詞見 [`hub/knowledge/CONTEXT.md`](hub/knowledge/CONTEXT.md)）。產品規格同時承載「已上線的現況」與「已定案未開發」兩種資訊，靠尚未實作標記 `> 尚未實作（[PRD 標題](kb:prd/<id>)）` 區分——所以讀 spec 的人永遠知道哪些行為現在真的存在。
 
 ### 4. 需求的完整生命週期
 
@@ -181,14 +176,14 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
 flowchart LR
     A["想法"] -->|"ade-create-prd"| B["PRD（已確認）"]
     B -->|"ade-prd-to-spec"| C["spec 加上尚未實作標記"]
-    C -->|"ade-dev"| D["實作完成"]
+    C -->|"開發"| D["實作完成"]
     D -->|"ade-align-spec"| E["移除標記<br/>PRD 標已實作"]
     E -.->|"ade-spec-audit 定期健檢"| C
 ```
 
 1. **PO** 用 `ade-create-prd` 把想法問成 PRD（含 Discovery 與盲點拷問），定案後標「已確認」
 2. **PO** 用 `ade-prd-to-spec` 把 PRD 融入 `specs/`，新行為加上尚未實作標記，逐項確認對齊
-3. **RD** 在 Forge 中走 `ade-dev` 六關開發，`ade-ship` 發 MR
+3. **RD** 在 Forge 中開發，以 `ade-ship` 發 MR
 4. **RD** 開發完跑 `ade-align-spec`：核對實作、移除尚未實作標記、PRD 標「已實作」，開 PR 回本 repo
 5. 虛線那條是補漏：hotfix 與直接改 code 不會經過上面四步，`ade-spec-audit` 定期抓出這種**規格漂移**
 
@@ -218,8 +213,6 @@ flowchart LR
 | 把新服務加進知識庫 | 「新增服務」 | `ade-add-service` |
 | 把一個想法整理成需求文件 | 「建 PRD」 | `ade-create-prd` |
 | 把定案的 PRD 落進規格 | 「PRD 轉 spec」 | `ade-prd-to-spec` |
-| 開始開發一個需求 | 「開始開發」／「繼續開發」 | `ade-dev` |
-| 一次把好幾個任務跑完 | 「批次開發」 | `ade-dev-auto` |
 | 交付：commit 與發 MR | 「commit」／「發 MR」 | `ade-commit`／`ade-ship` |
 | 開發完成，文件收尾 | 「對齊 spec」 | `ade-align-spec` |
 | 懷疑規格跟現況對不上 | 「規格還對嗎」 | `ade-spec-audit` |
@@ -246,9 +239,7 @@ flowchart LR
 | **`ade-list-service`** | 列出目前所有已註冊的服務（「有哪些服務」）。讀各描述檔的 `name` 與 `description` 列出清單，並回報欄位缺漏或名稱與檔名不一致之處。只讀不改。 | ✅ |
 | **`ade-create-prd`** | 引導 PO 產出標準化 PRD（「建 PRD」），涵蓋「只有模糊想法」到「照範本填寫」兩種起點。想法未成形先跑 **Discovery** 7 題（一批 2–3 題，已有答案的跳過），接著對照服務總覽、既有 spec 與進行中 PRD 用團隊詞彙寫入 `knowledge/prd/`，再進**盲點拷問**（邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收可測性、相鄰功能），需求描述一律寫成含例外處置（Fallback）欄的 GWT 決策表，最後用 `validate-prd.sh` 機械檢查（含檔名與決策表結構），並向使用者交代 agent 自己沒把握的風險與未決清單。**不自動翻狀態**——留「草稿」，PO 確認才改「已確認」；實作前取消改「已廢止」。 | ✅ |
 | **`ade-prd-to-spec`** | 把已確認的 PRD 落入規格（「PRD 轉 spec」）。找出受影響的 spec（必要時新建），將需求寫成「功能完成後應有的樣子」，並在每個新增／變更的行為區塊上方加上指向該 PRD 的尚未實作標記——spec 因此同時承載「已上線現況」與「已定案未開發」，靠標記區分。完成後回填 PRD 的「Spec 異動摘要」，帶 PO 逐項確認。產出即 RD 開發時的規格依據。 | ✅ |
-| **`ade-dev`** | 判準制標準開發流程（「開始開發」「繼續開發」）。六關：規格（實作規格，人簽核後凍結）→ 規劃（Phase 地圖）→ 實作（逐 Phase 輪到才展開，TDD 紅→綠，交前兩軸審查）→ 測試審視 → 沉澱 → Ship。每關只定義產出與過關判準，不規定做法；狀態全在 `.ade-dev/`，session 可隨時 `/clear` 換手。內建 **Spec Ready gate G1–G8 與 auto-pilot 模式**，配零容忍煞車與有限重試。規則全在 `knowledge/process/ade-dev-workflow/`，skill 只是指標。 | — |
-| **`ade-dev-auto`** | 串接多個 ade-dev 任務的批次執行器（「批次開發」）。列出 `.ade-dev/` 下未完成任務供多選，逐顆跑 Spec Ready 判定，不合格的問人補齊或剔除，全數就緒後依序 auto-pilot 執行。只定義批次層 B1–B4 與批次熔斷，任務內判準全在 ade-dev。 | — |
-| **`ade-ship`** | 從服務 repo 分支發出 MR／PR（「發 MR」「ship」），也是 ade-dev 第 6 關與 ade-dev-auto 的交付通道。偵測平台（GitHub → `gh`、GitLab → `glab`，退 API）、專案自有範本優先（GitHub 六個位置＋組織預設、GitLab 設定層與 `.gitlab/merge_request_templates/`）、沒有就用內建 `templates/mr.md`，依實際 diff 填寫後發出並回報 URL。不自動 merge。 | — |
+| **`ade-ship`** | 從服務 repo 分支發出 MR／PR（「發 MR」「ship」）。偵測平台（GitHub → `gh`、GitLab → `glab`，退 API）、專案自有範本優先（GitHub 六個位置＋組織預設、GitLab 設定層與 `.gitlab/merge_request_templates/`）、沒有就用內建 `templates/mr.md`，依實際 diff 填寫後發出並回報 URL。不自動 merge。 | — |
 | **`ade-commit`** | commit 訊息慣例解析，任何要在服務 repo commit 的場景使用。依序找專案自述（CLAUDE.md／AGENTS.md／CONTRIBUTING）→ commitlint 等設定檔 → 既有 git log 風格 → 都沒有才用 ADE 預設（`knowledge/process/git-commit.md`，Conventional Commits）。一個 commit 一件事。 | — |
 | **`ade-align-spec`** | 開發收尾的文件對齊（「開發完了更新 spec」）。對照實際實作依 PRD 的 id 逐一核對它的尚未實作標記：做完且一致的移除、有出入的**以實作為準**改 spec 並記差異、沒做的保留；驗收項全完成時 PRD 轉「已實作」。最後開 PR 把差異清單交 PO 判斷。只動屬於這次 PRD 的標記。 | — |
 | **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
@@ -274,13 +265,13 @@ hub/                     # init／update 注入每個 Forge 的內容
 │   ├── README.md        # 查找方式與分類導覽
 │   ├── CONTEXT.md       # 詞彙表：ADE 與 Forge、知識庫、開發流程與產品領域的名詞
 │   ├── services/        # 服務：README.md 加上一服務一份的描述檔 yaml
-│   ├── process/         # 流程與團隊慣例，含建立知識的規則與 ade-dev-workflow/ 開發流程規則
+│   ├── process/         # 流程與團隊慣例，含建立知識、撰寫 PRD 與 ADR 的規則
 │   ├── specs/           # 產品規格，持續迭代的事實來源
 │   └── prd/             # 一次開發一份的需求文件，歷史文件不迭代
-└── skills/              # Forge 的 .claude/skills/（十八支，見上方 Skills）
+└── skills/              # Forge 的 .claude/skills/（十六支，見上方 Skills）
 .claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
 .githooks/pre-commit     # commit 前產生 ADR 與知識庫的索引、執行知識庫檢查（pnpm install 時啟用）
-docs/                    # 只給維護者讀、不注入 Forge 的文件：adr/ 決策紀錄、開發流程的規則異動紀錄
+docs/                    # 只給維護者讀、不注入 Forge 的文件，例如 adr/ 決策紀錄
 UPSTREAM-CANDIDATES.md   # 本地模式下 [upstream-candidate] 的落點（有 issue tracker 時留空）
 ```
 

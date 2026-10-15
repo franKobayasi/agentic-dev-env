@@ -25,7 +25,7 @@ git config core.hooksPath .githooks
 
 這個定位衍生出四條撰寫約束：
 
-- **以 ADE 的視角撰寫。** seed 內的路徑必須以 create 產出的 ADE 根目錄為準，不得出現 `seed/` 或本 repo 的相對路徑。因此 `seed/repo/` 內指向 `hub/` 的相對連結，在 seed 內是斷的，在 ADE 內才成立。提及本 repo 時應稱為「上游 create-agentic-dev-env」；引用本 repo 的檔案（例如 `docs/research/`）時必須使用 GitHub URL。
+- **以 ADE 的視角撰寫。** seed 內的路徑必須以 create 產出的 ADE 根目錄為準，不得出現 `seed/` 或本 repo 的相對路徑。因此 `seed/repo/` 內指向 `hub/` 的相對連結，在 seed 內是斷的，在 ADE 內才成立。提及本 repo 時應稱為「上游 create-agentic-dev-env」；引用本 repo 的檔案時必須使用 GitHub URL。
 - **知識庫內的位置寫成 `knowledge/…`。** `knowledge/…` 代表知識庫根目錄，在 ADE 內是 `hub/knowledge/`，在 Forge 內是 `.claude/ade/knowledge/`，這條約定寫在 `seed/repo/CLAUDE.md`。描述 repo 結構本身時，例如判斷所在位置、指定建檔位置或建立 symlink，應寫從 repo 根目錄起算的完整路徑。
 - **不含任何公司知識。** `hub/knowledge/` 不得放入公司知識，只放結構、範本與通用流程，實際內容由各團隊在自己的 ADE 填寫。
 - **改動只影響新建的 repo。** 因此可以調整 seed 的結構，但 runner 讀取的部分受契約 A（runner 依賴的 ADE 結構）約束，見下一節的表格。
@@ -59,7 +59,7 @@ seed 只有兩個子目錄，分別是 ADE 兩個部分的原料：
 | `githooks/` | `.githooks/` | commit 前產生 ADR 與知識庫的索引、執行知識庫檢查的 hook；`pnpm install` 時由 `package.json` 的 `prepare` 啟用 |
 | `gitignore` | `.gitignore` | |
 | `package.json`、`cli.js` | 同名 | runner 讀取 `package.json` 的 `repository.url`；`cli.js` 只委派給 runner，不得包含邏輯 |
-| `docs/` | 同名 | ADE 維護者閱讀、不注入 Forge 的文件，例如決策紀錄 `adr/` 與開發流程的規則異動紀錄 |
+| `docs/` | 同名 | ADE 維護者閱讀、不注入 Forge 的文件，例如決策紀錄 `adr/` |
 | `CLAUDE.md`、`README.md`、`UPSTREAM-CANDIDATES.md` | 同名 | 前兩者必須位於 repo 根目錄，Claude Code 與程式碼託管平台才會讀取 |
 
 skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種使用對象的放置方式：

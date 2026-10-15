@@ -28,17 +28,12 @@ test('init 注入知識庫、skill 與常駐區段', () => {
   assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.yaml')), '服務 YAML 模板應存在')
   assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.md')), '舊 md 服務模板應移除')
   assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), '知識庫的入口檔應複製')
-  for (const f of ['README', 'state', 'gates', 'review', 'auto-pilot', 'batch']) {
-    assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow', f + '.md')), `ade-dev 規則檔應複製：${f}.md`)
-  }
-  assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow/research')), 'research 不應隨 seed 複製')
   assert(!fs.existsSync(path.join(work, '.claude/ade/UPSTREAM-CANDIDATES.md')), 'ADE repo 根目錄檔案不應複製進工作目錄')
-  assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/process/ade-dev-workflow/CHANGELOG.md')), 'agent 不載入的規則異動紀錄不應注入 ADE')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), 'skills 應複製')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-spec-audit/SKILL.md')), 'spec-audit skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-add-skill/SKILL.md')), 'add-skill skill 應注入')
-  for (const s of ['ade-create-prd', 'ade-prd-to-spec', 'ade-update', 'ade-help', 'ade-commit', 'ade-ship', 'ade-list-service', 'ade-dev', 'ade-dev-auto', 'ade-config']) {
+  for (const s of ['ade-create-prd', 'ade-prd-to-spec', 'ade-update', 'ade-help', 'ade-commit', 'ade-ship', 'ade-list-service', 'ade-config']) {
     assert(fs.existsSync(path.join(work, '.claude/skills', s, 'SKILL.md')), `${s} 應注入工作目錄`)
   }
   assert(!fs.existsSync(path.join(work, '.claude/skills/ade-feedback-upstream')), 'ADE repo 專用 skill 不應注入工作目錄')

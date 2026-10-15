@@ -3,6 +3,29 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [1.6.1] - 2026-10-16
+
+seed 移除開發流程的 skill 與知識，Generator 不再提供開發流程，由各 ADE 依需求自行建立或採用社群的 skill；並修正 `adr.js` 在 pre-commit hook 中的誤判。runner 與契約不變。
+
+### 移除 `ade-dev`、`ade-dev-auto` 與開發流程的規則
+
+**為什麼**：開發流程已有大量社群開源的 skill，seed 這一版已經過時；seed 在 create 時複製進每個新的 ADE，過時的流程會隨之進入每個新建的 ADE。決策見 `docs/adr/0013-remove-dev-workflow-skills-from-seed.md`。
+
+**怎麼做**：
+
+- seed 刪除 `hub/skills/ade-dev/`、`hub/skills/ade-dev-auto/`、`hub/knowledge/process/ade-dev-workflow/` 與 `repo/docs/ade-dev-workflow-changelog.md`
+- 詞彙表刪除只為開發流程服務的詞條：實作規格、關、Phase、交付定義、展開、AC、Task、Spec Ready、Auto-pilot、煞車、熔斷；產品規格移到「知識庫」一節
+- `ade-ship`、`ade-commit`、`ade-feedback-upstream` 移除對 ade-dev 的引用；README 的核心概念「產品規格 ≠ 實作規格」改為「產品規格描述現況與已定案的行為」
+- Generator 刪除 `docs/research/`，研究檔可從 `v1.6.0` 的 tag 取回
+
+既存的 ADE 不受影響：seed 的修改不會傳到既存的 ADE，其中的 `ade-dev` 與規則是否保留由各 ADE 決定。
+
+### 修正：`adr.js` 在 pre-commit hook 中把既有 ADR 誤判為刪除
+
+**為什麼**：git 執行 hook 時設定 `GIT_DIR`，git 因而把目前目錄當成 work tree 的根目錄；`adr.js` 在 ADR 目錄內執行 git，目錄外的路徑全部被視為刪除，hook 擋下所有修改 `docs/adr/` 的 commit。1.6.0 的 ADE 與 Generator 都受影響。
+
+**怎麼做**：`adr.js` 執行 git 前移除 `GIT_DIR` 與 `GIT_WORK_TREE`，改由目前目錄找到 repo。`tests/create-adr.test.js` 加入設有 `GIT_DIR` 的案例。既存的 1.6.0 ADE 可從本版 seed 複製 `hub/skills/ade-create-adr/adr.js`。
+
 ## [1.6.0] - 2026-10-16
 
 本版改寫 seed 的知識庫為新的形式標準（id、符號位址、詞彙表與入口檔），runner 新增 `check` 與 `index` 子命令，名詞改為 Generator、ADE 與 Forge，並收緊 PRD 的結構與生命週期。runner 對契約 A、B 只有新增、沒有變更，既存 ADE 升級 runner 不需要遷移；想採用新的知識庫標準時，見本版最後一節「既存 ADE 採用新的知識庫標準」。

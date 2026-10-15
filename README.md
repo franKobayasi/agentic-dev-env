@@ -9,7 +9,7 @@
 本工具生成並維護一種 repo（**ADE**）來把這兩件事抽出來共用：
 
 - **知識**（`hub/knowledge/`）— 服務 registry、跨服務流程慣例、產品規格與 PRD。agent 需要時自己去讀，不用人轉述。
-- **方法**（`hub/skills/`）— 十八支 `ade-*` skill，把「怎麼開需求、怎麼開發、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
+- **方法**（`hub/skills/`）— 十六支 `ade-*` skill，把「怎麼開需求、怎麼交付、怎麼維護文件」寫成 agent 照著跑的流程。
 
 再加一條讓它不會腐爛的機制：Forge 裡的知識是**唯讀副本**，agent 用的過程中發現內容與現實不符，會**當場開 PR 修回來**，人只需要 review。
 
@@ -33,7 +33,7 @@
 pnpm dlx create-agentic-dev-env my-ade
 ```
 
-生成的 `my-ade/` 帶完整結構、十九支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
+生成的 `my-ade/` 帶完整結構、十七支 skills、一份給團隊讀的 README（安裝步驟、核心概念、場景速查、逐支 skill 詳解都在裡面）。接著：
 
 1. 填 `my-ade/package.json` 的 `repository.url`——放 GitHub／GitLab 填 git url；只在本地填絕對路徑（見[本地模式](#本地模式ade-不放-githubgitlab)）
 2. `git add -A && git commit`（init／update 都從 commit 取內容，沒有 commit 會被擋下），放 GitHub／GitLab 的再 push
@@ -103,9 +103,9 @@ pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，�
 
 seed 預設提供三個分類：跨服務知識與團隊慣例（`process/`）、取得服務的最小資訊（`services/`）、產品規格與需求（`specs/`、`prd/`），團隊可以自行調整。原則見[收錄範圍](docs/core-concepts/knowledge/scope.md)。
 
-### 3. 產品規格 ≠ 實作規格
+### 3. 產品規格描述現況與已定案的行為
 
-**產品規格**是 `knowledge/specs/` 的長期資產，描述產品當前的整體功能，由 PO 持續迭代；**實作規格**是一次開發的產出，活在 Forge，簽核後凍結。產品規格以尚未實作標記 `> 尚未實作（[PRD 標題](kb:prd/<id>)）` 同時承載「已上線現況」與「已定案未開發」。
+**產品規格**是 `knowledge/specs/` 的長期資產，描述產品當前的整體功能，由 PO 持續迭代。產品規格以尚未實作標記 `> 尚未實作（[PRD 標題](kb:prd/<id>)）` 同時承載「已上線現況」與「已定案未開發」。
 
 ### 4. 需求的完整生命週期
 
@@ -113,26 +113,22 @@ seed 預設提供三個分類：跨服務知識與團隊慣例（`process/`）�
 flowchart LR
     A["想法"] -->|"ade-create-prd"| B["PRD（已確認）"]
     B -->|"ade-prd-to-spec"| C["spec 加上尚未實作標記"]
-    C -->|"ade-dev"| D["實作完成"]
+    C -->|"開發"| D["實作完成"]
     D -->|"ade-align-spec"| E["移除標記<br/>PRD 標已實作"]
     E -.->|"ade-spec-audit 定期健檢"| C
 ```
 
-PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 落進 spec 加上尚未實作標記 → RD 走 `ade-dev` 六關開發、`ade-ship` 發 MR → `ade-align-spec` 以實作為準收尾。虛線是補漏：hotfix 與直接改 code 繞過流程時，`ade-spec-audit` 抓規格漂移。
+PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 落進 spec 加上尚未實作標記 → RD 開發、`ade-ship` 發 MR → `ade-align-spec` 以實作為準收尾。虛線是補漏：hotfix 與直接改 code 繞過流程時，`ade-spec-audit` 抓規格漂移。
 
-### 5. 判準制開發流程
-
-`ade-dev` 六關：規格 → 規劃（Phase 地圖）→ 逐 Phase 實作（輪到才展開、TDD 紅→綠、交前兩軸審查）→ 測試審視 → 沉澱 → Ship。每關只定義產出與過關判準，不規定做法；狀態全落檔、可換 session 接手。Spec Ready G1–G8 全 PASS 的任務可 **auto-pilot** 無人把關跑完，`ade-dev-auto` 批次串接。規則住在 ADE 的 `hub/knowledge/process/ade-dev-workflow/`，證據盤點在本 repo [`docs/research/ade-dev/`](docs/research/ade-dev/)（不隨 ADE 複製）。
-
-### 6. Context 是最稀缺的資源
+### 5. Context 是最稀缺的資源
 
 貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（入口檔只寫何時閱讀，每份知識以 `description` 一句話說明內容）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
 
-### 7. 機制回饋上游，內容不外流
+### 6. 機制回饋上游，內容不外流
 
 各 ADE 在使用中演化出的 skill 寫法、模板、流程改良，由 `ade-feedback-upstream` 以 issue 回本專案，所有 ADE 受益；`knowledge/` 下的公司知識絕不外流。原則見[知識的流向](docs/core-concepts/knowledge-flow.md)。
 
-### 8. 知識記錄事實，skill 封裝執行
+### 7. 知識記錄事實，skill 封裝執行
 
 知識記錄事實本身，例如規則、判準與流程的定義；skill 引用知識，並依知識撰寫腳本，讓 agent 能夠執行。skill 不重述知識，知識庫也不放可執行的腳本，同一件事只記一次，人與 agent 讀到的是同一份事實。判斷一項內容該寫在哪裡，問的是：人不透過 agent 做這件事時，是否需要知道它。原則見[知識與 skill](docs/core-concepts/knowledge-and-skill.md)。
 
@@ -140,7 +136,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ## Skills
 
-ADE 帶十九支 skill，逐支詳解在生成的 ADE README；這裡只列用途。「兩邊」＝Forge 與 ADE 內都可用。
+ADE 帶十七支 skill，逐支詳解在生成的 ADE README；這裡只列用途。「兩邊」＝Forge 與 ADE 內都可用。
 
 | Skill | 一句話 | 可用處 |
 | --- | --- | --- |
@@ -152,8 +148,6 @@ ADE 帶十九支 skill，逐支詳解在生成的 ADE README；這裡只列用�
 | `ade-list-service` | 列出已註冊服務，回報總覽與描述檔不一致處 | 兩邊 |
 | `ade-create-prd` | Discovery 7 題 → 對照既有知識 → 建檔 → 盲點拷問 → 機械驗證 | 兩邊 |
 | `ade-prd-to-spec` | 已確認 PRD 融入 spec，加上尚未實作標記 | 兩邊 |
-| `ade-dev` | 判準制六關開發流程，含 Spec Ready 與 auto-pilot | Forge |
-| `ade-dev-auto` | 多任務批次執行器（B1–B4、熔斷） | Forge |
 | `ade-commit` | commit 慣例解析：專案自述 → commitlint → log 風格 → ADE 預設 | Forge |
 | `ade-ship` | 發 MR／PR：平台偵測、專案範本優先、內建預設範本、不自動 merge | Forge |
 | `ade-align-spec` | 開發收尾：以實作為準核對尚未實作標記、PRD 標已實作、開 PR | Forge |
@@ -177,7 +171,6 @@ docs/
 ├── adr/                     # 決策紀錄：考慮過的方案與選擇的理由
 ├── development-guide.md     # 開發指引：seed 的定位、各部分去向、create 的處理、改動時的同步清單
 ├── dependency-contract.md   # Generator ↔ ADE ↔ Forge 的契約，改 runner 或 seed 前必讀
-└── research/ade-dev/        # ade-dev 各規則的證據盤點，規則檔以 URL 引用
 tests/               # 端到端自測：create、init、update 分檔，是契約的可執行版本
 ```
 
