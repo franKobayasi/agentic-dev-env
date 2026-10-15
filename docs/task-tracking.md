@@ -108,6 +108,7 @@ GIT_SSH_COMMAND="ssh -i <金鑰路徑> -o IdentitiesOnly=yes" bd dolt push
 | 指定狀態的任務 | `bd list --status open,in_progress` |
 | 包含已關閉項目的全部任務 | `bd list --all` |
 | 已定案的決策 | `bd list -t decision --all` |
+| 全部的 wayfinder 地圖 | `bd list -l wayfinder:map` |
 
 `bd list` 預設不顯示已關閉的項目。指定多個狀態時，必須以逗號分隔寫在同一個 `--status` 參數內；重複寫 `--status` 時，只有最後一個生效。
 
@@ -140,8 +141,8 @@ GIT_SSH_COMMAND="ssh -i <金鑰路徑> -o IdentitiesOnly=yes" bd dolt push
 
 | 概念 | bd 中的對應 |
 |---|---|
-| Map | 一個 EPIC，描述欄記錄 Notes、Decisions-so-far 與 Fog |
-| Child ticket | 以 `--parent <epic-id>` 建立的任務，並以 `-l` 標記類型：`research`、`prototype`、`grilling` 或 `task` |
+| Map | 一個 EPIC，標籤為 `wayfinder:map`；描述欄依序記錄 Destination、Notes、Decisions so far、Not yet specified 與 Out of scope |
+| Child ticket | 以 `--parent <epic-id>` 建立的任務，並以 `-l wayfinder:<類型>` 標記類型，類型為 `research`、`prototype`、`grilling` 或 `task` |
 | Blocking | `bd dep add <被阻擋的 id> <阻擋它的 id>` |
 | Frontier | `bd ready --parent <epic-id>` 列出的任務 |
 | Claim | `bd update <id> --claim`，必須在開始任何工作之前執行。認領後狀態變成 `in_progress`，平行的 session 執行 `bd ready` 時不會再挑到同一張 ticket |
