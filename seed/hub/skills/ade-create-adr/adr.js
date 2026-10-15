@@ -62,7 +62,11 @@ function validate(adrs) {
 
 // 與主幹的分岔點比較；不在 git repo 內或找不到分岔點（例如淺層 clone）時略過這項檢查
 function removedOrRenamed() {
-  const sh = c => execSync(c, { cwd: DIR, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+  // git hook 會設定 GIT_DIR，git 因而把 cwd 當成 work tree 的根目錄；移除後改由 cwd 找到 repo
+  const env = { ...process.env }
+  delete env.GIT_DIR
+  delete env.GIT_WORK_TREE
+  const sh = c => execSync(c, { cwd: DIR, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
   let base
   for (const ref of ['origin/HEAD', 'origin/main', 'main']) {
     try { base = sh(`git merge-base HEAD ${ref}`); break } catch {}

@@ -5,10 +5,10 @@ const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
 const runner = require('../lib/runner')
-const { tmpdir, createAde, workdir } = require('./helpers')
+const { git, tmpdir, createAde, workdir } = require('./helpers')
 
 const script = path.join(__dirname, '..', 'seed/hub/skills/ade-create-adr/adr.js')
-const adr = (cmd, dir) => spawnSync('node', [script, cmd, dir], { encoding: 'utf8' })
+const adr = (cmd, dir, opts = {}) => spawnSync('node', [script, cmd, dir], { encoding: 'utf8', ...opts })
 
 test('ade-create-adr 兩邊可用：ADE 內有 symlink 與 docs/adr/，init 注入 Forge', () => {
   const tmp = tmpdir()
@@ -35,4 +35,18 @@ test('adr.js sync 依指定目錄產生索引，check 擋下不連續的編號',
   const r = adr('check', dir)
   assert.notStrictEqual(r.status, 0)
   assert.match(r.stderr, /編號應為 0002/)
+})
+
+test('adr.js 在 git hook 的環境（設有 GIT_DIR）中不把既有 ADR 誤判為刪除', () => {
+  const repo = tmpdir()
+  const dir = path.join(repo, 'docs/adr')
+  fs.mkdirSync(dir, { recursive: true })
+  fs.writeFileSync(path.join(dir, '0001-first.md'), '---\nstatus: accepted\ndate: 2026-01-01\noutcome: "結論"\n---\n\n# 第一份\n')
+  git('init -q -b main', repo)
+  assert.strictEqual(adr('sync', dir).status, 0)
+  git('add -A', repo)
+  git('commit -qm init', repo)
+  git('switch -qc feature', repo)
+  const r = adr('check', 'docs/adr', { cwd: repo, env: { ...process.env, GIT_DIR: path.join(repo, '.git') } })
+  assert.strictEqual(r.status, 0, r.stderr)
 })
