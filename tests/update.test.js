@@ -69,6 +69,11 @@ test('非 ade- 前綴的 skill 應被拒裝（在破壞前驗證）', () => {
   git('add -A', ade)
   git('commit -m rogue', ade)
   assert.throws(() => runner.update(work), /ade-/, '非 ade- 前綴 skill 應報錯')
+  assert(
+    fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')) &&
+      fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')),
+    '拒裝時既有 managed 內容必須原封不動'
+  )
 })
 
 test('update 沿用 .ade.json 的 workspaces 設定並保留 symlink', () => {
