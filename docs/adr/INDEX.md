@@ -6,6 +6,7 @@
 
 | ADR | 標題 | 狀態 | 結論 | 影響與備註 |
 |---|---|---|---|---|
+| [0010](./0010-knowledge-system-state-in-injected-readmes.md) | 知識體系的現況寫在注入的入口檔，理由寫在 ADE repo 的 ADR | `accepted` | 知識體系的現況寫在注入 ADE 的入口檔：根目錄 README.md 導覽分類，各分類 README.md 寫定位、文件類型與範本；體系設計的理由寫在 ADE repo 的 ADR，不注入 | 不另寫一份知識體系設計文件；修正 ade-jeb.1「repo/ 層決定分類與定位」的說法，repo/ 層只保留理由 |
 | [0009](./0009-frontmatter-fields-defined-by-reading-mechanism.md) | frontmatter 的欄位由讀取它的機制決定 | `accepted` | 框架只定義生成器的機制必須讀取的 frontmatter 欄位，即必填的 `id` 與 `description`；其他欄位由 ADE repo 依文件類型自行加入 | 分類、標題與 `status` 不由框架定義；會被程式或 skill 讀取的屬性應寫在 frontmatter；資料夾 README.md 開頭的一句話改由 `description` 擔任 |
 | [0008](./0008-record-relation-on-dependent-side.md) | 知識之間的關聯由依賴方記錄 | `accepted` | 知識之間的關聯只記一側：由依賴方記錄，指向被依賴方；對等關係由後建立的一側記錄；反向查找以搜尋完成 | 新增知識時只需修改它自己；雙向記錄無法機械判斷，由 skill 與 seed 落實；由程式產生反向索引不在本決策的範圍內，日後可以加上 |
 | [0007](./0007-knowledge-records-facts-skill-wraps-execution.md) | 知識記錄事實，skill 引用知識並封裝執行 | `accepted` | 知識記錄事實，skill 引用知識並封裝執行；人不透過 agent 做事時也需要知道的內容放在知識，只有 agent 執行時需要的放在 skill | skill 不得重述知識；腳本屬於 skill，知識庫不放可執行的腳本；取代 docs/research/ade-dev/research-skill-boundaries.md §1.2 的結論 |
