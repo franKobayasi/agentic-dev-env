@@ -141,7 +141,7 @@ GIT_SSH_COMMAND="ssh -i <金鑰路徑> -o IdentitiesOnly=yes" bd dolt push
 
 | 概念 | bd 中的對應 |
 |---|---|
-| Map | 一個 EPIC，標籤為 `wayfinder:map`；描述欄依序記錄 Destination、Notes、Decisions so far、Not yet specified 與 Out of scope |
+| Map | 一個 EPIC，標籤為 `wayfinder:map`。描述欄依序記錄 Destination、Notes、Not yet specified 與 Out of scope；Decisions so far 記錄在 notes 欄，一個決策一行 |
 | Child ticket | 以 `--parent <epic-id>` 建立的任務，並以 `-l wayfinder:<類型>` 標記類型，類型為 `research`、`prototype`、`grilling` 或 `task` |
 | Blocking | `bd dep add <被阻擋的 id> <阻擋它的 id>` |
 | Frontier | `bd ready --parent <epic-id>` 列出的任務 |
