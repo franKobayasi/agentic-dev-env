@@ -5,6 +5,10 @@
   "bin": {
     "__ADE_NAME__": "./cli.js"
   },
+  "scripts": {
+    "check": "node cli.js check",
+    "prepare": "git config core.hooksPath .githooks || true"
+  },
   "repository": {
     "type": "git",
     "url": "FILL_ME: git@github.com:ORG/__ADE_NAME__.git"

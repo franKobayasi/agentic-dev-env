@@ -1,0 +1,7 @@
+#!/bin/sh
+# commit 前檢查知識庫的語法；規則見 hub/knowledge/process/build-knowledge.md
+if [ ! -d node_modules/create-agentic-dev-env ]; then
+  echo "ADE check skipped: run pnpm install to enable the knowledge base check" >&2
+  exit 0
+fi
+exec node cli.js check

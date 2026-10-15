@@ -105,20 +105,20 @@ seed 預設提供三個分類：跨服務知識與團隊慣例（`process/`）�
 
 ### 3. 產品規格 ≠ 實作規格
 
-**產品規格**是 `knowledge/specs/` 的長期資產，描述產品當前的整體功能，由 PO 持續迭代；**實作規格**是一次開發的產出，活在工作目錄，簽核後凍結。產品規格以 `🚧 尚未實作（PRD: …）` 標記同時承載「已上線現況」與「已定案未開發」。
+**產品規格**是 `knowledge/specs/` 的長期資產，描述產品當前的整體功能，由 PO 持續迭代；**實作規格**是一次開發的產出，活在工作目錄，簽核後凍結。產品規格以尚未實作標記 `> 尚未實作（[PRD 標題](kb:prd/<id>)）` 同時承載「已上線現況」與「已定案未開發」。
 
 ### 4. 需求的完整生命週期
 
 ```mermaid
 flowchart LR
     A["想法"] -->|"ade-create-prd"| B["PRD（已確認）"]
-    B -->|"ade-prd-to-spec"| C["spec 標 🚧 尚未實作"]
+    B -->|"ade-prd-to-spec"| C["spec 加上尚未實作標記"]
     C -->|"ade-dev"| D["實作完成"]
-    D -->|"ade-align-spec"| E["移除 🚧<br/>PRD 標已實作"]
+    D -->|"ade-align-spec"| E["移除標記<br/>PRD 標已實作"]
     E -.->|"ade-spec-audit 定期健檢"| C
 ```
 
-PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 落進 spec 標 🚧 → RD 走 `ade-dev` 六關開發、`ade-ship` 發 MR → `ade-align-spec` 以實作為準收尾。虛線是補漏：hotfix 與直接改 code 繞過流程時，`ade-spec-audit` 抓規格漂移。
+PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 落進 spec 加上尚未實作標記 → RD 走 `ade-dev` 六關開發、`ade-ship` 發 MR → `ade-align-spec` 以實作為準收尾。虛線是補漏：hotfix 與直接改 code 繞過流程時，`ade-spec-audit` 抓規格漂移。
 
 ### 5. 判準制開發流程
 
@@ -126,7 +126,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ### 6. Context 是最稀缺的資源
 
-貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（`services/index.md` 一兩行定位，細節在各自 yaml）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
+貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（入口檔只寫何時閱讀，每份知識以 `description` 一句話說明內容）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
 
 ### 7. 機制回饋上游，內容不外流
 
@@ -151,12 +151,12 @@ ADE repo 帶十八支 skill，逐支詳解在生成的 ADE repo README；這裡�
 | `ade-add-service` | 依 `_template.yaml` 註冊服務並同步總覽 | 兩邊 |
 | `ade-list-service` | 列出已註冊服務，回報總覽與描述檔不一致處 | 兩邊 |
 | `ade-create-prd` | Discovery 7 題 → 對照既有知識 → 建檔 → 盲點拷問 → 機械驗證 | 兩邊 |
-| `ade-prd-to-spec` | 已確認 PRD 融入 spec，標 🚧 尚未實作 | 兩邊 |
+| `ade-prd-to-spec` | 已確認 PRD 融入 spec，加上尚未實作標記 | 兩邊 |
 | `ade-dev` | 判準制六關開發流程，含 Spec Ready 與 auto-pilot | 工作目錄 |
 | `ade-dev-auto` | 多任務批次執行器（B1–B4、熔斷） | 工作目錄 |
 | `ade-commit` | commit 慣例解析：專案自述 → commitlint → log 風格 → ADE 預設 | 工作目錄 |
 | `ade-ship` | 發 MR／PR：平台偵測、專案範本優先、內建預設範本、不自動 merge | 工作目錄 |
-| `ade-align-spec` | 開發收尾：以實作為準核對 🚧、PRD 標已實作、開 PR | 工作目錄 |
+| `ade-align-spec` | 開發收尾：以實作為準核對尚未實作標記、PRD 標已實作、開 PR | 工作目錄 |
 | `ade-spec-audit` | spec 定期健檢，抓計畫外變更造成的規格漂移 | 工作目錄 |
 | `ade-add-skill` | 新增 skill 的 meta-skill：問使用對象、定位置、命名、README 同步 | 兩邊 |
 | `ade-add-process` | 建立流程慣例的 meta-skill：三層載體選擇＋context 紀律 | 兩邊 |

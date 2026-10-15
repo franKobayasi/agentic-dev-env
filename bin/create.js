@@ -24,6 +24,9 @@ fs.cpSync(path.join(seed, 'hub'), path.join(dest, 'hub'), { recursive: true })
 fs.renameSync(path.join(dest, 'gitignore'), path.join(dest, '.gitignore'))
 fs.mkdirSync(path.join(dest, '.claude'))
 fs.renameSync(path.join(dest, 'skills'), path.join(dest, '.claude', 'skills'))
+fs.renameSync(path.join(dest, 'githooks'), path.join(dest, '.githooks'))
+// npm 打包不保證保留執行權限，git 只執行可執行的 hook
+fs.chmodSync(path.join(dest, '.githooks', 'pre-commit'), 0o755)
 // 兩邊都用的 skill 單一真相在 hub/skills/，frontmatter 宣告 ade-scope: both 者 symlink 進 .claude/skills/
 const skillsDir = path.join(dest, '.claude', 'skills')
 for (const s of fs.readdirSync(path.join(dest, 'hub', 'skills'))) {

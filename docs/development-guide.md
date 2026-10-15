@@ -56,6 +56,7 @@ seed 只有兩個子目錄，分別是 ADE repo 兩個部分的原料：
 | `repo/` 內 | 在 ADE repo 成為 | 說明 |
 |---|---|---|
 | `skills/` | `.claude/skills/` | ADE repo 專用的 skill，以實體目錄存放 |
+| `githooks/` | `.githooks/` | commit 前執行知識庫檢查的 hook；`pnpm install` 時由 `package.json` 的 `prepare` 啟用 |
 | `gitignore` | `.gitignore` | |
 | `package.json`、`cli.js` | 同名 | runner 讀取 `package.json` 的 `repository.url`；`cli.js` 只委派給 runner，不得包含邏輯 |
 | `docs/` | 同名 | ADE repo 維護者閱讀、不注入 ADE 的文件，例如開發流程的規則異動紀錄 |
@@ -74,7 +75,7 @@ skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種�
 [`bin/create.js`](../bin/create.js) 依下列順序處理 seed：
 
 1. 將 `seed/repo/` 攤平複製為 `<name>/`，並將 `seed/hub/` 複製為 `<name>/hub/`。
-2. 將 `gitignore` 改名為 `.gitignore`，並將 `skills/` 移到 `.claude/skills/`。npm publish 會移除以點開頭的檔案與目錄，因此 seed 內一律以不含點的名稱存放。
+2. 將 `gitignore` 改名為 `.gitignore`、`githooks/` 改名為 `.githooks/`，並將 `skills/` 移到 `.claude/skills/`。npm publish 會移除以點開頭的檔案與目錄，因此 seed 內一律以不含點的名稱存放。
 3. 為 `hub/skills/` 中宣告 `ade-scope: both` 的 skill，在 `.claude/skills/` 建立 symlink。
 4. 掃描所有文字檔，將 `__ADE_NAME__` 替換為 repo 名稱。
 5. 在 `package.json` 寫入 `ade.upstream`（本 repo 的 `repository.url`），並將 `create-agentic-dev-env` 依賴鎖定為當下的精確版本。
