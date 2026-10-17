@@ -76,6 +76,22 @@ test('自訂作業區：workspaces 建成指向既有資料夾的 symlink', () =
   const full = path.join(tmp, 'work-full')
   fs.mkdirSync(path.join(full, 'workspaces', 'my-repo'), { recursive: true })
   assert.throws(() => runner.init(full, ade, '../shared-repos'), /not a symlink/, '非空實體目錄應報錯')
+  assert(!fs.existsSync(path.join(full, '.claude')), 'workspaces 衝突應在寫入任何檔案前擋下')
+})
+
+test('init 寫入途中失敗時，目錄回復原狀、可重跑', () => {
+  const tmp = tmpdir()
+  const ade = createAde(tmp)
+  const work = workdir(tmp, 'work')
+  const md = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')
+  // workspaces 的目標位於一般檔案之下，建立目錄時失敗；此時知識庫、skill 與 CLAUDE.md 都已寫入
+  fs.writeFileSync(path.join(tmp, 'afile'), '')
+  assert.throws(() => runner.init(work, ade, path.join(tmp, 'afile', 'sub')), /ENOTDIR|EEXIST/)
+  assert(!fs.existsSync(path.join(work, '.claude')), '失敗的 init 不應留下 .claude')
+  assert.strictEqual(fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8'), md, '失敗的 init 應回復 CLAUDE.md')
+  assert(!fs.existsSync(path.join(work, '.ade.json')) && !fs.existsSync(path.join(work, 'workspaces')), '失敗的 init 不應留下 .ade.json 與 workspaces')
+  runner.init(work, ade)
+  assert(fs.existsSync(path.join(work, '.ade.json')), '回復後 init 應可重跑')
 })
 
 test('套件目錄無 .git 時，commit 由 source 取得', () => {

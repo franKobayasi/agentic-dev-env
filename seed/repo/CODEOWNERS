@@ -1,0 +1,10 @@
+# 指定 review 的負責人：PR 修改到符合路徑的檔案時，自動請負責人 review。
+# GitHub 與 GitLab 都讀取 repo 根目錄的本檔；預設全部註解，不產生作用。
+# 填寫方式：取消註解，把 @ORG/... 換成團隊或成員的帳號；同一個檔案符合多條規則時，以最後一條為準。
+# 搭配分支保護的「要求 code owner review」，agent 經 ade-contribute 開的 PR 必須由負責人核准才能合併。
+
+# * @ORG/ade-maintainers
+# /hub/skills/ @ORG/ade-maintainers
+# /hub/knowledge/services/ @ORG/tech-leads
+# /hub/knowledge/specs/ @ORG/product-owners
+# /hub/knowledge/prd/ @ORG/product-owners

@@ -1,0 +1,24 @@
+# PR 與推送到主幹時檢查知識庫與 ADR，擋下沒有經過 pre-commit hook 的 commit；
+# 搭配分支保護把本 job 設為必要檢查，未通過的 PR 就無法合併
+name: ADE check
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # adr.js 比對與主幹的分岔點，淺層 clone 會略過 ADR 改名與刪除的檢查
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # 唯一的依賴是鎖定精確版本的 runner，不需要 lockfile 與 pnpm 也能裝到同一個版本
+      - run: npm install --no-audit --no-fund
+      - run: node cli.js check
+      - run: node hub/skills/ade-create-adr/adr.js check docs/adr

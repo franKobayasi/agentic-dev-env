@@ -78,6 +78,7 @@ revert 即可」。
   `source: null`；加 `workspaces` 欄位之前的檔案沒有該欄位。讀取端必須容忍缺省。
 - `CLAUDE.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更
 - `.claude/ade/` — 整個目錄視為 managed，update 全刪重建
+- 寫入的原子性 — init 與 update 先完成全部讀取與驗證（source、commit、skill 前綴、`CLAUDE.md` 標記、`workspaces` 的現況）才寫入任何檔案；寫入途中失敗時，runner 刪除寫到一半的 managed 內容，搬回 managed 區域的備份並還原 `CLAUDE.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。備份在寫入期間位於 `.claude/.ade-backup-*`，成功或回復後刪除；程序中斷而殘留的備份由下一次 init 或 update 刪除，managed 區域隨該次寫入整份重建
 - `.claude/skills/ade-*` — `ade-` 前綴即 managed，update 全刪重建；前綴規則不可變更，
   否則舊安裝的 skill 變成清不掉的孤兒
 - `workspaces` — 目錄或 symlink 兩種形態都合法；`.gitignore` 寫入不帶斜線的 `workspaces`

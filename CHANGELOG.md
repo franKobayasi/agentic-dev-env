@@ -3,6 +3,39 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [Unreleased]
+
+ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本；runner 的 init 與 update 改為先驗證再寫入、寫入途中失敗時回復原狀，並以參數陣列執行 git。契約 A 不變，契約 B 只新增寫入期間的備份目錄，既存的 ADE 與 Forge 不需要遷移。
+
+### ADE 的 CI workflow 與 `CODEOWNERS` 範本
+
+**為什麼**：pre-commit hook 只在執行過 `pnpm install` 的 clone 中生效，agent 在 Forge 的工作副本開的 PR 通常沒有安裝依賴，知識庫的檢查因此被略過；「agent 開 PR、人 review」也需要明確的 review 負責人。
+
+**怎麼做**：
+
+- seed 新增 `.github/workflows/check.yml`，在 PR 與推送到 `main` 或 `master` 時執行 `node cli.js check` 與 ADR 檢查；以 `npm install` 安裝鎖定版本的 runner，不需要 lockfile 與 pnpm
+- seed 新增根目錄的 `CODEOWNERS` 範本，預設全部註解，GitHub 與 GitLab 都會讀取
+- ADE 的 README 在初始設定加入「設定 PR 的把關」：把 workflow 設為分支保護的必要檢查、填寫 `CODEOWNERS` 並開啟 code owner review；GitLab 改在 `.gitlab-ci.yml` 執行相同的指令
+- `tests/create.test.js` 在新建的 ADE 上執行 workflow 的 `run` 指令，seed 改壞檢查時測試失敗
+
+既存的 ADE 可從本版 seed 複製 `repo/github/workflows/check.yml`（放到 `.github/workflows/`）與 `repo/CODEOWNERS`。
+
+### runner：先驗證再寫入，寫入途中失敗時回復原狀
+
+**為什麼**：update 先清除 managed 區域再逐一寫入，寫入途中失敗（磁碟空間、權限、`workspaces` 的目標無法建立）時，Forge 留下一半新、一半缺的內容；`workspaces` 衝突與 `CLAUDE.md` 標記損壞也要到知識庫與 skill 寫入之後才發現。
+
+**怎麼做**：
+
+- init 與 update 分成兩段：先完成全部讀取與驗證，再寫入；可預見的錯誤都在寫入前擋下，目錄保持原狀
+- 寫入前把 managed 區域搬進 `.claude/.ade-backup-*`；寫入途中失敗時刪除寫到一半的內容、搬回備份並還原 `CLAUDE.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。init 失敗時一併移除本次建立的空目錄，可直接重跑
+- 程序中斷而殘留的備份目錄由下一次 init 或 update 刪除
+
+### runner：以參數陣列執行 git
+
+**為什麼**：`git clone` 與 `git ls-remote` 以字串組成 shell 指令，`.ade.json` 的 `source` 含有引號時會被當成 shell 指令執行，以 `-` 開頭時會被當成 git 的選項。
+
+**怎麼做**：改用 `execFileSync` 以參數陣列執行 git，`source` 放在 `--` 之後；`tests/update.test.js` 以兩種惡意的 `source` 驗證不會被執行。
+
 ## [1.6.1] - 2026-10-16
 
 seed 移除開發流程的 skill 與知識，Generator 不再提供開發流程，由各 ADE 依需求自行建立或採用社群的 skill；並修正 `adr.js` 在 pre-commit hook 中的誤判。runner 與契約不變。

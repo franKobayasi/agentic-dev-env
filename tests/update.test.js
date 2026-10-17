@@ -89,3 +89,66 @@ test('update 沿用 .ade.json 的 workspaces 設定並保留 symlink', () => {
     'update 應沿用設定並保留 symlink'
   )
 })
+
+test('update 寫入途中失敗時，managed 內容、CLAUDE.md 與 .ade.json 回復原狀', () => {
+  const { tmp, ade, work, cfgPath } = installed()
+  fs.appendFileSync(path.join(ade, 'hub/knowledge/services/README.md'), '\n上游新知識\n')
+  fs.rmSync(path.join(ade, 'hub/skills/ade-add-service'), { recursive: true })
+  fs.rmSync(path.join(ade, '.claude/skills/ade-add-service'))
+  git('add -A', ade)
+  git('commit -m update', ade)
+  // workspaces 的目標位於一般檔案之下，建立目錄時失敗；此時知識庫、skill 與 CLAUDE.md 都已寫入
+  fs.writeFileSync(path.join(tmp, 'afile'), '')
+  fs.writeFileSync(cfgPath, JSON.stringify({ ...readJson(cfgPath), workspaces: path.join(tmp, 'afile', 'sub') }))
+  const cfg = fs.readFileSync(cfgPath, 'utf8')
+  const md = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')
+
+  assert.throws(() => runner.update(work), /ENOTDIR|EEXIST/)
+
+  const idx = fs.readFileSync(path.join(work, '.claude/ade/knowledge/services/README.md'), 'utf8')
+  assert(!idx.includes('上游新知識'), '失敗的 update 應回復原本的知識庫')
+  assert(fs.existsSync(path.join(work, '.claude/skills/ade-add-service/SKILL.md')), '失敗的 update 應回復原本的 skill')
+  assert.strictEqual(fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8'), md, '失敗的 update 應回復 CLAUDE.md')
+  assert.strictEqual(fs.readFileSync(cfgPath, 'utf8'), cfg, '失敗的 update 不應改寫 .ade.json')
+  assert(fs.lstatSync(path.join(work, 'workspaces')).isDirectory(), '失敗的 update 不應動到 workspaces')
+  assert.deepStrictEqual(fs.readdirSync(path.join(work, '.claude')).filter((d) => d.startsWith('.ade-backup')), [], '回復後不應留下備份目錄')
+})
+
+test('update 清除前次中斷留下的備份目錄', () => {
+  const { work } = installed()
+  fs.mkdirSync(path.join(work, '.claude/.ade-backup-stale/ade'), { recursive: true })
+  runner.update(work)
+  assert(!fs.existsSync(path.join(work, '.claude/.ade-backup-stale')), '殘留的備份目錄應被清除')
+})
+
+test('source 不會被當成 shell 指令或 git 選項執行', () => {
+  const { tmp, work, cfgPath } = installed()
+  const cfg = readJson(cfgPath)
+  const marker = path.join(tmp, 'pwned')
+  for (const source of [`nowhere"; touch "${marker}`, `--upload-pack=touch ${marker}`]) {
+    fs.writeFileSync(cfgPath, JSON.stringify({ ...cfg, source }))
+    assert.throws(() => runner.update(work))
+    assert(!fs.existsSync(marker), `source 不得被執行：${source}`)
+  }
+  assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), '失敗時既有 managed 內容必須原封不動')
+})
+
+test('搬移備份途中失敗時，已搬走的 managed 內容搬回原處', () => {
+  const { work } = installed()
+  const before = fs.readdirSync(path.join(work, '.claude/skills')).sort()
+  // 第二次 rename 失敗：知識庫已搬進備份，skill 還在原處
+  const rename = fs.renameSync
+  let calls = 0
+  fs.renameSync = (...args) => {
+    if (++calls === 2) throw new Error('EBUSY: injected')
+    return rename(...args)
+  }
+  try {
+    assert.throws(() => runner.update(work), /EBUSY: injected/)
+  } finally {
+    fs.renameSync = rename
+  }
+  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), '已搬走的知識庫應搬回')
+  assert.deepStrictEqual(fs.readdirSync(path.join(work, '.claude/skills')).sort(), before, '原處的 skill 不得被刪除')
+  assert.deepStrictEqual(fs.readdirSync(path.join(work, '.claude')).filter((d) => d.startsWith('.ade-backup')), [], '回復後不應留下備份目錄')
+})
