@@ -12,7 +12,7 @@ const fm = (id, desc = '說明') => `---\nid: ${id}\ndescription: ${desc}\n---\n
 function repo(overrides = {}) {
   const dir = tmpdir()
   const files = {
-    'hub/CLAUDE.section.md': 'commit 前讀[commit 規範](kb:process/a1b2c3)\n',
+    'hub/forge-section.md': 'commit 前讀[commit 規範](kb:process/a1b2c3)\n',
     'hub/knowledge/README.md': '# 知識庫\n',
     'hub/knowledge/CONTEXT.md': '# 詞彙表\n',
     'hub/knowledge/process/README.md': fm('0f0f0f') + '# 流程\n',
@@ -101,5 +101,5 @@ test('update 遇到檢查未通過只警告，照常更新', () => {
     console.warn = warn
   }
   assert(warnings.some((w) => /knowledge base check problem/.test(w)), 'update 應印出檢查摘要')
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), 'update 應照常完成')
+  assert(fs.existsSync(path.join(work, '.ade/knowledge/README.md')), 'update 應照常完成')
 })

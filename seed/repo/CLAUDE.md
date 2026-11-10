@@ -10,6 +10,6 @@ PO 用 `ade-create-prd` 建立 PRD，確認後用 `ade-prd-to-spec` 寫入產品
 
 - 建立或修改知識依 `ade-build-knowledge` skill，規則見 `knowledge/process/build-knowledge.md`
 - 知識中的引用 `[文字](kb:<分類>/<id>)` 是符號位址：在 `hub/knowledge/<分類>/` 下搜尋 frontmatter 為 `id: <id>` 的檔案即可找到目標
-- 文件與 skill 中的 `knowledge/…` 指知識庫根目錄：本 repo 內是 `hub/knowledge/`，Forge 中是 `.claude/ade/knowledge/`
+- 文件與 skill 中的 `knowledge/…` 指知識庫根目錄：本 repo 內是 `hub/knowledge/`，Forge 中是 `.ade/knowledge/`
 - 名詞以 `knowledge/CONTEXT.md` 為準；PRD 進入「已實作」或「已廢止」後不再修改
 - 設計文件或流程時，常駐內容最小化、細節按需載入，放置規則見 `knowledge/process/README.md`

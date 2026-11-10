@@ -15,7 +15,7 @@ _Avoid_：生成器、本套件
 _Avoid_：中央 ADE repo
 
 **Forge**：
-團隊成員實際運用 ADE 的知識，由人與 AI 協作產出程式碼、軟體或執行結果的目錄；由 runner 從 ADE 注入知識庫、skill 與 `CLAUDE.md` 的常駐區段，各服務的 repo 位於其中的 `workspaces/`。
+團隊成員實際運用 ADE 的知識，由人與 AI 協作產出程式碼、軟體或執行結果的目錄；由 runner 從 ADE 注入知識庫、skill 與常駐區段，各服務的 repo 位於其中的 `workspaces/`。
 _Avoid_：工作目錄、消費端、工作站、hub、以 ADE 指稱這個目錄
 
 **runner**：
@@ -31,14 +31,14 @@ ADE 中注入 Forge 的部分，即 `hub/` 目錄。
 _Avoid_：以 hub 指稱 Forge
 
 **常駐區段**：
-ADE 的 `hub/CLAUDE.section.md`，注入 Forge 後成為 `CLAUDE.md` 中 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 之間的區段。
+ADE 的 `hub/forge-section.md`，注入 Forge 後成為 `CLAUDE.md` 與 `AGENTS.md` 中 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 之間的區段，兩份內容相同。
 _Avoid_：CLAUDE.md 區段
 
 **工作副本**：
 Forge 中 ADE 的 clone，用於修改知識或 skill 並送回 ADE。
 
 **知識庫**：
-ADE 的 `hub/knowledge/`，注入 Forge 後位於 `.claude/ade/knowledge/`；文件中以 `knowledge/…` 表示知識庫根目錄下的位置。
+ADE 的 `hub/knowledge/`，注入 Forge 後位於 `.ade/knowledge/`；文件中以 `knowledge/…` 表示知識庫根目錄下的位置。
 
 **詞彙表**：
 定義一個領域內專有名詞的文件，檔名為 `CONTEXT.md`；Generator 的詞彙表是本檔，ADE 的詞彙表位於知識庫根目錄。

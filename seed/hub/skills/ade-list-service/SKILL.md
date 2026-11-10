@@ -7,7 +7,7 @@ metadata:
 
 # 列出已註冊服務
 
-1. **判斷所在位置**：repo 根目錄有 `hub/knowledge/` 時，讀 `hub/knowledge/services/`；只有 `.claude/ade/knowledge/` 時，讀 `.claude/ade/knowledge/services/`。
+1. **判斷所在位置**：repo 根目錄有 `hub/knowledge/` 時，讀 `hub/knowledge/services/`；只有 `.ade/knowledge/` 時，讀 `.ade/knowledge/services/`。
 2. 列出目錄下的 `*.yaml`，排除 `_` 開頭的範本，每份只讀 `name` 與 `description`。
 3. 輸出服務清單，每列「服務名稱｜定位（取自 `description`）｜描述檔路徑」。需要某個服務的細節時再讀該描述檔，不預先全部載入。
 4. 描述檔的 `name` 與檔名不一致，或缺少 `repo` 的 `url`、`branch` 時，一併回報，並提示用 `ade-add-service` 修正。

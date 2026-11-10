@@ -3,9 +3,37 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
-## [Unreleased]
+## [2.0.0] - 2026-11-10
 
-ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本；runner 的 init 與 update 改為先驗證再寫入、寫入途中失敗時回復原狀，並以參數陣列執行 git。契約 A 不變，契約 B 只新增寫入期間的備份目錄，既存的 ADE 與 Forge 不需要遷移。
+runner 為 Claude Code、Codex、Cursor 與 Kiro 注入 Forge，知識庫改放 `.ade/knowledge/`；init 與 update 改為先驗證再寫入、寫入途中失敗時回復原狀，並以參數陣列執行 git；ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本。Forge 的 managed 位置改變，屬於 breaking change；舊 Forge 在下一次 update 自動遷移，既存 ADE 升級時要調整 hub 內容中的路徑，見本版最後一節。
+
+### Forge 同時支援多個 agent
+
+**為什麼**：runner 只為 Claude Code 注入 skill 與常駐區段，使用 Codex、Cursor 或 Kiro 的團隊成員在 Forge 中讀不到 ADE 的 skill 與常駐指引。決策見 `docs/adr/0014-inject-forge-for-multiple-agents.md`。
+
+**怎麼做**：
+
+- skill 複製到每個 agent 的 skill 目錄：`.claude/skills/`、`.agents/skills/`、`.cursor/skills/`、`.kiro/skills/`；update 在四個目錄依 `ade-` 前綴清理
+- 常駐區段同時寫入 `CLAUDE.md` 與 `AGENTS.md`；Codex、Cursor 與 Kiro 讀取 `AGENTS.md`
+- 任一份檔案的 `ADE:BEGIN／END` 標記損壞時，init 與 update 在寫入任何檔案前失敗
+
+### 知識庫改放 `.ade/knowledge/`
+
+**為什麼**：知識庫不屬於任何單一 agent，放在 `.claude/` 下會讓其他 agent 的使用者誤以為只供 Claude Code 使用。
+
+**怎麼做**：Forge 的 managed 目錄改為 `.ade/`。update 刪除舊的 `.claude/ade/`，舊版 runner 留下的 Forge 在下一次 update 自動遷移。
+
+### 常駐區段的來源檔改名為 `hub/forge-section.md`
+
+**為什麼**：常駐區段不再只注入 `CLAUDE.md`；新名稱也避開 Claude Code、Codex、Cursor 與 Kiro 會自動載入的 `CLAUDE.md` 與 `AGENTS.md`。
+
+**怎麼做**：runner 先讀 `hub/forge-section.md`，找不到時改讀 `hub/CLAUDE.section.md`，既存 ADE 升級 runner 時不需先改名。
+
+### seed 的 skill 不再寫死 Claude Code 的工具
+
+**為什麼**：`ade-create-prd`、`ade-create-adr` 與 `ade-build-knowledge` 指定使用 `AskUserQuestion`，這是 Claude Code 專有的工具。
+
+**怎麼做**：改為「用提問工具列出選項並標明推薦；沒有提問工具時直接在對話中列出」，由各 agent 使用自己的提問工具。
 
 ### ADE 的 CI workflow 與 `CODEOWNERS` 範本
 
@@ -27,7 +55,7 @@ ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本；runner 的 init �
 **怎麼做**：
 
 - init 與 update 分成兩段：先完成全部讀取與驗證，再寫入；可預見的錯誤都在寫入前擋下，目錄保持原狀
-- 寫入前把 managed 區域搬進 `.claude/.ade-backup-*`；寫入途中失敗時刪除寫到一半的內容、搬回備份並還原 `CLAUDE.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。init 失敗時一併移除本次建立的空目錄，可直接重跑
+- 寫入前把 managed 區域搬進 Forge 根目錄的 `.ade-backup-*`；寫入途中失敗時刪除寫到一半的內容、搬回備份並還原 `CLAUDE.md` 與 `AGENTS.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。init 失敗時一併移除本次建立的空目錄，可直接重跑
 - 程序中斷而殘留的備份目錄由下一次 init 或 update 刪除
 
 ### runner：以參數陣列執行 git
@@ -35,6 +63,18 @@ ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本；runner 的 init �
 **為什麼**：`git clone` 與 `git ls-remote` 以字串組成 shell 指令，`.ade.json` 的 `source` 含有引號時會被當成 shell 指令執行，以 `-` 開頭時會被當成 git 的選項。
 
 **怎麼做**：改用 `execFileSync` 以參數陣列執行 git，`source` 放在 `--` 之後；`tests/update.test.js` 以兩種惡意的 `source` 驗證不會被執行。
+
+### 既存 ADE 的升級步驟
+
+既存 ADE 依下列步驟升級：
+
+1. 將 `package.json` 的 `create-agentic-dev-env` 依賴改為 `2.0.0`，執行 `pnpm install`。
+2. 將 `hub/` 內容中的 `.claude/ade/` 全部改為 `.ade/`，包括常駐區段、skill 與知識庫；managed 區域的說明補上 `.agents/`、`.cursor/`、`.kiro/` 下的 `skills/ade-*/`。可對照本版 seed 的 `hub/forge-section.md` 與 `hub/skills/ade-update/SKILL.md`。
+3. 可將 `hub/CLAUDE.section.md` 改名為 `hub/forge-section.md`，並同步修改引用它的文件，例如 `knowledge/process/README.md` 與 `ade-add-process`。
+4. 可將 skill 中的 `AskUserQuestion` 改為「seed 的 skill 不再寫死 Claude Code 的工具」一節的中性寫法。
+5. 執行 `node cli.js check`，再 commit 並推送。
+
+團隊成員在 Forge 執行一次 update 即完成遷移，不需要其他操作。執行後，Forge 根目錄出現 `AGENTS.md` 與 `.ade/knowledge/`，`.claude/ade/` 不再存在。
 
 ## [1.6.1] - 2026-10-16
 

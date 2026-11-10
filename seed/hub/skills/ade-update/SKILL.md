@@ -1,6 +1,6 @@
 ---
 name: ade-update
-description: 把 Forge 的 managed 內容（.claude/ade/knowledge/、.claude/skills/ade-*、CLAUDE.md managed 區段）更新到 ADE 的最新版。使用者說「更新 Forge」「拉最新知識」「ade update」「知識庫過期了」，或 session 開始時偵測到版本落後時使用。
+description: 把 Forge 的 managed 內容（.ade/knowledge/、各 agent skill 目錄下的 ade-*、CLAUDE.md 與 AGENTS.md 的 managed 區段）更新到 ADE 的最新版。使用者說「更新 Forge」「拉最新知識」「ade update」「知識庫過期了」，或 session 開始時偵測到版本落後時使用。
 ---
 
 # 更新 Forge
@@ -11,7 +11,7 @@ description: 把 Forge 的 managed 內容（.claude/ade/knowledge/、.claude/ski
 
 1. 讀 Forge 根目錄的 `.ade.json` 取得 `source`（為 null 則請使用者補上）
 2. **比對版本**：`git ls-remote <source> HEAD`，hash 與 `.ade.json` 的 `commit` 相同 → 已是最新，回報後結束，不必跑 update
-3. **先檢查有沒有未回流的修改**：`.claude/ade/` 與 `.claude/skills/ade-*/` 是 managed 區域，update 會整個覆蓋。有人手改過就先走 `ade-contribute` 把修改送回 ADE，否則會被蓋掉
+3. **先檢查有沒有未回流的修改**：`.ade/` 與各 agent skill 目錄（`.claude/`、`.agents/`、`.cursor/`、`.kiro/` 下的 `skills/ade-*/`）是 managed 區域，update 會整個覆蓋。有人手改過就先走 `ade-contribute` 把修改送回 ADE，否則會被蓋掉
 4. 在 Forge 根目錄執行（`<source>` 的 `git@host:org/repo.git` 要改寫成 `git+ssh://git@host/org/repo.git`——冒號換斜線）：
    ```bash
    pnpm dlx "git+ssh://git@github.com/ORG/REPO.git" update
