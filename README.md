@@ -1,6 +1,6 @@
 # create-agentic-dev-env
 
-> 為團隊打造 **Agentic Dev Environment（ADE）**：一個集中管理跨服務知識、產品規格與開發方法的知識庫 repo，一行指令注入到每個人的 Claude Code，讓全隊的 agent 用同一套上下文、同一套做事流程——團隊的知識從「散落在成員腦中」變成「持久化、可迭代的資產」。
+> 為團隊打造 **Agentic Dev Environment（ADE）**：一個集中管理跨服務知識、產品規格與開發方法的知識庫 repo，一行指令注入到每個人的 agent（Claude Code、Codex、Cursor、Kiro），讓全隊的 agent 用同一套上下文、同一套做事流程——團隊的知識從「散落在成員腦中」變成「持久化、可迭代的資產」。
 
 ## 這是在解決什麼
 
@@ -25,7 +25,7 @@
 | --- | --- | --- |
 | **Generator**（本 repo，create-agentic-dev-env） | 腳手架（`create`）＋執行期 runner（`init`／`update`），發佈到 npm | Generator 的維護者；各 ADE 以 issue 回饋機制改良 |
 | **ADE** | `create` 生成、每個團隊一份的知識庫 repo，團隊知識與 skills 的**唯一真相來源** | 團隊一律走 PR（agent 端由 `ade-contribute` 引導） |
-| **Forge** | 成員電腦上的一個資料夾，**開 Claude Code 的起點**。裡面有 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
+| **Forge** | 成員電腦上的一個資料夾，**開啟 agent 的起點**。裡面有 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
 
 ### 步驟 1：建立你的 ADE
 
@@ -52,16 +52,19 @@ init 在當前目錄建立：
 
 ```
 my-forge/
-├── CLAUDE.md             # 原有內容不動，插入 <!-- ADE:BEGIN/END --> managed 區段
+├── CLAUDE.md             # 原有內容不動，插入 <!-- ADE:BEGIN/END --> managed 區段（Claude Code 讀取）
+├── AGENTS.md             # 同一份區段（Codex、Cursor、Kiro 讀取）
 ├── .ade.json             # source、commit（新鮮度檢查用）、workspaces 位置
-├── .claude/
-│   ├── ade/knowledge/    # 知識庫唯讀副本
-│   └── skills/ade-*/     # 全部 ade-* skills
+├── .ade/knowledge/       # 知識庫唯讀副本
+├── .claude/skills/ade-*/ # 全部 ade-* skills，Claude Code 讀取
+├── .agents/skills/ade-*/ # 同一份 skills，Codex 讀取
+├── .cursor/skills/ade-*/ # 同一份 skills，Cursor 讀取
+├── .kiro/skills/ade-*/   # 同一份 skills，Kiro 讀取
 └── workspaces/           # agent clone 服務 repo 的作業區（自動 gitignore）
 ```
 
 > [!IMPORTANT]
-> session 一律從 Forge 根開啟。在 `workspaces/<service>/` 裡直接開 Claude Code 會載不到 ade skills 與知識庫。
+> session 一律從 Forge 根開啟。在 `workspaces/<service>/` 裡直接開 agent 會載不到 ade skills 與知識庫。
 
 ### 步驟 3：日後更新
 
@@ -95,7 +98,7 @@ pnpm dlx "file:/Users/me/my-ade" init     # update 同形式；file: 必要，�
      └──────────  PR（ade-contribute 引導） ◀───────────  發現過期 / 要新增
 ```
 
-副本永遠會被 update 整個覆蓋，所以直接改 `.claude/ade/` 等於白改。這是保證而非限制：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。原則見[知識的流向](docs/core-concepts/knowledge-flow.md)。
+副本永遠會被 update 整個覆蓋，所以直接改 `.ade/` 等於白改。這是保證而非限制：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。原則見[知識的流向](docs/core-concepts/knowledge-flow.md)。
 
 ### 2. 收錄範圍由團隊決定
 
@@ -122,7 +125,7 @@ PO 把想法問成 PRD（Discovery → 盲點拷問 → `validate-prd.sh`）→ 
 
 ### 5. Context 是最稀缺的資源
 
-貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（CLAUDE.md 區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（入口檔只寫何時閱讀，每份知識以 `description` 一句話說明內容）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
+貫穿一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」常駐最小（常駐區段只寫「何時做＋去哪看」）、按需載入（細節分檔）、導航短細節深（入口檔只寫何時閱讀，每份知識以 `description` 一句話說明內容）。原則見 [Context 管理](docs/core-concepts/context-management.md)。
 
 ### 6. 機制回饋上游，內容不外流
 
