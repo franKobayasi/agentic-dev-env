@@ -1,11 +1,11 @@
 ---
 name: ade-contribute
-description: 從 Forge 修改 ADE 的知識或 skill 並開 PR（ADE 只在本地時 push 分支交人 merge）——包含主動撰寫（新增或調整 spec、skill、process、服務描述檔）與被動回流（發現 .claude/ade/knowledge/ 內容過期或缺漏）。使用者說「改 ADE 的 spec／skill」「把這個記回知識庫」「同步到 ADE」「寫回 ADE」「回流」時使用。
+description: 從 Forge 修改 ADE 的知識或 skill 並開 PR（ADE 只在本地時 push 分支交人 merge）——包含主動撰寫（新增或調整 spec、skill、process、服務描述檔）與被動回流（發現 .ade/knowledge/ 內容過期或缺漏）。使用者說「改 ADE 的 spec／skill」「把這個記回知識庫」「同步到 ADE」「寫回 ADE」「回流」時使用。
 ---
 
 # 知識回流到 ADE
 
-本地 `.claude/ade/` 是 managed 區域，`update` 時會被整個覆蓋——**永遠不要直接修改本地副本**，一切修改都在 ADE 的工作副本上進行、走 PR 回去。
+本地 `.ade/` 是 managed 區域，`update` 時會被整個覆蓋——**永遠不要直接修改本地副本**，一切修改都在 ADE 的工作副本上進行、走 PR 回去。
 
 ## 流程
 

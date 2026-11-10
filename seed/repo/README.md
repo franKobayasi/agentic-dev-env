@@ -1,6 +1,6 @@
 # __ADE_NAME__
 
-> 團隊的 **Agentic Dev Environment（ADE）**：把跨服務知識、產品規格與開發方法集中成一份 repo，一行指令注入到每個人的 Claude Code，讓全隊的 agent 用同一套上下文、同一套做事流程。
+> 團隊的 **Agentic Dev Environment（ADE）**：把跨服務知識、產品規格與開發方法集中成一份 repo，一行指令注入到每個人的 agent（Claude Code、Codex、Cursor、Kiro），讓全隊的 agent 用同一套上下文、同一套做事流程。
 
 ## 這是在解決什麼
 
@@ -42,7 +42,7 @@ ADE 把這兩件事抽出來共用：
 | | 是什麼 | 誰在動它 |
 | --- | --- | --- |
 | **ADE**（就是本 repo） | 團隊知識與 skills 的**唯一真相來源**，全隊共用一份。 | 一律走 PR（agent 端由 `ade-contribute` 引導）；[本地模式](#本地模式ade-不放-githubgitlab)沒有 PR，在本 repo 內直接 commit、或由人 merge 回流分支 |
-| **Forge** | 你自己電腦上的一個資料夾，是**開 Claude Code 的起點**。裡面有一份 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo。 | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
+| **Forge** | 你自己電腦上的一個資料夾，是**開啟 agent 的起點**。裡面有一份 ADE 的唯讀副本＋全部 skills，底下的 `workspaces/` 放實際要開發的服務 repo。 | 副本不要手改（update 會整個覆蓋）；`workspaces/` 下的服務 repo 照平常方式開發 |
 
 ### 步驟 1：設定 SSH（只做一次）
 
@@ -73,21 +73,24 @@ init 在**當前目錄**建立以下內容，既有檔案不會被覆蓋：
 
 | 產出 | 說明 |
 | --- | --- |
-| `CLAUDE.md` 的 `<!-- ADE:BEGIN/END -->` 區段 | ADE 給 agent 的常駐指引；區段外你原有的內容不動 |
-| `.claude/ade/knowledge/` | 知識庫副本 |
-| `.claude/skills/ade-*/` | 全部 ade-* skills |
+| `CLAUDE.md` 與 `AGENTS.md` 的 `<!-- ADE:BEGIN/END -->` 區段 | ADE 給 agent 的常駐指引，兩份內容相同：Claude Code 讀 `CLAUDE.md`，Codex、Cursor、Kiro 讀 `AGENTS.md`；區段外你原有的內容不動 |
+| `.ade/knowledge/` | 知識庫副本 |
+| `.claude/skills/ade-*/`、`.agents/skills/ade-*/`、`.cursor/skills/ade-*/`、`.kiro/skills/ade-*/` | 全部 ade-* skills，每個 agent 的 skill 目錄各一份：Claude Code、Codex、Cursor、Kiro 依序讀取 |
 | `workspaces/` | 開發作業區，agent 之後把服務 repo clone 到這裡；自動加入 `.gitignore` |
 | `.ade.json` | 設定檔：`source`（來源 repo）、`commit`（目前知識版本）、`workspaces`（作業區實際位置，預設 `null`＝就在目錄底下） |
 
 裝完長這樣：
 
 ```
-~/my-forge/                   ← Forge：Claude Code 一律從這裡開
-├── CLAUDE.md                 ← 你自己的指引 ＋ ADE managed 區段
+~/my-forge/                   ← Forge：agent 一律從這裡開
+├── CLAUDE.md                 ← 你自己的指引 ＋ ADE managed 區段（Claude Code）
+├── AGENTS.md                 ← 同上（Codex、Cursor、Kiro）
 ├── .ade.json                 ← Forge 設定：來源、版本、workspaces 位置
-├── .claude/
-│   ├── ade/knowledge/        ← 知識庫唯讀副本（update 會整個覆蓋）
-│   └── skills/ade-*/         ← ade-* skills（同上）
+├── .ade/knowledge/           ← 知識庫唯讀副本（update 會整個覆蓋）
+├── .claude/skills/ade-*/     ← ade-* skills（同上），Claude Code 讀取
+├── .agents/skills/ade-*/     ← 同一份 skills，Codex 讀取
+├── .cursor/skills/ade-*/     ← 同一份 skills，Cursor 讀取
+├── .kiro/skills/ade-*/       ← 同一份 skills，Kiro 讀取
 └── workspaces/               ← 開發用的 repo 都 clone 到這裡
     ├── service-a/
     ├── service-b/
@@ -95,7 +98,7 @@ init 在**當前目錄**建立以下內容，既有檔案不會被覆蓋：
 ```
 
 > [!IMPORTANT]
-> **session 一律從 Forge 的根目錄開啟。** 在 `workspaces/<service>/` 裡直接開 Claude Code 會載不到 ade skills 與知識庫；需要哪個服務，讓 agent 自己進去。
+> **session 一律從 Forge 的根目錄開啟。** 在 `workspaces/<service>/` 裡直接開 agent 會載不到 ade skills 與知識庫；需要哪個服務，讓 agent 自己進去。
 
 > public repo 可用短寫法 `pnpm dlx github:ORG/__ADE_NAME__ init`；private repo 走 `github:` 會因 tarball API 無認證而失敗，**請一律用上方 git+ssh 形式**。
 
@@ -159,7 +162,7 @@ pnpm dlx "file:/Users/me/__ADE_NAME__" init      # update 同形式；file: 必�
      └──────────  PR（ade-contribute 引導） ◀───────────  發現過期 / 要新增
 ```
 
-副本永遠會被 update 整個覆蓋，所以**直接改 `.claude/ade/` 等於白改**。這不是限制，而是保證：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。`ade-contribute` 的存在就是把「想改知識」自動導向正確位置——它會在 `workspaces/<ade-repo-name>/` 開分支、改檔、開 PR。
+副本永遠會被 update 整個覆蓋，所以**直接改 `.ade/` 等於白改**。這不是限制，而是保證：每個人手上的知識一定是同一份，任何修改都經過 PR 這道 review 閘門。`ade-contribute` 的存在就是把「想改知識」自動導向正確位置——它會在 `workspaces/<ade-repo-name>/` 開分支、改檔、開 PR。
 
 ### 2. 收錄範圍由團隊決定
 
@@ -194,7 +197,7 @@ flowchart LR
 
 這是貫穿 ADE 一切設計的底層原則：每份文件都要回答「這段內容值得在什麼時機、以什麼成本進入 context？」
 
-- **常駐最小**：`CLAUDE.md` managed 區段只寫「何時做＋去哪看」，一條一行
+- **常駐最小**：`CLAUDE.md` 與 `AGENTS.md` 的 managed 區段只寫「何時做＋去哪看」，一條一行
 - **按需載入**：細節分檔存放，skill body 精簡、超過一頁的細節拆出去引用
 - **導航短、細節深**：入口檔只寫何時閱讀，每份知識的 `description` 一句話說明內容，細節在各自的檔案
 
@@ -204,7 +207,7 @@ flowchart LR
 
 ## 常用場景速查
 
-在 Forge 開 Claude Code，直接用自然語言說就會觸發對應 skill：
+在 Forge 開 agent，直接用自然語言說就會觸發對應 skill：
 
 | 你想做的事 | 說一句 | 觸發 |
 | --- | --- | --- |
@@ -235,7 +238,7 @@ flowchart LR
 | **`ade-help`** | 列出當前位置可用的 ade-* skills 與各自用途（「有哪些 skill」「ADE 支援什麼」）。清單由 `list-skills.sh` 掃 `.claude/skills/ade-*/SKILL.md` 的 frontmatter 即時產生——**不寫死清單**，skill 搬家或新增都不用回頭改；掃的是當前位置真正載得到的目錄，Forge 與 ADE 自然列出各自那套。 | ✅ |
 | **`ade-update`** | 把 Forge 的 managed 內容拉到本 repo 最新版（「更新 Forge」，或 session 開始偵測到落後時）。先用 `git ls-remote` 比對 `.ade.json` 的 `commit`（一樣就不跑）、提醒把 managed 區域的手改先走 `ade-contribute` 回流，才執行 `pnpm dlx <source> update`，最後回報版本變化與期間新增的 skill。**只在 Forge 中用**——本 repo 內沒有 managed 副本，用一般 `git pull`。 | — |
 | **`ade-config`** | 查看或修改 Forge 的安裝設定 `.ade.json`（「Forge 設定」「改成本地模式」「作業區換位置」）：模式（由 `source` 是路徑還是 url 判定）、來源 repo、`workspaces` 位置。改完直接跑 update 重建；`.ade.json` 的 `source` 一經設定就以它為準，不會被本 repo 的 `repository.url` 蓋回——所以可以用自己的本地 clone 當來源快速迭代、再切回遠端。在本 repo 內則是看／改 `package.json` 的 `repository.url`（init 的初值）與 `ade.upstream`。 | ✅ |
-| **`ade-contribute`** | 從 Forge 修改本 repo 知識的**唯一通道**（「同步到 ADE」「改 ADE 的 spec／skill」「回流」）。主動撰寫直接建分支開工；被動回流先查 open issues／PRs 避免重複，沒有才開 issue 記錄缺口、PR 再連回該 issue。工作副本放 `workspaces/<ade-repo-name>/`，已存在就重用、收尾切回主幹，人只需 review PR。本地模式（`source` 是路徑）沒有 issue／PR：push 分支交人 merge。**絕不直接改 Forge 的 `.claude/ade/` 副本**——那是 managed 區域，update 時會被覆蓋。其他 skill 的「開 PR」動作都委派給它。 | — |
+| **`ade-contribute`** | 從 Forge 修改本 repo 知識的**唯一通道**（「同步到 ADE」「改 ADE 的 spec／skill」「回流」）。主動撰寫直接建分支開工；被動回流先查 open issues／PRs 避免重複，沒有才開 issue 記錄缺口、PR 再連回該 issue。工作副本放 `workspaces/<ade-repo-name>/`，已存在就重用、收尾切回主幹，人只需 review PR。本地模式（`source` 是路徑）沒有 issue／PR：push 分支交人 merge。**絕不直接改 Forge 的 `.ade/` 副本**——那是 managed 區域，update 時會被覆蓋。其他 skill 的「開 PR」動作都委派給它。 | — |
 | **`ade-add-service`** | 在知識庫註冊新服務（「新增服務」）。依 `knowledge/services/_template.yaml` 建描述檔（`repo` 的 url 與 branch 必填，agent 之後要靠它自主 clone），規則見 `services/` 的 `README.md`。資訊不足會問人，不留空猜測。在本 repo 直接編輯收尾，在 Forge 中則走 `ade-contribute`。 | ✅ |
 | **`ade-list-service`** | 列出目前所有已註冊的服務（「有哪些服務」）。讀各描述檔的 `name` 與 `description` 列出清單，並回報欄位缺漏或名稱與檔名不一致之處。只讀不改。 | ✅ |
 | **`ade-create-prd`** | 引導 PO 產出標準化 PRD（「建 PRD」），涵蓋「只有模糊想法」到「照範本填寫」兩種起點。想法未成形先跑 **Discovery** 7 題（一批 2–3 題，已有答案的跳過），接著對照服務總覽、既有 spec 與進行中 PRD 用團隊詞彙寫入 `knowledge/prd/`，再進**盲點拷問**（邊界與錯誤情境、跨服務影響、權限安全、資料相容性、驗收可測性、相鄰功能），需求描述一律寫成含例外處置（Fallback）欄的 GWT 決策表，最後用 `validate-prd.sh` 機械檢查（含檔名與決策表結構），並向使用者交代 agent 自己沒把握的風險與未決清單。**不自動翻狀態**——留「草稿」，PO 確認才改「已確認」；實作前取消改「已廢止」。 | ✅ |
@@ -245,7 +248,7 @@ flowchart LR
 | **`ade-align-spec`** | 開發收尾的文件對齊（「開發完了更新 spec」）。對照實際實作依 PRD 的 id 逐一核對它的尚未實作標記：做完且一致的移除、有出入的**以實作為準**改 spec 並記差異、沒做的保留；驗收項全完成時 PRD 轉「已實作」。最後開 PR 把差異清單交 PO 判斷。只動屬於這次 PRD 的標記。 | — |
 | **`ade-spec-audit`** | spec 的定期健檢（「規格還對嗎」）。PRD 流程只覆蓋計畫內開發，hotfix 與直接改 code 會讓 spec 悄悄失真——這支補上偵測路徑：逐份 spec 對照實作（缺的 repo 會先 clone），找出行為已變／功能已移除／實作有但 spec 沒記載的漂移，產出清單讓人決定修 spec 還是修 code，確認後開 PR。建議 release 後或定期執行。 | — |
 | **`ade-add-skill`** | 新增 skill 的 meta-skill（「把這個做成 skill」）。先問使用對象再決定位置：Forge 中用 → `hub/skills/ade-*`（init/update 注入）；本 repo 內用 → `.claude/skills/ade-*`；兩邊都用 → 放 `hub/skills/` 並在 frontmatter 標 `ade-scope: both`，再於 `.claude/skills/` 建 symlink。並落實 `ade-` 命名規則、context 紀律與 README 同步。 | ✅ |
-| **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `hub/CLAUDE.section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
+| **`ade-add-process`** | 建立或修改流程慣例的 meta-skill（「以後都這樣做」）。依三層機制選載體：無條件約束 → `hub/forge-section.md` 加一行指標；有觸發時機的程序 → 新增一支 `ade-` 前綴 skill；細節 → `process/` 一主題一檔。並執行 context 紀律：常駐層只寫「何時做＋去哪看」，常駐規則超過 10 行時新增前必須與使用者確認取捨。 | ✅ |
 | **`ade-build-knowledge`** | 在知識庫建立或修改一份知識（「新增知識」「寫進知識庫」）。先依詞彙表與 `description` 查重，判斷內容該不該收、放在哪個分類，以 `new-id.sh` 產生分類內未使用的 id，寫好 frontmatter、內文與上層入口檔的導覽，最後執行 `node cli.js check` 驗證。規則全在 `knowledge/process/build-knowledge.md`，skill 只寫步驟。PRD、服務描述檔與流程慣例改用各自的 skill。 | ✅ |
 | **`ade-create-adr`** | 以 MADR 格式建立或修訂架構決策紀錄（「寫 ADR」「記錄這個決策」）。先依規則確認決定值得寫 ADR，再依主題決定寫到哪裡：服務的架構寫進該服務 repo 的 `docs/adr/`；知識體系、skill 與流程的設計寫進本 repo 的 `docs/adr/`，在 Forge 中走 `ade-contribute`。附 MADR 範本與產生索引的 `adr.js`。規則全在 `knowledge/process/adr-writing.md`。 | ✅ |
 
@@ -261,15 +264,15 @@ flowchart LR
 
 ```
 hub/                     # init／update 注入每個 Forge 的內容
-├── CLAUDE.section.md    # Forge 中 CLAUDE.md 的 managed 區段
-├── knowledge/           # Forge 的 .claude/ade/knowledge/
+├── forge-section.md     # Forge 中 CLAUDE.md 與 AGENTS.md 的 managed 區段
+├── knowledge/           # Forge 的 .ade/knowledge/
 │   ├── README.md        # 查找方式與分類導覽
 │   ├── CONTEXT.md       # 詞彙表：ADE 與 Forge、知識庫、開發流程與產品領域的名詞
 │   ├── services/        # 服務：README.md 加上一服務一份的描述檔 yaml
 │   ├── process/         # 流程與團隊慣例，含建立知識、撰寫 PRD 與 ADR 的規則
 │   ├── specs/           # 產品規格，持續迭代的事實來源
 │   └── prd/             # 一次開發一份的需求文件，歷史文件不迭代
-└── skills/              # Forge 的 .claude/skills/（十六支，見上方 Skills）
+└── skills/              # Forge 中各 agent 的 skill 目錄（十六支，見上方 Skills）
 .claude/skills/          # 本 repo 內可用的 skills：實體目錄是本 repo 專用，symlink 指向 hub/skills/ 中標 ade-scope: both 的
 .githooks/pre-commit     # commit 前產生 ADR 與知識庫的索引、執行知識庫檢查（pnpm install 時啟用）
 .github/workflows/       # check.yml：PR 與推送到主幹時執行知識庫與 ADR 檢查

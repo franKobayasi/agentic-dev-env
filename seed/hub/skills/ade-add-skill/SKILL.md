@@ -7,9 +7,9 @@ metadata:
 
 # 新增 skill
 
-1. **判斷所在位置**：repo 根目錄有 `hub/knowledge/` 時，你在 ADE 內，直接編輯本 repo 的檔案。只有 `.claude/ade/knowledge/` 時，你在 Forge 中，依 `ade-contribute` 的流程取得工作副本並建立分支；以下路徑都指工作副本內的檔案，不得修改 `.claude/ade/` 的副本。
+1. **判斷所在位置**：repo 根目錄有 `hub/knowledge/` 時，你在 ADE 內，直接編輯本 repo 的檔案。只有 `.ade/knowledge/` 時，你在 Forge 中，依 `ade-contribute` 的流程取得工作副本並建立分支；以下路徑都指工作副本內的檔案，不得修改 `.ade/` 的副本。
 2. **選使用對象**——這決定放哪，不確定就問使用者：
-   - **Forge 中使用** → `hub/skills/ade-<name>/`。init 與 update 會注入各 Forge 的 `.claude/skills/`；**目錄名必須 `ade-` 前綴**，runner 只管理此前綴，非前綴會被拒裝
+   - **Forge 中使用** → `hub/skills/ade-<name>/`。init 與 update 會注入各 Forge 中每個 agent 的 skill 目錄（`.claude/`、`.agents/`、`.cursor/`、`.kiro/` 下的 `skills/`）；**目錄名必須 `ade-` 前綴**，runner 只管理此前綴，非前綴會被拒裝
    - **ADE 內用**（PO／維護者）→ `.claude/skills/ade-<name>/`（實體目錄）
    - **兩邊都用** → 放 `hub/skills/ade-<name>/`，frontmatter 加 `metadata:` 下的 `ade-scope: both`，再建 symlink：`ln -s ../../hub/skills/ade-<name> .claude/skills/ade-<name>`
    - `.claude/skills/` 下的實體目錄是 ADE 專用、symlink 是兩邊都用（單一真相在 `hub/skills/`，維護只改一份）
