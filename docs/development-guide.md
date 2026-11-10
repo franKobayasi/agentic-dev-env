@@ -26,7 +26,7 @@ git config core.hooksPath .githooks
 這個定位衍生出四條撰寫約束：
 
 - **以 ADE 的視角撰寫。** seed 內的路徑必須以 create 產出的 ADE 根目錄為準，不得出現 `seed/` 或本 repo 的相對路徑。因此 `seed/repo/` 內指向 `hub/` 的相對連結，在 seed 內是斷的，在 ADE 內才成立。提及本 repo 時應稱為「上游 create-agentic-dev-env」；引用本 repo 的檔案時必須使用 GitHub URL。
-- **知識庫內的位置寫成 `knowledge/…`。** `knowledge/…` 代表知識庫根目錄，在 ADE 內是 `hub/knowledge/`，在 Forge 內是 `.claude/ade/knowledge/`，這條約定寫在 `seed/repo/CLAUDE.md`。描述 repo 結構本身時，例如判斷所在位置、指定建檔位置或建立 symlink，應寫從 repo 根目錄起算的完整路徑。
+- **知識庫內的位置寫成 `knowledge/…`。** `knowledge/…` 代表知識庫根目錄，在 ADE 內是 `hub/knowledge/`，在 Forge 內是 `.ade/knowledge/`，這條約定寫在 `seed/repo/CLAUDE.md`。描述 repo 結構本身時，例如判斷所在位置、指定建檔位置或建立 symlink，應寫從 repo 根目錄起算的完整路徑。
 - **不含任何公司知識。** `hub/knowledge/` 不得放入公司知識，只放結構、範本與通用流程，實際內容由各團隊在自己的 ADE 填寫。
 - **改動只影響新建的 repo。** 因此可以調整 seed 的結構，但 runner 讀取的部分受契約 A（runner 依賴的 ADE 結構）約束，見下一節的表格。
 
@@ -45,11 +45,11 @@ seed 只有兩個子目錄，分別是 ADE 兩個部分的原料：
 
 | `hub/` 內 | Forge 內 | runner 是否讀取 |
 |---|---|---|
-| `knowledge/` | `.claude/ade/knowledge/`，update 時整份刪除後重建 | 是（契約 A，必要） |
-| `skills/ade-*/` | `.claude/skills/ade-*/`，update 時依前綴刪除後重建 | 是（契約 A，目錄名稱必須以 `ade-` 開頭） |
-| `CLAUDE.section.md` | 注入 `CLAUDE.md` 的 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 區段 | 是（契約 A，必要） |
+| `knowledge/` | `.ade/knowledge/`，update 時整份刪除後重建 | 是（契約 A，必要） |
+| `skills/ade-*/` | `.claude/skills/`、`.agents/skills/`、`.cursor/skills/`、`.kiro/skills/` 各一份，update 時依前綴刪除後重建 | 是（契約 A，目錄名稱必須以 `ade-` 開頭） |
+| `forge-section.md` | 注入 `CLAUDE.md` 與 `AGENTS.md` 的 `<!-- ADE:BEGIN -->` 與 `<!-- ADE:END -->` 區段 | 是（契約 A，必要） |
 
-**注意**：常駐區段不得命名為 `CLAUDE.md`。Claude Code 讀取子目錄的檔案時，會自動載入該目錄的 `CLAUDE.md`；維護者在 ADE 內編輯 `hub/` 時，會因此誤載入給 Forge 使用的指引。
+**注意**：常駐區段不得命名為 `CLAUDE.md` 或 `AGENTS.md`。Claude Code 讀取子目錄的檔案時，會自動載入該目錄的 `CLAUDE.md`，Codex、Cursor 與 Kiro 也會讀取子目錄的 `AGENTS.md`；維護者在 ADE 內編輯 `hub/` 時，會因此誤載入給 Forge 使用的指引。
 
 下表列出 `repo/` 各部分在 ADE 中的去向：
 
@@ -96,7 +96,7 @@ skill 的使用對象由放置位置與 frontmatter 決定，下表列出三種�
 | skill 附帶腳本或範本檔 | 可視需要在 [`tests/init.test.js`](../tests/init.test.js) 加入附檔斷言，確認附檔隨目錄注入 |
 | 新增以點開頭的檔案或目錄 | 在 `seed/repo/` 內以不含點的名稱存放，並在 [`bin/create.js`](../bin/create.js) 補上歸位步驟 |
 | 內容需要 ADE 名稱 | 寫成 `__ADE_NAME__`，create 會替換 |
-| 搬動或改名 `hub/knowledge/`、`hub/CLAUDE.section.md`，或改變 skill 目錄規則 | 屬於契約 A，必須先閱讀[依賴關係與相容性契約](./dependency-contract.md) |
+| 搬動或改名 `hub/knowledge/`、`hub/forge-section.md`，或改變 skill 目錄規則 | 屬於契約 A，必須先閱讀[依賴關係與相容性契約](./dependency-contract.md) |
 | 搬動 `seed/` 內的檔案 | 指向該檔案的相對連結，在 create 產出的 ADE 內檢查（見下一節） |
 | 任何 seed 改動 | [`CHANGELOG.md`](../CHANGELOG.md) 的條目 |
 

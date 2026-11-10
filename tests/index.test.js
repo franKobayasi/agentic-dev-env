@@ -7,7 +7,7 @@ const runner = require('../lib/runner')
 const { writeIndexes } = require('../lib/check')
 const { tmpdir, create } = require('./helpers')
 
-const layout = (ade) => ({ knowledge: path.join(ade, 'hub/knowledge'), skills: path.join(ade, 'hub/skills'), section: path.join(ade, 'hub/CLAUDE.section.md') })
+const layout = (ade) => ({ knowledge: path.join(ade, 'hub/knowledge'), skills: path.join(ade, 'hub/skills'), section: path.join(ade, 'hub/forge-section.md') })
 const prd = (ade, ...p) => path.join(ade, 'hub/knowledge/prd', ...p)
 
 function enableIndex(ade, value = '[status, description]') {

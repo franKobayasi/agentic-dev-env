@@ -14,7 +14,7 @@ test('ade-build-knowledge 兩邊可用：ADE repo 內有 symlink，init 注入 A
   const work = workdir(tmp, 'work')
   runner.init(work, ade)
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-build-knowledge/new-id.sh')), 'skill 與附檔應注入 ADE')
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/process/build-knowledge.md')), '規則應注入 ADE')
+  assert(fs.existsSync(path.join(work, '.ade/knowledge/process/build-knowledge.md')), '規則應注入 ADE')
 })
 
 test('new-id.sh 輸出分類內未使用的 6 位十六進位 id', () => {

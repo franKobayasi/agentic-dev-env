@@ -20,7 +20,7 @@ test('ade-create-adr 兩邊可用：ADE 內有 symlink 與 docs/adr/，init 注�
   for (const f of ['adr.js', 'template.md']) {
     assert(fs.existsSync(path.join(forge, '.claude/skills/ade-create-adr', f)), `${f} 應注入 Forge`)
   }
-  assert(!fs.existsSync(path.join(forge, '.claude/ade/docs')), 'ADE 的 docs/ 不注入 Forge')
+  assert(!fs.existsSync(path.join(forge, '.ade/docs')), 'ADE 的 docs/ 不注入 Forge')
 })
 
 test('adr.js sync 依指定目錄產生索引，check 擋下不連續的編號', () => {

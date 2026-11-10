@@ -17,7 +17,7 @@ ADE（create 當下 seed 的快照）
         ▲
         │ pnpm dlx "git+ssh://…/<ade-repo>.git" init | update
         │
-Forge（.ade.json / .claude/ade/ / .claude/skills/ade-*/ / CLAUDE.md 區段）
+Forge（.ade.json / .ade/ / 各 agent 的 skills/ade-*/ / CLAUDE.md 與 AGENTS.md 的常駐區段）
 ```
 
 ## 兩條傳播路徑，都是顯式的
@@ -41,8 +41,9 @@ revert 即可」。
 
 （新增「必要」項目 = breaking change）
 
-- `hub/knowledge/` — 必要；整份複製到 Forge `.claude/ade/knowledge/`
-- `hub/CLAUDE.section.md` — 必要；注入 CLAUDE.md 的 `<!-- ADE:BEGIN/END -->` 區段
+- `hub/knowledge/` — 必要；整份複製到 Forge `.ade/knowledge/`
+- `hub/forge-section.md` — 必要；注入 `CLAUDE.md` 與 `AGENTS.md` 的 `<!-- ADE:BEGIN/END -->` 區段。
+  找不到時改讀 `hub/CLAUDE.section.md`：2.0.0 之前 create 的 ADE 使用這個名稱，升級 runner 時不需先改名；`tests/legacy-layout.test.js` 保留此案例
 - `hub/skills/*/` — 可缺；目錄名必須 `ade-` 前綴，runner 拒裝非前綴（update 只清理此前綴）
 - 扁平結構 — repo 根沒有 `hub/` 時，runner 改讀 `knowledge/`、`claude-md/section.md`、`skills/*/`，規則同上。
   1.6.0 之前 create 的 ADE 都是這個結構，升級 runner 時不需先遷移；`tests/legacy-layout.test.js` 保留此案例
@@ -71,15 +72,18 @@ revert 即可」。
 - `.ade.json` — `{ source, commit, workspaces }`；`source` 是 git url 或本地路徑（`git clone`／
   `git ls-remote` 兩者都吃；`ade-contribute` 以路徑形態判定本地模式）。**已設定的 `source` 優先**：
   ADE 的 `repository.url` 只在 init 時當初值，之後 update 不覆寫（1.4.0 起；`ade-config` 靠此讓 Forge
-  自行切換來源或本地／遠端模式）；消費者有三個：runner update、CLAUDE.md
+  自行切換來源或本地／遠端模式）；消費者有三個：runner update、常駐
   區段的保鮮檢查、`ade-contribute` skill。`commit` 由套件目錄 `git rev-parse` 取得，取不到
   （`file:` 安裝不帶 `.git`）退 `git ls-remote <source> HEAD`；兩者都取不到（repo 尚無 commit）init 在寫檔前失敗。
   update 先 clone 並驗證知識庫與常駐區段（依上面兩種結構之一）存在才清 managed 區域——來源是空 repo 時既有安裝原封不動。注意歷史狀態：0.2.8 之前的 init 可能留下
   `source: null`；加 `workspaces` 欄位之前的檔案沒有該欄位。讀取端必須容忍缺省。
-- `CLAUDE.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更
-- `.claude/ade/` — 整個目錄視為 managed，update 全刪重建
-- 寫入的原子性 — init 與 update 先完成全部讀取與驗證（source、commit、skill 前綴、`CLAUDE.md` 標記、`workspaces` 的現況）才寫入任何檔案；寫入途中失敗時，runner 刪除寫到一半的 managed 內容，搬回 managed 區域的備份並還原 `CLAUDE.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。備份在寫入期間位於 `.claude/.ade-backup-*`，成功或回復後刪除；程序中斷而殘留的備份由下一次 init 或 update 刪除，managed 區域隨該次寫入整份重建
-- `.claude/skills/ade-*` — `ade-` 前綴即 managed，update 全刪重建；前綴規則不可變更，
+- `CLAUDE.md`、`AGENTS.md` — 只動 `<!-- ADE:BEGIN -->`…`<!-- ADE:END -->` 之間；標記字串本身不可變更。
+  兩份檔案寫入相同的區段：Claude Code 讀 `CLAUDE.md`，Codex、Cursor 與 Kiro 讀 `AGENTS.md`
+- `.ade/` — 整個目錄視為 managed，update 全刪重建
+- `.claude/ade/` — 2.0.0 之前的 managed 目錄，update 時刪除；舊版 runner 留下的 Forge 因此在下一次 update 自動遷移
+- 寫入的原子性 — init 與 update 先完成全部讀取與驗證（source、commit、skill 前綴、`CLAUDE.md` 與 `AGENTS.md` 的標記、`workspaces` 的現況）才寫入任何檔案；寫入途中失敗時，runner 刪除寫到一半的 managed 內容，搬回 managed 區域的備份並還原 `CLAUDE.md` 與 `AGENTS.md`，`.ade.json` 最後寫入，因此保持前一次安裝的紀錄。備份在寫入期間位於 Forge 根目錄的 `.ade-backup-*`，成功或回復後刪除；程序中斷而殘留的備份由下一次 init 或 update 刪除，managed 區域隨該次寫入整份重建
+- `.claude/skills/ade-*`、`.agents/skills/ade-*`、`.cursor/skills/ade-*`、`.kiro/skills/ade-*` — 依序是 Claude Code、Codex、Cursor、Kiro 讀取 skill 的目錄，
+  每個目錄放一份相同的 skill；`ade-` 前綴即 managed，update 全刪重建；前綴規則不可變更，
   否則舊安裝的 skill 變成清不掉的孤兒
 - `workspaces` — 目錄或 symlink 兩種形態都合法；`.gitignore` 寫入不帶斜線的 `workspaces`
 

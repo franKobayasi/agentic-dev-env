@@ -24,11 +24,11 @@ test('init 注入知識庫、skill 與常駐區段', () => {
   const work = workdir(tmp, 'work')
   runner.init(work, ade)
 
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/README.md')), '知識庫應複製')
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.yaml')), '服務 YAML 模板應存在')
-  assert(!fs.existsSync(path.join(work, '.claude/ade/knowledge/services/_template.md')), '舊 md 服務模板應移除')
-  assert(fs.existsSync(path.join(work, '.claude/ade/knowledge/README.md')), '知識庫的入口檔應複製')
-  assert(!fs.existsSync(path.join(work, '.claude/ade/UPSTREAM-CANDIDATES.md')), 'ADE repo 根目錄檔案不應複製進工作目錄')
+  assert(fs.existsSync(path.join(work, '.ade/knowledge/services/README.md')), '知識庫應複製')
+  assert(fs.existsSync(path.join(work, '.ade/knowledge/services/_template.yaml')), '服務 YAML 模板應存在')
+  assert(!fs.existsSync(path.join(work, '.ade/knowledge/services/_template.md')), '舊 md 服務模板應移除')
+  assert(fs.existsSync(path.join(work, '.ade/knowledge/README.md')), '知識庫的入口檔應複製')
+  assert(!fs.existsSync(path.join(work, '.ade/UPSTREAM-CANDIDATES.md')), 'ADE repo 根目錄檔案不應複製進工作目錄')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-contribute/SKILL.md')), 'skills 應複製')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-align-spec/SKILL.md')), 'align-spec skill 應注入')
   assert(fs.existsSync(path.join(work, '.claude/skills/ade-spec-audit/SKILL.md')), 'spec-audit skill 應注入')
@@ -48,6 +48,23 @@ test('init 注入知識庫、skill 與常駐區段', () => {
   assert.throws(() => runner.init(work, ade), /update/, '重複 init 應報錯')
 })
 
+test('init 為每個 agent 注入 skill 與常駐區段', () => {
+  const tmp = tmpdir()
+  const ade = createAde(tmp)
+  const work = workdir(tmp, 'work')
+  fs.writeFileSync(path.join(work, 'AGENTS.md'), '# 給其他 agent 的原有指引\n')
+  runner.init(work, ade)
+
+  for (const dir of ['.claude/skills', '.agents/skills', '.cursor/skills', '.kiro/skills']) {
+    assert(fs.existsSync(path.join(work, dir, 'ade-help/list-skills.sh')), `skill 與附檔應注入 ${dir}`)
+  }
+  const claude = fs.readFileSync(path.join(work, 'CLAUDE.md'), 'utf8')
+  const agents = fs.readFileSync(path.join(work, 'AGENTS.md'), 'utf8')
+  assert(agents.includes('給其他 agent 的原有指引'), 'AGENTS.md 應保留原內容')
+  const block = (md) => md.slice(md.indexOf('<!-- ADE:BEGIN -->'))
+  assert.strictEqual(block(agents), block(claude), 'AGENTS.md 與 CLAUDE.md 的區段內容應相同')
+})
+
 test('損壞的 marker 應明確失敗而非靜默寫壞', () => {
   const tmp = tmpdir()
   const ade = createAde(tmp)
@@ -55,6 +72,12 @@ test('損壞的 marker 應明確失敗而非靜默寫壞', () => {
   fs.mkdirSync(work)
   fs.writeFileSync(path.join(work, 'CLAUDE.md'), '<!-- ADE:END -->\n內容\n<!-- ADE:BEGIN -->\n')
   assert.throws(() => runner.init(work, ade), /corrupted/, '顛倒的 marker 應報錯')
+
+  // 任一份檔案的 marker 損壞，兩份都不寫，避免 agent 之間讀到不同版本的區段
+  const work2 = workdir(tmp, 'work2')
+  fs.writeFileSync(path.join(work2, 'AGENTS.md'), '<!-- ADE:BEGIN -->\n只有開頭\n')
+  assert.throws(() => runner.init(work2, ade), /AGENTS\.md/, 'AGENTS.md 的 marker 損壞應報錯')
+  assert(!fs.readFileSync(path.join(work2, 'CLAUDE.md'), 'utf8').includes('<!-- ADE:BEGIN -->'), 'CLAUDE.md 不應被寫入區段')
 })
 
 test('自訂作業區：workspaces 建成指向既有資料夾的 symlink', () => {
