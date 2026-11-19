@@ -3,6 +3,21 @@
 格式依 [Keep a Changelog](https://keepachangelog.com/)；版本語意見
 `docs/dependency-contract.md`（ADE repos 鎖精確版本，major bump = 升級需動結構）。
 
+## [2.1.0] - 2026-11-19
+
+init 與 update 在終端機上完成時印出 ADE 的 logo 與本次安裝的摘要。runner 對契約 A、B 沒有變更，既存 ADE 升級 runner 不需要遷移。
+
+### init 與 update 完成時顯示摘要畫面
+
+**為什麼**：init 與 update 完成時只印一行 `ADE init done` 或 `ADE update done`，團隊成員在終端機上看不出這次安裝的來源、版本變化與 skill 的增減。
+
+**怎麼做**：
+
+- 輸出是終端機時，印出 ADE 的 logo、runner 版本、source、commit（update 時顯示前後兩個版本）、skill 數量與增減，以及 `workspaces` 的位置
+- 輸出不是終端機時，例如 agent 透過 `ade-update` 執行，照舊只印 `ADE init done` 或 `ADE update done`
+- 設定 `NO_COLOR` 環境變數時不上色
+- update 執行 `git clone` 時加上 `--quiet`，clone 的進度訊息不再出現在畫面之前；clone 失敗時錯誤照常輸出
+
 ## [2.0.0] - 2026-11-10
 
 runner 為 Claude Code、Codex、Cursor 與 Kiro 注入 Forge，知識庫改放 `.ade/knowledge/`；init 與 update 改為先驗證再寫入、寫入途中失敗時回復原狀，並以參數陣列執行 git；ADE 新增 PR 把關的 CI workflow 與 `CODEOWNERS` 範本。Forge 的 managed 位置改變，屬於 breaking change；舊 Forge 在下一次 update 自動遷移，既存 ADE 升級時要調整 hub 內容中的路徑，見本版最後一節。
