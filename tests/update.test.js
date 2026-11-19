@@ -3,6 +3,7 @@ const test = require('node:test')
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
+const { spawnSync } = require('child_process')
 const runner = require('../lib/runner')
 const { git, tmpdir, createAde, workdir, readJson } = require('./helpers')
 
@@ -181,4 +182,31 @@ test('AGENTS.md 的 marker 損壞時，update 失敗且不破壞既有安裝', (
   fs.writeFileSync(path.join(work, 'AGENTS.md'), '<!-- ADE:END -->\n')
   assert.throws(() => runner.update(work), /AGENTS\.md/, 'marker 損壞應報錯')
   assert(fs.existsSync(path.join(work, '.ade/knowledge/README.md')), 'update 失敗時既有 managed 內容必須原封不動')
+})
+
+test('update 回報 commit 變化與 skill 的增減', () => {
+  const { ade, work, cfgPath } = installed()
+  const prev = readJson(cfgPath).commit
+  fs.rmSync(path.join(ade, 'hub/skills/ade-add-service'), { recursive: true })
+  fs.rmSync(path.join(ade, '.claude/skills/ade-add-service'))
+  fs.cpSync(path.join(ade, 'hub/skills/ade-contribute'), path.join(ade, 'hub/skills/ade-new'), { recursive: true })
+  git('add -A', ade)
+  git('commit -m skills', ade)
+
+  const s = runner.update(work)
+
+  assert.strictEqual(s.prevCommit, prev)
+  assert.strictEqual(s.commit, readJson(cfgPath).commit)
+  assert.notStrictEqual(s.commit, prev)
+  assert.deepStrictEqual(s.added, ['ade-new'])
+  assert.deepStrictEqual(s.removed, ['ade-add-service'])
+})
+
+test('輸出不是終端機時（skill 執行），update 只印純文字', () => {
+  // skill 讀取 update 的輸出，畫面與色碼會干擾判讀
+  const { work } = installed()
+  const runnerPath = path.join(__dirname, '..', 'lib', 'runner.js')
+  const r = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(runnerPath)}).run('update')`], { cwd: work, encoding: 'utf8' })
+  assert.strictEqual(r.status, 0, r.stderr)
+  assert.strictEqual(r.stdout, 'ADE update done\n')
 })
